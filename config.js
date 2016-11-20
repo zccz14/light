@@ -17,7 +17,7 @@ const configuration = {
             resave: false,
             saveUninitialized: true
         },
-        defaultPort: 80
+        defaultPort: 2048
     }
 }
 
