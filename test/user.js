@@ -23,29 +23,34 @@ describe('User API Testing', function () {
             .send({username: newUser.username, password: newUser.password})
             .expect(200)
             .expect((res) => {
-                if (res.body.code != 0) throw new Error('非零的返回');
-                if (res.body.body.length > 1) throw new Error('怎么还有人');
-                if (res.body.body[0].name != newUser.username) throw new Error('明明是我先来的');
-                newUser._id = res.body.body[0]._id;
+                if (res.body.code != 0) throw new Error('return non-zero value');
+                if (res.body.body.username != newUser.username) throw new Error('明明是我先来的');
+                newUser._id = res.body.body._id;
             })
             .end(function(err, res) {
                 if (err) return done(err);
-                _id = res.body.
+                _id = res.body.body._id;
                 done();
             });
     });
-    // it('update a exist user (change password)', function (done) {
-    //     request(app)
-    //         .put(`/user/${newUser._id}`)
-    //         .set('Accept', 'application/json')
-    //         .send({password: '23333333'})
-    //         .expect(200)
-    //         .expect({code: 0})
-    //         .end(function(err, res) {
-    //             if (err) return done(err);
-    //             done();
-    //         });
-    // });
+    it('update a exist user (change password)', function (done) {
+        var newPass = '23333333';
+        request(app)
+            .put(`/user/${newUser._id}`)
+            .set('Accept', 'application/json')
+            .send({password: newPass})
+            .expect(200)
+            .expect((res) => {
+                console.log(res.body);
+                if (res.body.code != 0) throw new Error('return non-zero value');
+                if (res.body.body.value.password != newUser.password) throw new Error('not origin password');
+            })
+            .end(function(err, res) {
+                if (err) return done(err);
+                newUser.password = newPass;
+                done();
+            });
+    });
     // it('update a non-exist user', function (done) {
     //     request(app)
     //         .put(`/user/heiheihei`)
