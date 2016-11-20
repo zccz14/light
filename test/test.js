@@ -1,9 +1,10 @@
 var request = require('supertest');
 var app = require('../server');
 
-request(app)
-  .get('/')
-  .expect(200)
-  .end(function (err, res) {
-    if (err) throw err;
+describe('GET /', function () {
+  it('respond index page', function (done) {
+    request(app)
+      .get('/')
+      .expect(200, done);
   });
+});
