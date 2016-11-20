@@ -34,28 +34,28 @@ describe('User API Testing', function () {
                 done();
             });
     });
-    it('update a exist user (change password)', function (done) {
-        request(app)
-            .put(`/user/${newUser._id}`)
-            .set('Accept', 'application/json')
-            .send({password: '23333333'})
-            .expect(200)
-            .expect({code: 0})
-            .end(function(err, res) {
-                if (err) return done(err);
-                done();
-            });
-    });
-    it('update a non-exist user', function (done) {
-        request(app)
-            .put(`/user/heiheihei`)
-            .set('Accept', 'application/json')
-            .send({username: 'haha'})
-            .expect(200)
-            .expect({code: 1})
-            .end((err, res) => {
-                if (err) return done(err);
-                done();
-            });
-    });
+    // it('update a exist user (change password)', function (done) {
+    //     request(app)
+    //         .put(`/user/${newUser._id}`)
+    //         .set('Accept', 'application/json')
+    //         .send({password: '23333333'})
+    //         .expect(200)
+    //         .expect({code: 0})
+    //         .end(function(err, res) {
+    //             if (err) return done(err);
+    //             done();
+    //         });
+    // });
+    // it('update a non-exist user', function (done) {
+    //     request(app)
+    //         .put(`/user/heiheihei`)
+    //         .set('Accept', 'application/json')
+    //         .send({username: 'haha'})
+    //         .expect(200)
+    //         .expect({code: 1})
+    //         .end((err, res) => {
+    //             if (err) return done(err);
+    //             done();
+    //         });
+    // });
 });
