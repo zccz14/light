@@ -22,6 +22,7 @@ app.use(cookieParser());
 app.use(session(configuration.system.session));
 // 注册路由
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/user', require('./routes/user'));
 
 // 监听端口
 app.listen(app.get('port'), () => {
