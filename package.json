@@ -1,0 +1,30 @@
+{
+  "name": "orange-juice",
+  "version": "0.1.0",
+  "description": "An opensource API Server of Online Judge",
+  "main": "index.js",
+  "scripts": {
+    "test": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/function-x/Orange-Juice.git"
+  },
+  "keywords": [
+    "online",
+    "judge"
+  ],
+  "author": "OrangeJuice@Function-X.org",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/function-x/Orange-Juice/issues"
+  },
+  "homepage": "https://github.com/function-x/Orange-Juice#readme",
+  "dependencies": {
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "morgan": "^1.7.0"
+  }
+}
