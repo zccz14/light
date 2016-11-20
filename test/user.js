@@ -22,8 +22,8 @@ describe('User API Testing', function () {
             .set('Accept', 'application/json')
             .send({username: newUser.username, password: newUser.password})
             .expect(200)
-            .expect({code: 0})
             .expect((res) => {
+                if (res.code != 0) throw new Error('非零的返回');
                 if (res.body.body.length > 1) throw new Error('怎么还有人');
                 if (res.body.body[0].name != newUser.username) throw new Error('明明是我先来的');
                 newUser._id = res.body.body[0]._id;
