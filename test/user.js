@@ -1,5 +1,6 @@
 const request = require('supertest');
 const app = require('../server');
+const expect = require('expect.js');
 
 describe('User API Testing', function () {
     it('retrieve return json', function (done) {
@@ -12,7 +13,7 @@ describe('User API Testing', function () {
                 done();
             });
     });
-    var newUser = {
+    var theUser = {
         username: 'zccz14',
         password: '23336666'
     };
@@ -20,34 +21,31 @@ describe('User API Testing', function () {
         request(app)
             .post('/user')
             .set('Accept', 'application/json')
-            .send({ username: newUser.username, password: newUser.password })
+            .send({ username: theUser.username, password: theUser.password })
             .expect(200)
-            .expect((res) => {
-                if (res.body.code != 0) throw new Error('return non-zero value');
-                if (res.body.body.username != newUser.username) throw new Error('明明是我先来的');
-                newUser._id = res.body.body._id;
-            })
             .end(function (err, res) {
                 if (err) return done(err);
-                _id = res.body.body._id;
+                expect(res.body.code).to.equal(0);
+                theUser._id = res.body.body._id;
+                expect(res.body.body).to.eql(theUser);         
                 done();
             });
     });
     it('update a exist user (change password)', function (done) {
         var newPass = '23333333';
         request(app)
-            .put(`/user/${newUser._id}`)
+            .put(`/user/${theUser._id}`)
             .set('Accept', 'application/json')
             .send({ password: newPass })
             .expect(200)
             .expect((res) => {
                 // console.log(res.body);
                 if (res.body.code != 0) throw new Error('return non-zero value');
-                if (res.body.body.value.password != newUser.password) throw new Error('not origin password');
+                if (res.body.body.value.password != theUser.password) throw new Error('not origin password');
             })
             .end(function (err, res) {
                 if (err) return done(err);
-                newUser.password = newPass;
+                theUser.password = newPass;
                 done();
             });
     });
