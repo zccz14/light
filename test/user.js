@@ -38,13 +38,9 @@ describe('User API Testing', function () {
             .set('Accept', 'application/json')
             .send({ password: newPass })
             .expect(200)
-            .expect((res) => {
-                // console.log(res.body);
-                if (res.body.code != 0) throw new Error('return non-zero value');
-                if (res.body.body.value.password != theUser.password) throw new Error('not origin password');
-            })
             .end(function (err, res) {
                 if (err) return done(err);
+                expect(res.body.code).to.be(0);
                 theUser.password = newPass;
                 done();
             });
