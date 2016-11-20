@@ -11,6 +11,8 @@ const configuration = require('./config');
 
 // 定义 APP Server
 var app = express();
+// 端口注册
+app.set('port', process.env.PORT || configuration.system.defaultPort);
 
 // 注册
 app.use(morgan(configuration.system.morgan.format, configuration.system.morgan.options));
@@ -22,4 +24,6 @@ app.use(session(configuration.system.session));
 app.use(express.static(path.join(__dirname, 'public')));
 
 // 监听端口
-app.listen(configuration.system.port);
+app.listen(app.get('port'), () => {
+    console.log('Orange Juice Server');
+});
