@@ -28,3 +28,6 @@ app.use('/user', require('./routes/user'));
 app.listen(app.get('port'), () => {
     console.log('Orange Juice Server');
 });
+
+// 导出服务器
+module.exports = app;
