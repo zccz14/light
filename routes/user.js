@@ -1,5 +1,5 @@
 const express = require('express');
-const ObjectId = require('mongodb').ObjectID;
+const ObjectId = require('mongodb').ObjectId;
 var db = require('../db');
 // User CRUD API
 module.exports = express.Router()
@@ -27,6 +27,14 @@ module.exports = express.Router()
   })
   // Update User
   .put('/:_id', (req, res, next) => {
+    if (ObjectId.isValid(req.params._id) === false) {
+      res.json({
+        code: 1,
+        msg: 'invalid user id',
+        body: {}
+      });
+      return;
+    }
     db.collection('users').findOneAndUpdate({
       _id: new ObjectId(req.params._id)
       // this would crash when _id is illegal
@@ -49,6 +57,14 @@ module.exports = express.Router()
   })
   // Delete User
   .delete('/:_id', (req, res, next) => {
+    if (ObjectId.isValid(req.params._id) === false) {
+      res.json({
+        code: 1,
+        msg: 'invalid user id',
+        body: {}
+      });
+      return;
+    }
     db.collection('users').findOneAndDelete({
       _id: new ObjectId(req.params._id)
       // this would crash when _id is illegal
