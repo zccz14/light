@@ -8,7 +8,11 @@ const config = require('../config');
 describe('User Sign Up', function () {
     // drop all users before all the tests
     before(function (done) {
-        db.collection('users').drop(done);
+        db.collection('users').drop(function(err, reply) {
+            console.log(err);
+            console.log(reply);
+            done();
+        });
     });
 
     var aUser = {
