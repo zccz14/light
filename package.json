@@ -26,10 +26,12 @@
     "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
+    "isemail": "^2.2.1",
     "mongodb": "^2.2.11",
     "morgan": "^1.7.0"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "mocha": "^3.1.2",
     "supertest": "^2.0.1"
   }
