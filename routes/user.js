@@ -69,23 +69,23 @@ module.exports = express.Router()
         return;
       }
     }
-    db.collection('users').findOne({ email }, { field: email }, (err, user) => {
-      if (err) throw err;
-      if (user) {
-        res.json({
-          code: 11,
-          msg: 'the email has been used'
-        });
-      } else {
-        db.collection('users').insertOne({ email, password }, (err, user) => {
-          if (err) throw err;
+    db.collection('users').insertOne({ email, password }, (err, user) => {
+      if (err) {
+        if (err.code == 11000) {
+          // email duplicated
           res.json({
-            code: 0,
-            msg: 'ok',
+            code: 11,
+            msg: 'the email has been used'
           });
-        });
+          return;
+        }
+        throw err;
       }
-    })
+      res.json({
+        code: 0,
+        msg: 'ok',
+      });
+    });
   })
   // Retrieve Users
   .get('/', (req, res, next) => {
