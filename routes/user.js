@@ -10,6 +10,23 @@ module.exports = express.Router()
   .post('/', (req, res, next) => {
     var email = req.body.email;
     var password = req.body.password;
+    // non-empty validate
+    if (!email) {
+      res.json({
+        code: 13,
+        msg: 'expect the field(s) to be nonempty',
+        body: 'email'
+      });
+      return;
+    }
+    if (!password) {
+      res.json({
+        code: 13,
+        msg: 'expect the field to be nonempty',
+        body: 'password'
+      });
+      return;
+    }
     // validate email and password format
     if (!IsEmail.validate(email)) {
       res.json({
@@ -29,22 +46,28 @@ module.exports = express.Router()
       return;
     }
     // check the number of letters in the password
-    var lowercaseLimit = configuration.user.password.minimumLowercaseLetter;
-    if (password.match(/[a-z]/g).length < lowercaseLimit) {
-      res.json({
-        code: 5,
-        msg: `the password should contain at least ${lowercaseLimit} lowercase letter${lowercaseLimit > 1 ? 's' : ''}.`
-      });
-      return;
+    {
+      let lowercaseLimit = configuration.user.password.minimumLowercaseLetter;
+      let lowercases = password.match(/[a-z]/g);
+      if (!lowercases || lowercases.length < lowercaseLimit) {
+        res.json({
+          code: 5,
+          msg: `the password should contain at least ${lowercaseLimit} lowercase letter${lowercaseLimit > 1 ? 's' : ''}.`
+        });
+        return;
+      }
     }
     // check the number of numberals in the password
-    var numberalLimit = configuration.user.password.minimumNumeral;
-    if (password.match(/\d/g).length < numberalLimit) {
-      res.json({
-        code: 7,
-        msg: `the password should contain at least ${numberalLimit} numberal${numberal > 1 ? 's' : ''}.`
-      });
-      return;
+    {
+      let numberalLimit = configuration.user.password.minimumNumeral;
+      let numberals = password.match(/\d/g);
+      if (!numberals || numberals.length < numberalLimit) {
+        res.json({
+          code: 7,
+          msg: `the password should contain at least ${numberalLimit} numberal${numberalLimit > 1 ? 's' : ''}.`
+        });
+        return;
+      }
     }
     db.collection('users').findOne({ email }, { field: email }, (err, user) => {
       if (err) throw err;
@@ -54,7 +77,7 @@ module.exports = express.Router()
           msg: 'the email has been used'
         });
       } else {
-        db.collection('users').insertOne({ email, password }, (err, cursor) => {
+        db.collection('users').insertOne({ email, password }, (err, user) => {
           if (err) throw err;
           res.json({
             code: 0,
