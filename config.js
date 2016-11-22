@@ -3,6 +3,13 @@
 // system.morgan: https://github.com/expressjs/morgan
 // system.session: https://github.com/expressjs/session
 const configuration = {
+    user: {
+        password: {
+            minimumLength: 7,
+            minimumLowercaseLetter: 1,
+            minimumNumeral: 1
+        }
+    },
     system: {
         mongodb: {
             URI: "mongodb://localhost:27017/OrangeJuice"

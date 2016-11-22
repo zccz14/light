@@ -1,18 +1,68 @@
 const express = require('express');
 const ObjectId = require('mongodb').ObjectId;
+const IsEmail = require('isemail');
+const configuration = require('../config');
+
 var db = require('../db');
 // User CRUD API
 module.exports = express.Router()
-  // Create User
+  // Create User (Sign Up)
   .post('/', (req, res, next) => {
-    db.collection('users').insertOne(req.body, (err, cursor) => {
-      if (err) throw err;
+    var email = req.body.email;
+    var password = req.body.password;
+    // validate email and password format
+    if (!IsEmail.validate(email)) {
       res.json({
-        code: 0,
-        msg: 'ok',
-        body: req.body
+        code: 2,
+        msg: 'the email is illegal',
+        body: {}
       });
-    });
+      return;
+    }
+    // password length check
+    var lengthLimit = configuration.user.password.minimumLength;
+    if (password.length < lengthLimit) {
+      res.json({
+        code: 3,
+        msg: `the password's length should be at least ${lengthLimit}`
+      });
+      return;
+    }
+    // check the number of letters in the password
+    var lowercaseLimit = configuration.user.password.minimumLowercaseLetter;
+    if (password.match(/[a-z]/g).length < lowercaseLimit) {
+      res.json({
+        code: 5,
+        msg: `the password should contain at least ${lowercaseLimit} lowercase letter${lowercaseLimit > 1 ? 's' : ''}.`
+      });
+      return;
+    }
+    // check the number of numberals in the password
+    var numberalLimit = configuration.user.password.minimumNumeral;
+    if (password.match(/\d/g).length < numberalLimit) {
+      res.json({
+        code: 7,
+        msg: `the password should contain at least ${numberalLimit} numberal${numberal > 1 ? 's' : ''}.`
+      });
+      return;
+    }
+    db.collection('users').findOne({ email }, { field: email }, (err, user) => {
+      if (err) throw err;
+      if (user) {
+        res.json({
+          code: 11,
+          msg: 'the email has been used'
+        });
+      } else {
+        db.collection('users').insertOne({ email, password }, (err, cursor) => {
+          if (err) throw err;
+          res.json({
+            code: 0,
+            msg: 'ok',
+          });
+        });
+      }
+    })
   })
   // Retrieve Users
   .get('/', (req, res, next) => {
