@@ -5,7 +5,7 @@
 const configuration = {
     system: {
         mongodb: {
-            URI: "mongodb://localhost:27017/OrangeJuice"
+            URI: "mongodb://" + (process.env.MONGO_SERVER || "localhost:27017") + "/OrangeJuice"
         },
         morgan: {
             format: 'dev',
