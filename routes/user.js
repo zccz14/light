@@ -69,20 +69,64 @@ module.exports = express.Router()
         return;
       }
     }
-    db.collection('users').findOne({ email }, { field: email }, (err, user) => {
+    db.collection('users').insertOne({ email, password }, (err, user) => {
+      if (err) {
+        if (err.code == 11000) {
+          // email duplicated
+          res.json({
+            code: 11,
+            msg: 'the email has been used'
+          });
+          return;
+        }
+        throw err;
+      }
+      res.json({
+        code: 0,
+        msg: 'ok',
+      });
+    });
+  })
+  // Sign In
+  .post('/sign-in', function (req, res, next) {
+    var email = req.body.email;
+    var password = req.body.password;
+    if (!email) {
+      res.json({
+        code: 13,
+        msg: 'email'
+      });
+      return;
+    }
+    if (!IsEmail.validate(email)) {
+      res.json({
+        code: 2,
+        msg: 'illegal email'
+      });
+      return;
+    }
+    if (!password) {
+      res.json({
+        code: 13,
+        msg: 'password'
+      });
+      return;
+    }
+    db.collection('users').findOne({ email }, function (err, user) {
       if (err) throw err;
       if (user) {
-        res.json({
-          code: 11,
-          msg: 'the email has been used'
-        });
-      } else {
-        db.collection('users').insertOne({ email, password }, (err, user) => {
-          if (err) throw err;
+        if (user.password === password) {
           res.json({
-            code: 0,
-            msg: 'ok',
+            code: 0
           });
+        } else {
+          res.json({
+            code: 17
+          });
+        }
+      } else {
+        res.json({
+          code: 19
         });
       }
     })

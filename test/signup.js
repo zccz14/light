@@ -6,9 +6,9 @@ const db = require('../db');
 const config = require('../config');
 
 describe('User Sign Up', function () {
-    // drop all users before all the tests
+    // create index on users before all the tests
     before(function (done) {
-        db.collection('users').drop(done);
+        db.collection('users').createIndex({ email: 1 }, { unique: true }, done);
     });
 
     var aUser = {
@@ -20,7 +20,7 @@ describe('User Sign Up', function () {
         '1'.repeat(config.user.password.minimumLength) +
         'a'.repeat(config.user.password.minimumLowercaseLetter) +
         '1'.repeat(config.user.password.minimumNumeral);
-    
+
     it('create a user', function (done) {
         request(app)
             .post('/user')
@@ -145,5 +145,9 @@ describe('User Sign Up', function () {
                 res.body.code.should.be.equal(0);
                 done();
             });
+    });
+    // drop users after all the test
+    after(function (done) {
+        db.collection('users').drop(done);
     });
 });
