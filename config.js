@@ -18,7 +18,22 @@ const configuration = {
             format: 'dev',
             options: {}
         },
-        passwordHashMethod: 'sha1',
+        // Store the password in encrypted
+        // You can customize the hash algorithm
+        passwordHash: {
+            store: function (clearPassword) {
+                // DO NOT CHANGE IT after deployed!!!
+                // Or your users should reset their password
+                return require('crypto')
+                    .createHash('sha1') // Hash Algorithm
+                    .update(clearPassword)
+                    .digest('hex');
+            },
+            // return true if the clearPassword is true
+            verify: function (clearPassword, encryptedPassword) {
+                return configuration.system.passwordHash.store(clearPassword) === encryptedPassword;
+            }
+        },
         session: {
             secret: 'ORANGEJUICE',
             key: 'OJID',
