@@ -18,6 +18,7 @@ const configuration = {
             format: 'dev',
             options: {}
         },
+        passwordHashMethod: 'sha1',
         session: {
             secret: 'ORANGEJUICE',
             key: 'OJID',
