@@ -135,6 +135,15 @@ module.exports = express.Router()
       }
     })
   })
+  // Sign Out
+  .get('/sign-out', function (req, res, next) {
+    req.session.destroy(function (err) {
+      if (err) throw err;
+      res.json({
+        code: 0
+      });
+    });
+  })
   // Retrieve User Profile
   .get('/profile', AccessControl.signIn)
   .get('/profile', function (req, res, next) {
