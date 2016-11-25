@@ -138,7 +138,7 @@ module.exports = express.Router()
   // Retrieve User Profile
   .get('/profile', AccessControl.signIn)
   .get('/profile', function (req, res, next) {
-    db.collection('users').findOne({ _id: req.session.userId }, (err, user) => {
+    db.collection('users').findOne({ _id: new ObjectId(req.session.userId) }, (err, user) => {
       if (err) throw err;
       res.json({
         code: 0,
