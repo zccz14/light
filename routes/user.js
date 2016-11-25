@@ -2,6 +2,7 @@ const express = require('express');
 const ObjectId = require('mongodb').ObjectId;
 const IsEmail = require('isemail');
 const configuration = require('../config');
+const AccessControl = require('./assess_control');
 
 var db = require('../db');
 // User CRUD API
@@ -130,6 +131,17 @@ module.exports = express.Router()
         });
       }
     })
+  })
+  // Retrieve User Profile
+  .get('/profile', AccessControl.signIn)
+  .get('/profile', function (req, res, next) {
+    db.collection('users').findOne({ _id: req.session.userId }, (err, user) => {
+      if (err) throw err;
+      res.json({
+        code: 0,
+        body: user
+      });
+    });
   })
   // Retrieve Users
   .get('/', (req, res, next) => {
