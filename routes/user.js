@@ -70,6 +70,8 @@ module.exports = express.Router()
         return;
       }
     }
+    // using Hash to crypto password
+    password = configuration.system.passwordHash.store(password);
     db.collection('users').insertOne({ email, password }, (err, user) => {
       if (err) {
         if (err.code == 11000) {
@@ -116,7 +118,7 @@ module.exports = express.Router()
     db.collection('users').findOne({ email }, function (err, user) {
       if (err) throw err;
       if (user) {
-        if (user.password === password) {
+        if (configuration.system.passwordHash.verify(password, user.password)) {
           res.json({
             code: 0
           });
