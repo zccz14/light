@@ -119,6 +119,7 @@ module.exports = express.Router()
       if (err) throw err;
       if (user) {
         if (configuration.system.passwordHash.verify(password, user.password)) {
+          req.session.userId = user._id;
           res.json({
             code: 0
           });
