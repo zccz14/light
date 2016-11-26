@@ -59,13 +59,9 @@ module.exports = express.Router()
     .get('/profile', function(req, res, next) {
         User.findById(req.session.userId, (err, user) => {
             if (err) throw err;
-            if (user) {
-                res.json({
-                    code: 0,
-                    body: user
-                });
-            } else {
-                res.json({ code: 7 });
-            }
+            res.json({
+                code: 0,
+                body: user
+            });
         });
     })

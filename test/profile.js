@@ -57,9 +57,9 @@ describe('profile', function () {
             .expect(200)
             .end(function (err, res) {
                 expect(err).to.be.null;
-                res.body.code.should.equal(23);
+                console.log(res.body)
+                res.body.code.should.equal(7);
                 done();
-
             });
     });
     after('drop users after tests', function (done) {

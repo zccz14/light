@@ -3,9 +3,7 @@ module.exports = {
         if (req.session.userId) {
             next();
         } else {
-            res.json({
-                code: 23
-            });
+            res.json({ code: 7 });
         }
     }
 };
