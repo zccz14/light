@@ -2,8 +2,8 @@ const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../server');
-const db = require('../db');
 const config = require('../config');
+const User = require('../models/user');
 
 describe('profile', function () {
     var aUser = {
@@ -15,20 +15,16 @@ describe('profile', function () {
     var wrongPassword = 'world333';
     var cookieid;
     before('create a user before sign in', function (done) {
-        db.collection('users').createIndex({ email: 1 }, { unique: true }, function (err, reply) {
-            expect(err).to.be.null;
-            request(app)
-                .post('/user')
-                .set('Accept', 'application/json')
-                .send(aUser)
-                .expect(200)
-                .end(function (err, res) {
-                    expect(err).to.be.null;
-                    res.body.code.should.equal(0);
-                    done();
-                });
-        });
-
+        request(app)
+            .post('/user')
+            .set('Accept', 'application/json')
+            .send(aUser)
+            .expect(200)
+            .end(function (err, res) {
+                expect(err).to.be.null;
+                res.body.code.should.equal(0);
+                done();
+            });
     });
     it('correct see profile', function (done) {
         request(app)
@@ -67,8 +63,7 @@ describe('profile', function () {
             });
     });
     after('drop users after tests', function (done) {
-        db.collection('users').drop(done);
+        User.remove({}, done);
     });
-
 });
 

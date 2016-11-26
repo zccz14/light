@@ -2,8 +2,8 @@ const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../server');
-const db = require('../db');
 const config = require('../config');
+const User = require('../models/user');
 
 describe('User Sign Out', function () {
     var aUser = {
@@ -14,20 +14,17 @@ describe('User Sign Out', function () {
     var noCookie = '';
 
     before('create a user', function (done) {
-        db.collection('users').createIndex({ email: 1 }, { unique: true }, function (err, reply) {
-            expect(err).to.be.null;
-            request(app)
-                .post('/user')
-                .set('Accept', 'application/json')
-                .send(aUser)
-                .expect(200)
-                .end(function (err, res) {
-                    expect(err).to.be.null;
-                    res.body.code.should.equal(0);
-                    cookie = res.headers['set-cookie'];
-                    done();
-                });
-        });
+        request(app)
+            .post('/user')
+            .set('Accept', 'application/json')
+            .send(aUser)
+            .expect(200)
+            .end(function (err, res) {
+                expect(err).to.be.null;
+                res.body.code.should.equal(0);
+                cookie = res.headers['set-cookie'];
+                done();
+            });
     });
 
     it('correct sign-out', function (done) {
@@ -77,7 +74,7 @@ describe('User Sign Out', function () {
                 done();
             });
     });
-    after(function(done){
-        db.collection('users').drop(done);
+    after(function (done) {
+        User.remove({}, done);
     });
 });

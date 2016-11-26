@@ -2,15 +2,10 @@ const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../server');
-const db = require('../db');
 const config = require('../config');
+const User = require('../models/user');
 
 describe('User Sign Up', function () {
-    // create index on users before all the tests
-    before(function (done) {
-        db.collection('users').createIndex({ email: 1 }, { unique: true }, done);
-    });
-
     var aUser = {
         email: 'hello@function-x.org',
         password: 'world233'
@@ -41,7 +36,7 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(11);
+                res.body.code.should.be.equal(3);
                 done();
             });
     });
@@ -68,8 +63,8 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(13);
-                res.body.body.should.be.equal('password');
+                res.body.code.should.be.equal(2);
+                // res.body.body.should.be.equal('password');
                 done();
             });
     });
@@ -81,8 +76,8 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(13);
-                res.body.body.should.be.equal('email');
+                res.body.code.should.be.equal(2);
+                // res.body.body.should.be.equal('email');
                 done();
             });
     });
@@ -97,7 +92,7 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(3);
+                res.body.code.should.be.equal(2);
                 done();
             });
     });
@@ -112,7 +107,7 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(5);
+                res.body.code.should.be.equal(2);
                 done();
             });
     });
@@ -127,7 +122,7 @@ describe('User Sign Up', function () {
             .expect(200)
             .end((err, res) => {
                 expect(err).to.be.null;
-                res.body.code.should.be.equal(7);
+                res.body.code.should.be.equal(2);
                 done();
             });
     });
@@ -146,8 +141,7 @@ describe('User Sign Up', function () {
                 done();
             });
     });
-    // drop users after all the test
-    after(function (done) {
-        db.collection('users').drop(done);
+    after('drop all users after tests', function (done) {
+        User.remove({}, done);
     });
 });
