@@ -1,3 +1,4 @@
+const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
@@ -27,27 +28,22 @@ describe('profile', function () {
             });
     });
     it('correct see profile', function (done) {
-        request(app)
-            .post('/user/sign-in')
-            .set('Accept', 'application/json')
-            .send(aUser)
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                res.body.code.should.equal(0);
-                cookieid = res.headers['set-cookie'];
-                request(app)
-                    .get('/user/profile')
-                    .set('Accept', 'application/json')
-                    .set('cookie', cookieid)
-                    .expect(200)
-                    .end(function (err, res) {
-                        expect(err).to.be.null;
-                        res.body.code.should.equal(0);
-                        done();
-
-                    });
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user/sign-in')
+                .set('Accept', 'application/json')
+                .send(aUser)
+                .expect(200);
+            res1.body.code.should.equal(0);
+            cookieid = res1.headers['set-cookie'];
+            var res2 = yield request(app)
+                .get('/user/profile')
+                .set('Accept', 'application/json')
+                .set('cookie', cookieid)
+                .expect(200);
+            res2.body.code.should.equal(0);
+            done();
+        });
     });
 
     it('not signin', function (done) {

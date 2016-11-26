@@ -1,3 +1,4 @@
+const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
@@ -28,27 +29,20 @@ describe('User Sign Out', function () {
     });
 
     it('correct sign-out', function (done) {
-        //sign in first
-        request(app)
-            .post('/user/sign-in')
-            .set('Accept', 'application/json')
-            .set('Cookie', cookie)
-            .send(aUser)
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                res.body.code.should.equal(0);
-                //test sign-out
-                request(app)
-                    .get('/user/sign-out')
-                    .set('Accept', 'application/json')
-                    .expect(200)
-                    .end(function (err, res) {
-                        expect(err).to.be.null;
-                        res.body.code.should.equal(0);
-                        done();
-                    });
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user/sign-in')
+                .set('Accept', 'application/json')
+                .set('Cookie', cookie)
+                .send(aUser)
+                .expect(200);
+            var res2 = yield request(app)
+                .get('/user/sign-out')
+                .set('Accept', 'application/json')
+                .expect(200);
+            res2.body.code.should.equal(0);
+            done();
+        });
     });
     it('just signed up but have not signed in yet', function (done) {
         request(app)
