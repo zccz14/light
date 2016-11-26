@@ -4,7 +4,8 @@ const errors = {
     2: 'validation failed',
     3: 'duplicated',
     5: 'wrong passport',
-    7: 'authentication failed'
+    7: 'authentication failed',
+    11: 'resource not available'
 };
 
 module.exports = errors;
