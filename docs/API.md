@@ -1,6 +1,9 @@
 # Full API Document
 ## Error Code
-All the error code are **primes** except 0 for OK. [See Also](../errors/index.js)
+
+0 for OK, 1 for BUG(if you get a BUG, report it to us please), and others are all **primes**.
+
+[See Also](../errors/index.js)
 
 ## User API
 ### User Sign Up
