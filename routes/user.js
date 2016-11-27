@@ -2,6 +2,7 @@ const express = require('express');
 const ObjectId = require('mongodb').ObjectId;
 const IsEmail = require('isemail');
 const configuration = require('../config');
+const AccessControl = require('./assess_control');
 
 var db = require('../db');
 // User CRUD API
@@ -69,6 +70,8 @@ module.exports = express.Router()
         return;
       }
     }
+    // using Hash to crypto password
+    password = configuration.system.passwordHash.store(password);
     db.collection('users').insertOne({ email, password }, (err, user) => {
       if (err) {
         if (err.code == 11000) {
@@ -115,7 +118,8 @@ module.exports = express.Router()
     db.collection('users').findOne({ email }, function (err, user) {
       if (err) throw err;
       if (user) {
-        if (user.password === password) {
+        if (configuration.system.passwordHash.verify(password, user.password)) {
+          req.session.userId = user._id;
           res.json({
             code: 0
           });
@@ -130,6 +134,26 @@ module.exports = express.Router()
         });
       }
     })
+  })
+  // Sign Out
+  .get('/sign-out', function (req, res, next) {
+    req.session.destroy(function (err) {
+      if (err) throw err;
+      res.json({
+        code: 0
+      });
+    });
+  })
+  // Retrieve User Profile
+  .get('/profile', AccessControl.signIn)
+  .get('/profile', function (req, res, next) {
+    db.collection('users').findOne({ _id: new ObjectId(req.session.userId) }, (err, user) => {
+      if (err) throw err;
+      res.json({
+        code: 0,
+        body: user
+      });
+    });
   })
   // Retrieve Users
   .get('/', (req, res, next) => {

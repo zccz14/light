@@ -7,7 +7,8 @@ const errors = {
     11: 'the email has been used',
     13: 'require field',
     17: 'wrong email or password',
-    19: 'user not found'
+    19: 'user not found',
+    23: 'not signin yet'
 };
 
 module.exports = errors;
