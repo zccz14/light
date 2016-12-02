@@ -16,16 +16,16 @@ describe('profile', function () {
     var wrongPassword = 'world333';
     var cookieid;
     before('create a user before sign in', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send(aUser)
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                res.body.code.should.equal(0);
-                done();
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send(aUser)
+                .expect(200);
+            res1.body.code.should.equal(0);
+            done();
+        });
+
     });
     it('correct see profile', function (done) {
         co(function* () {
@@ -47,16 +47,15 @@ describe('profile', function () {
     });
 
     it('not signin', function (done) {
-        request(app)
-            .get('/user/profile')
-            .set('Accept', 'application/json')
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                console.log(res.body)
-                res.body.code.should.equal(7);
-                done();
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .get('/user/profile')
+                .set('Accept', 'application/json')
+                .expect(200);
+            res1.body.code.should.equal(7);
+            done();
+        });
+
     });
     after('drop users after tests', function (done) {
         User.remove({}, done);
