@@ -5,10 +5,14 @@ const UserRoleSchema = new Schema({
     name: {
         type: String,
         required: true,
-        unique: true
     },
     group: {
+        type: Schema.Types.ObjectId,
+        required: true
+    },
+    role: {
         type: String,
+        enum: ['owner', 'member'],
         required: true
     }
 });

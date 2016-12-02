@@ -5,6 +5,11 @@ const config = require('../config');
 const UserRoleSchema = require('./user_role');
 
 var UserSchema = new Schema({
+    username: {
+        type: String,
+        required: true,
+        unique: true
+    },
     email: {
         type: String,
         required: true,
