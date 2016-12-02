@@ -23,7 +23,10 @@ var UserSchema = new Schema({
             },
             message: 'password illegal'
         }
-    }
+    },
+    roles: [
+
+    ]
 });
 
 UserSchema.post('validate', function (user) {
