@@ -9,7 +9,8 @@ const User = require('../models/user');
 describe('User Sign Out', function () {
     var aUser = {
         email: 'zccz14@function-x.org',
-        password: 'world233'
+        password: 'world233',
+        name: 'zccz14'
     }
     var cookie;
     var noCookie = '';

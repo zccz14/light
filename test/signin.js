@@ -8,7 +8,8 @@ const User = require('../models/user');
 describe('User Sign In', function () {
     var aUser = {
         email: 'zccz14@function-x.org',
-        password: 'world233'
+        password: 'world233',
+        name: 'zccz14'
     }
     var illegalEmail = 'zccz14';
     var nonExistEmail = 'zccz1444@function-x.org';
