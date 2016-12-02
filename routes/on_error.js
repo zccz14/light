@@ -11,6 +11,7 @@ module.exports = function(res) {
                 errors: err.errmsg
             });
         } else {
+            console.log(err);
             res.json({
                 code: 1
             });
