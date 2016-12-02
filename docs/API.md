@@ -56,3 +56,23 @@ response json:
 possible error code:
 
 + 7: authentication failed
+
+### User Update role name
+PUT `/user/role/:_id` and send:
+
+The param `_id` is a BSON Object ID. It's the ID of UserRole.
+
+> You can get user profile to get the ID.
+
+```js
+{
+    "name": ObjectId
+}
+```
+
+posiible error code:
+
++ 2: user role name is illegal
++ 3: user role name duplicated
++ 7: not login yet
++ 11: user role not found
