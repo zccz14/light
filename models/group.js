@@ -17,7 +17,7 @@ var GroupRoleSchema = new Schema({
         enum: ['owner', 'member'],
         default: 'member'
     }
-})
+});
 
 var GroupSchema = new Schema({
     name: {
