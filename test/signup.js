@@ -45,22 +45,32 @@ describe('User Sign Up', function() {
     });
     it('create an email-duplicated user', function(done) {
         co(function* () {
-            var res = yield request(app)
+            var res1 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/jason')
                 .send({
                     email: aUserEmail,
                     password: mustLegalPassword,
                     name: mustLegalName
                 })
                 .expect(200)
-            res.body.code.should.equal(3);
+            res2.body.code.should.equal(3);
             done();
         }).catch(done);
     });
     it('create an name-duplicated user', function(done) {
         co(function* () {
-            var res = yield request(app)
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
                 .send({
@@ -69,7 +79,7 @@ describe('User Sign Up', function() {
                     name: aUserName
                 })
                 .expect(200)
-            res.body.code.should.equal(3);
+            res2.body.code.should.equal(3);
             done();
         }).catch(done);
     });
@@ -177,7 +187,12 @@ describe('User Sign Up', function() {
     });
     it('create a name-dupicated user after trimmed', function(done) {
         co(function* () {
-            var res = yield request(app)
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
                 .send({
@@ -186,7 +201,7 @@ describe('User Sign Up', function() {
                     name: trimmedToAUserName
                 })
                 .expect(200)
-            res.body.code.should.equal(3);
+            res2.body.code.should.equal(3);
             done();
         }).catch(done);
     });
@@ -220,7 +235,7 @@ describe('User Sign Up', function() {
             done();
         }).catch(done);
     });
-    after('drop all users after tests', function(done) {
+    afterEach('drop all users after tests', function(done) {
         User.remove({}, done);
     });
 });
