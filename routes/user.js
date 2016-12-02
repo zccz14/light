@@ -8,8 +8,18 @@ module.exports = express.Router()
     .post('/', (req, res, next) => {
         var email = req.body.email || '';
         var password = req.body.password || '';
+        var name = req.body.name || '';
         // non-empty validate
-        new User({ email, password }).save(function(err, user, num) {
+        new User({
+            email,
+            password,
+            roles: [
+                {
+                    name,
+                    group: 'public'
+                }
+            ]
+        }).save(function (err, user, num) {
             if (err) {
                 if (err.errors) {
                     res.json({
@@ -20,7 +30,7 @@ module.exports = express.Router()
                     // email duplicated
                     res.json({
                         code: 3,
-                        errors: ['email']
+                        errors: err.errmsg
                     });
                 } else {
                     console.log(err); // console for debug
@@ -32,10 +42,10 @@ module.exports = express.Router()
         });
     })
     // Sign In
-    .post('/sign-in', function(req, res, next) {
+    .post('/sign-in', function (req, res, next) {
         var email = req.body.email || '';
         var password = req.body.password || '';
-        User.findOne({ email }, function(err, user) {
+        User.findOne({ email }, function (err, user) {
             if (err) throw err;
             if (user && configuration.system.passwordHash.verify(password, user.password)) {
                 req.session.userId = user._id;
@@ -46,8 +56,8 @@ module.exports = express.Router()
         });
     })
     // Sign Out
-    .get('/sign-out', function(req, res, next) {
-        req.session.destroy(function(err) {
+    .get('/sign-out', function (req, res, next) {
+        req.session.destroy(function (err) {
             if (err) throw err;
             res.json({
                 code: 0
@@ -56,7 +66,7 @@ module.exports = express.Router()
     })
     // Retrieve User Profile
     .get('/profile', AccessControl.signIn)
-    .get('/profile', function(req, res, next) {
+    .get('/profile', function (req, res, next) {
         User.findById(req.session.userId, (err, user) => {
             if (err) throw err;
             res.json({
