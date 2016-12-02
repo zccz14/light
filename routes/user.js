@@ -9,20 +9,11 @@ const UserRole = require('../models/user_role');
 module.exports = express.Router()
     // Create User (Sign Up)
     .post('/', (req, res, next) => {
-        var email = req.body.email || '';
+        var username = (req.body.username || '').trim();
+        var email = (req.body.email || '').trim();
         var password = req.body.password || '';
-        var name = (req.body.name || '').trim();
         // non-empty validate
-        new User({
-            email,
-            password,
-            roles: [
-                {
-                    name,
-                    group: 'public'
-                }
-            ]
-        }).save(function (err, user, num) {
+        new User({ username, email, password }).save(function (err, user, num) {
             if (err) {
                 if (err.errors) {
                     res.json({
@@ -36,7 +27,6 @@ module.exports = express.Router()
                         errors: err.errmsg
                     });
                 } else {
-                    console.log(err); // console for debug
                     res.json({ code: 1 });
                 }
             } else {
@@ -46,12 +36,12 @@ module.exports = express.Router()
     })
     // Sign In
     .post('/sign-in', function (req, res, next) {
-        var email = req.body.email || '';
+        var username = (req.body.username || '').trim();
         var password = req.body.password || '';
-        User.findOne({ email }, function (err, user) {
+        User.findOne({ username }, function (err, user) {
             if (err) throw err;
             if (user && configuration.system.passwordHash.verify(password, user.password)) {
-                req.session.user = user; // cache user
+                req.session.user = user; // create cache
                 res.json({ code: 0 });
             } else {
                 res.json({ code: 5 });
