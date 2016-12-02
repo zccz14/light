@@ -11,9 +11,30 @@ POST `/user` and send:
 
 ```js
 {
+    "username": String, // passport
     "email": String,
-    "password": String,
-    "name": String // default public role name
+    "password": String
+}
+```
+Actually, `username` and `email` will be trimmed, but `password` won't.
+
+For example, if you post:
+
+```json
+{
+    "username": "  admin  ",
+    "email": " hello@function-x.org",
+    "password": " a123456 "
+}
+```
+
+The API Server will distinguish it as:
+
+```json
+{
+    "username": "admin",
+    "email": "hello@function-x.org",
+    "password": " a123456 "
 }
 ```
 
@@ -27,7 +48,7 @@ POST `/user/sign-in` and send:
 
 ```js
 {
-    "email": String,
+    "username": String,
     "password": String
 }
 ```
@@ -35,6 +56,7 @@ POST `/user/sign-in` and send:
 possible error code:
 
 + 5: wrong passport
++ 11: user not found
 
 ### User Sign Out
 GET `/user/sign-out`

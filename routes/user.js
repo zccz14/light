@@ -25,7 +25,7 @@ module.exports = express.Router()
     .post('/sign-in', function (req, res, next) {
         co(function* () {
             let username = (req.body.username || '').trim();
-            let password = req.body.password;
+            let password = req.body.password || '';
             let user = yield User.findOne({ username }).exec();
             if (user) {
                 if (configuration.system.passwordHash.verify(password, user.password)) {
@@ -39,7 +39,7 @@ module.exports = express.Router()
                 }
             } else {
                 res.json({
-                    code: 5,
+                    code: 11,
                     msg: 'user not found'
                 });
             }
