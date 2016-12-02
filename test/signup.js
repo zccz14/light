@@ -25,14 +25,14 @@ describe('User Sign Up', function () {
     var noEnoughNumeralPassword =
         'a'.repeat(config.user.password.minimumLength) +
         '1'.repeat(config.user.password.minimumNumeral - 1)
-    
+
     it('create a user', function (done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
                 .send(aUser)
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(0);
             done();
         });
@@ -43,7 +43,7 @@ describe('User Sign Up', function () {
                 .post('/user')
                 .set('Accept', 'application/json')
                 .send(aUser)
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(3);
             done();
         });
@@ -57,7 +57,7 @@ describe('User Sign Up', function () {
                     email: mustIllegalEmail,
                     password: mustLegalPassword
                 })
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -67,8 +67,8 @@ describe('User Sign Up', function () {
             var res = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
-                .send({ email: mustLegalEmail})
-                .expect(200) 
+                .send({ email: mustLegalEmail })
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -78,8 +78,8 @@ describe('User Sign Up', function () {
             var res = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
-                .send({ password: mustLegalPassword})
-                .expect(200) 
+                .send({ password: mustLegalPassword })
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -93,7 +93,7 @@ describe('User Sign Up', function () {
                     email: mustLegalEmail,
                     password: lengthIllegelPassword
                 })
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -107,7 +107,7 @@ describe('User Sign Up', function () {
                     email: mustLegalEmail,
                     password: noEnoughLowercaseLetterPassword
                 })
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -121,7 +121,7 @@ describe('User Sign Up', function () {
                     email: mustLegalEmail,
                     password: noEnoughNumeralPassword
                 })
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(2);
             done();
         });
@@ -135,7 +135,7 @@ describe('User Sign Up', function () {
                     email: mustLegalEmail,
                     password: mustLegalPassword
                 })
-                .expect(200) 
+                .expect(200)
             res.body.code.should.equal(0);
             done();
         });
