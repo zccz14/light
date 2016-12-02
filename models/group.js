@@ -5,7 +5,6 @@ var GroupRoleSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
         required: true,
-        unique: true
     },
     name: {
         type: String,

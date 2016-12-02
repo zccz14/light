@@ -3,6 +3,7 @@ const express = require('express');
 const AccessControl = require('./assess_control');
 const User = require('../models/user');
 const Group = require('../models/group');
+const OnError = require('./on_error');
 
 module.exports = express.Router()
     // create a group
@@ -36,21 +37,5 @@ module.exports = express.Router()
             res.json({
                 code: 0
             });
-        }).catch(function (err) {
-            if (err.errors) {
-                res.json({
-                    code: 2,
-                    errors: err.errors
-                });
-            } else if (err.code === 11000) {
-                res.json({
-                    code: 3,
-                    errors: err.errmsg
-                });
-            } else {
-                res.json({
-                    code: 1
-                });
-            }
-        })
-    })
+        }).catch(OnError(res));
+    });
