@@ -1,3 +1,4 @@
+const co = require('co');
 const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -5,46 +6,35 @@ const configuration = require('../config');
 const AccessControl = require('./assess_control');
 const User = require('../models/user');
 const UserRole = require('../models/user_role');
+const OnError = require('./on_error');
 // User CRUD API
 module.exports = express.Router()
     // Create User (Sign Up)
     .post('/', (req, res, next) => {
-        var username = (req.body.username || '').trim();
-        var email = (req.body.email || '').trim();
-        var password = req.body.password || '';
-        // non-empty validate
-        new User({ username, email, password }).save(function (err, user, num) {
-            if (err) {
-                if (err.errors) {
-                    res.json({
-                        code: 2,
-                        errors: err.errors
-                    });
-                } else if (err.code === 11000) {
-                    // email duplicated
-                    res.json({
-                        code: 3,
-                        errors: err.errmsg
-                    });
-                } else {
-                    res.json({ code: 1 });
-                }
-            } else {
-                res.json({ code: 0 });
-            }
-        });
+        co(function* () {
+            let newUser = new User({
+                username: (req.body.username || '').trim(),
+                email: (req.body.email || '').trim(),
+                password: req.body.password || ''
+            });
+            newUser = yield newUser.save();
+            res.json({ code: 0 });
+        }).catch(OnError(res));
     })
     // Sign In
     .post('/sign-in', function (req, res, next) {
-        var username = (req.body.username || '').trim();
-        var password = req.body.password || '';
-        User.findOne({ username }, function (err, user) {
-            if (err) throw err;
-            if (user && configuration.system.passwordHash.verify(password, user.password)) {
-                req.session.user = user; // create cache
-                res.json({ code: 0 });
+        co(function* () {
+            let user = yield User.findOne({ username }).exec();
+            if (user) {
+                if (configuration.system.passwordHash.verify(password, user.password)) {
+                    req.session.user = user;
+                    res.json({ code: 0 });
+                }
             } else {
-                res.json({ code: 5 });
+                res.json({
+                    code: 5,
+                    msg: 'user not found'
+                });
             }
         });
     })
@@ -60,8 +50,9 @@ module.exports = express.Router()
     // Retrieve User Profile
     .get('/profile', AccessControl.signIn)
     .get('/profile', function (req, res, next) {
-        User.findById(req.session.user._id, (err, user) => {
-            if (err) throw err;
+        co(function* () {
+            let user = req.session.user;
+            user = yield User.findById(user._id).exec();
             res.json({
                 code: 0,
                 body: user
@@ -71,46 +62,18 @@ module.exports = express.Router()
     // Update role name
     .put('/role/:_id', AccessControl.signIn)
     .put('/role/:_id', function (req, res, next) {
-        var user = req.session.user;
-        var userRoleId = req.params._id;
-        var newName = (req.body.name || '').trim();
-        var userRoles = user.roles;
-        if (isItsRoleId) {
-            User.update(
+        co(function* () {
+            let user = req.session.user;
+            user = yield User.update(
                 {
                     _id: new ObjectId(user._id),
-                    "roles._id": new ObjectId(userRoleId),
+                    "roles._id": new ObjectId(req.params._id),
                 },
                 {
-                    $set: { "roles.$.name": newName }
-                },
-                function (err, user) {
-                    if (err) {
-                        if (err.errors) {
-                            res.json({
-                                code: 2,
-                                errors: err.errors
-                            });
-                        } else if (err.code == 11000) {
-                            res.json({
-                                code: 3,
-                                errors: err.errmsg
-                            });
-                        } else {
-                            res.json({
-                                code: 1
-                            });
-                        }
-                    } else {
-                        req.session.user = user; // update cache
-                        res.json({
-                            code: 0
-                        });
-                    }
-                })
-        } else {
-            res.json({
-                code: 11
-            });
-        }
+                    $set: { "roles.$.name": (req.body.name || '').trim() }
+                }
+            ).exec();
+            req.session.user = user;
+            res.json({ code: 0 });
+        }).catch(OnError(res));
     })
