@@ -24,8 +24,7 @@ describe('profile', function () {
                 .expect(200);
             res1.body.code.should.equal(0);
             done();
-        });
-
+        }).catch(done);
     });
     it('correct see profile', function (done) {
         co(function* () {
@@ -43,7 +42,7 @@ describe('profile', function () {
                 .expect(200);
             res2.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
 
     it('not signin', function (done) {
@@ -54,8 +53,7 @@ describe('profile', function () {
                 .expect(200);
             res1.body.code.should.equal(7);
             done();
-        });
-
+        }).catch(done);
     });
     after('drop users after tests', function (done) {
         User.remove({}, done);

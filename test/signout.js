@@ -23,7 +23,7 @@ describe('User Sign Out', function () {
             res.body.code.should.equal(0);
             cookie = res.headers['set-cookie'];
             done();
-        });
+        }).catch(done);
     });
     it('correct sign-out', function (done) {
         co(function* () {
@@ -39,7 +39,7 @@ describe('User Sign Out', function () {
                 .expect(200);
             res2.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     it('just signed up but have not signed in yet', function (done) {
         co(function* (){
@@ -50,7 +50,7 @@ describe('User Sign Out', function () {
                 .expect(200)
             res.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     it('have not signed in or signed up yet', function (done) {
         co(function* (){
@@ -61,7 +61,7 @@ describe('User Sign Out', function () {
                 .expect(200)
             res.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     after('drop user after tests', function (done) {
         User.remove({}, done);

@@ -23,7 +23,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     it('correct sign in', function (done) {
         co(function* () {
@@ -34,7 +34,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     it('a nonexist user', function (done) {
         co(function* () {
@@ -45,7 +45,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
-        });
+        }).catch(done);
     });
     it('wrong password', function (done) {
         co(function* () {
@@ -56,7 +56,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
-        });
+        }).catch(done);
     });
     it('empty email', function (done) {
         co(function* () {
@@ -67,8 +67,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
-        });
-
+        }).catch(done);
     });
     it('empty password', function (done) {
         co(function* () {
@@ -79,7 +78,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
-        });
+        }).catch(done);
     });
     it('illegal email', function (done) {
         co(function* () {
@@ -90,7 +89,7 @@ describe('User Sign In', function () {
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
-        });
+        }).catch(done);
     });
     after('drop users after tests', function (done) {
         User.remove({}, done);

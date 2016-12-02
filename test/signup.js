@@ -35,7 +35,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     it('create an email-duplicated user', function (done) {
         co(function* () {
@@ -46,7 +46,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(3);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose email is illegal', function (done) {
         co(function* () {
@@ -60,7 +60,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose password is empty', function (done) {
         co(function* () {
@@ -71,7 +71,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose email is empty', function (done) {
         co(function* () {
@@ -82,7 +82,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose password is too short', function (done) {
         co(function* () {
@@ -96,7 +96,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose password has not enough lowercase letter', function (done) {
         co(function* () {
@@ -110,7 +110,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create a user whose password has not enough numerals', function (done) {
         co(function* () {
@@ -124,7 +124,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(2);
             done();
-        });
+        }).catch(done);
     });
     it('create another legal user', function (done) {
         co(function* () {
@@ -138,7 +138,7 @@ describe('User Sign Up', function () {
                 .expect(200)
             res.body.code.should.equal(0);
             done();
-        });
+        }).catch(done);
     });
     after('drop all users after tests', function (done) {
         User.remove({}, done);
