@@ -1,7 +1,10 @@
 const express = require('express');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const configuration = require('../config');
 const AccessControl = require('./assess_control');
 const User = require('../models/user');
+const UserRole = require('../models/user_role');
 // User CRUD API
 module.exports = express.Router()
     // Create User (Sign Up)
@@ -81,38 +84,40 @@ module.exports = express.Router()
         var user = req.session.user;
         var userRoleId = req.params._id;
         var newName = (req.body.name || '').trim();
-        var userRoles = user.roles; // array
-        var isItsRoleId = userRoles.some(function (v, i, arr) {
-            if (v._id == userRoleId) {
-                arr[i].name = newName;
-                return true;
-            }
-            return false;
-        });
+        var userRoles = user.roles;
         if (isItsRoleId) {
-            User.findByIdAndUpdate(user._id, user, function (err, user) {
-                if (err) {
-                    if (err.errors) {
-                        res.json({
-                            code: 2,
-                            errors: err.errors
-                        });
-                    } else if (err.code == 11000) {
-                        res.json({
-                            code: 3,
-                            errors: err.errmsg
-                        });
+            User.update(
+                {
+                    _id: new ObjectId(user._id),
+                    "roles._id": new ObjectId(userRoleId),
+                },
+                {
+                    $set: { "roles.$.name": newName }
+                },
+                function (err, user) {
+                    if (err) {
+                        if (err.errors) {
+                            res.json({
+                                code: 2,
+                                errors: err.errors
+                            });
+                        } else if (err.code == 11000) {
+                            res.json({
+                                code: 3,
+                                errors: err.errmsg
+                            });
+                        } else {
+                            res.json({
+                                code: 1
+                            });
+                        }
                     } else {
+                        req.session.user = user; // update cache
                         res.json({
-                            code: 1
+                            code: 0
                         });
                     }
-                } else {
-                    res.json({
-                        code: 0
-                    });
-                }
-            })
+                })
         } else {
             res.json({
                 code: 11
