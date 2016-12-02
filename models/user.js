@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const IsEmail = require('isemail');
 const config = require('../config');
+const UserRoleSchema = require('./user_role');
 
 var UserSchema = new Schema({
     email: {
@@ -24,9 +25,7 @@ var UserSchema = new Schema({
             message: 'password illegal'
         }
     },
-    roles: [
-
-    ]
+    roles: [UserRoleSchema]
 });
 
 UserSchema.post('validate', function (user) {
