@@ -1,14 +1,11 @@
 const errors = {
     0: 'ok',
-    2: 'illegal email format',
-    3: 'password too short',
-    5: 'password lowercase letter limit',
-    7: 'password numeral limit',
-    11: 'the email has been used',
-    13: 'require field',
-    17: 'wrong email or password',
-    19: 'user not found',
-    23: 'not signin yet'
+    1: 'unexpected error',
+    2: 'validation failed',
+    3: 'duplicated',
+    5: 'wrong passport',
+    7: 'authentication failed',
+    11: 'resource not available'
 };
 
 module.exports = errors;

@@ -5,12 +5,13 @@ const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
+const mongoose = require('mongoose');
 // 引入配置
 const configuration = require('./config');
+// 连接数据库
+mongoose.connect(configuration.system.mongodb.URI);
 
-// 定义 APP Server
 var server = express();
-
 // 注册
 server.use(morgan(configuration.system.morgan.format, configuration.system.morgan.options));
 server.use(bodyParser.json());

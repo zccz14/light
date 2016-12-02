@@ -6,16 +6,15 @@ const app = require('../server');
 const config = require('../config');
 const User = require('../models/user');
 
-describe('profile', function () {
+describe('User Sign Out', function () {
     var aUser = {
         email: 'zccz14@function-x.org',
         password: 'world233'
     }
-    var illegalEmail = 'zccz14';
-    var nonExistEmail = 'zccz1444@function-x.org';
-    var wrongPassword = 'world333';
-    var cookieid;
-    before('create a user before sign in', function (done) {
+    var cookie;
+    var noCookie = '';
+
+    before('create a user', function (done) {
         request(app)
             .post('/user')
             .set('Accept', 'application/json')
@@ -24,42 +23,52 @@ describe('profile', function () {
             .end(function (err, res) {
                 expect(err).to.be.null;
                 res.body.code.should.equal(0);
+                cookie = res.headers['set-cookie'];
                 done();
             });
     });
-    it('correct see profile', function (done) {
+
+    it('correct sign-out', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
                 .set('Accept', 'application/json')
+                .set('Cookie', cookie)
                 .send(aUser)
                 .expect(200);
-            res1.body.code.should.equal(0);
-            cookieid = res1.headers['set-cookie'];
             var res2 = yield request(app)
-                .get('/user/profile')
+                .get('/user/sign-out')
                 .set('Accept', 'application/json')
-                .set('cookie', cookieid)
                 .expect(200);
             res2.body.code.should.equal(0);
             done();
         });
     });
-
-    it('not signin', function (done) {
+    it('just signed up but have not signed in yet', function (done) {
         request(app)
-            .get('/user/profile')
+            .get('/user/sign-out')
             .set('Accept', 'application/json')
+            .set('Cookie', cookie)
             .expect(200)
             .end(function (err, res) {
                 expect(err).to.be.null;
-                console.log(res.body)
-                res.body.code.should.equal(7);
+                res.body.code.should.equal(0);
                 done();
             });
     });
-    after('drop users after tests', function (done) {
+    it('have not signed in or signed up yet', function (done) {
+        request(app)
+            .get('/user/sign-out')
+            .set('Accept', 'application/json')
+            .set('Cookie', noCookie)
+            .expect(200)
+            .end(function (err, res) {
+                expect(err).to.be.null;
+                res.body.code.should.equal(0);
+                done();
+            });
+    });
+    after(function (done) {
         User.remove({}, done);
     });
 });
-

@@ -1,52 +1,42 @@
 # Full API Document
 ## Error Code
-All the error code are **primes** except 0 for OK. [See Also](../errors/index.js)
+
+0 for OK, 1 for BUG(if you get a BUG, report it to us please), and others are all **primes**.
+
+[See Also](../errors/index.js)
 
 ## User API
 ### User Sign Up
 POST `/user` and send:
 
-```json
+```js
 {
-    "email": "sample@function-x.org",
-    "password": "a123456"
+    "email": String,
+    "password": String
 }
 ```
 
 possible error code:
 
-+ 2: illegal email format
-+ 3: password too short
-+ 5: password lowercase letter limit
-+ 7: password numeral limit
-+ 11: the email has been used
-+ 13: require field
-
-email will be refused if it's illegal.
-
-configuration at `user.password` to change the behavior of password limits
++ 2: validation failed
++ 3: duplicated
 
 ### User Sign In
 POST `/user/sign-in` and send:
 
-```json
+```js
 {
-    "email": "sample@function-x.org",
-    "password": "a123456"
+    "email": String,
+    "password": String
 }
 ```
 
 possible error code:
 
-+ 2: illegal email format
-+ 13: require field
-+ 17: wrong email or password
-+ 19: user not found
++ 5: wrong passport
 
 ### User Sign Out
 GET `/user/sign-out`
-
-expect the error code to equal `0`.
 
 ### User Profile
 GET `/user/profile`
@@ -58,12 +48,10 @@ response json:
 ```js
 {
     "code": 0,
-    "body": {
-        // user profile
-    }
+    "body": UserProfile
 }
 ```
 
 possible error code:
 
-+ 23: not signin yet
++ 7: authentication failed
