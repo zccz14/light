@@ -12,7 +12,8 @@ POST `/user` and send:
 ```js
 {
     "email": String,
-    "password": String
+    "password": String,
+    "name": String // default public role name
 }
 ```
 
