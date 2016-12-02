@@ -8,7 +8,7 @@ module.exports = express.Router()
     .post('/', (req, res, next) => {
         var email = req.body.email || '';
         var password = req.body.password || '';
-        var name = req.body.name || '';
+        var name = (req.body.name || '').trim();
         // non-empty validate
         new User({
             email,
