@@ -68,31 +68,29 @@ describe('User Sign In', function () {
             res1.body.code.should.equal(5);
             done();
         });
-        
+
     });
     it('empty password', function (done) {
-        request(app)
-            .post('/user/sign-in')
-            .set('Accept', 'application/json')
-            .send({ email: aUser.email })
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                res.body.code.should.equal(5);
-                done();
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user/sign-in')
+                .set('Accept', 'application/json')
+                .send({ email: aUser.email })
+                .expect(200);
+            res1.body.code.should.equal(5);
+            done();
+        });
     });
     it('illegal email', function (done) {
-        request(app)
-            .post('/user/sign-in')
-            .set('Accept', 'application/json')
-            .send({ email: illegalEmail, password: aUser.password })
-            .expect(200)
-            .end(function (err, res) {
-                expect(err).to.be.null;
-                res.body.code.should.equal(5);
-                done();
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user/sign-in')
+                .set('Accept', 'application/json')
+                .send({ email: illegalEmail, password: aUser.password })
+                .expect(200);
+            res1.body.code.should.equal(5);
+            done();
+        });
     });
     after('drop users after tests', function (done) {
         User.remove({}, done);
