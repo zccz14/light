@@ -6,5 +6,11 @@ const UserRoleSchema = new Schema({
         type: String,
         required: true,
         unique: true
+    },
+    group: {
+        type: String,
+        required: true
     }
-})
+});
+
+module.exports = UserRoleSchema;
