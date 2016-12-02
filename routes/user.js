@@ -24,11 +24,18 @@ module.exports = express.Router()
     // Sign In
     .post('/sign-in', function (req, res, next) {
         co(function* () {
+            let username = (req.body.username || '').trim();
+            let password = req.body.password;
             let user = yield User.findOne({ username }).exec();
             if (user) {
                 if (configuration.system.passwordHash.verify(password, user.password)) {
                     req.session.user = user;
                     res.json({ code: 0 });
+                } else {
+                    res.json({
+                        code: 5,
+                        msg: 'wrong username or password'
+                    });
                 }
             } else {
                 res.json({

@@ -10,7 +10,7 @@ describe('profile', function () {
     var aUser = {
         email: 'zccz14@function-x.org',
         password: 'world233',
-        name: 'zccz14'
+        username: 'zccz14'
     }
     var illegalEmail = 'zccz14';
     var nonExistEmail = 'zccz1444@function-x.org';
