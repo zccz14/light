@@ -6,7 +6,7 @@ const app = require('../server');
 const config = require('../config');
 const User = require('../models/user');
 
-describe('User Sign Up', function () {
+describe('User Sign Up', function() {
     var aUserEmail = 'hello@function-x.org';
     var aUserName = 'zccz14';
     var aUser = {
@@ -32,7 +32,7 @@ describe('User Sign Up', function () {
     var trimmedToAUserName = '  zccz14  ';
     var trimmedToEmptyName = '      ';
 
-    it('create a user', function (done) {
+    it('create a user', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -43,7 +43,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create an email-duplicated user', function (done) {
+    it('create an email-duplicated user', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -58,7 +58,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create an name-duplicated user', function (done) {
+    it('create an name-duplicated user', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -73,7 +73,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose email is empty', function (done) {
+    it('create a user whose email is empty', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -87,7 +87,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose password is empty', function (done) {
+    it('create a user whose password is empty', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -101,7 +101,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose name is empty', function (done) {
+    it('create a user whose name is empty', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -115,7 +115,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose email is illegal', function (done) {
+    it('create a user whose email is illegal', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -130,7 +130,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose password is too short', function (done) {
+    it('create a user whose password is too short', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -145,7 +145,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose password has not enough lowercase letter', function (done) {
+    it('create a user whose password has not enough lowercase letter', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -160,7 +160,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a user whose password has not enough numerals', function (done) {
+    it('create a user whose password has not enough numerals', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -175,7 +175,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a name-dupicated user after trimmed', function (done) {
+    it('create a name-dupicated user after trimmed', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -190,7 +190,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create a name-empty user after trimmed', function (done) {
+    it('create a name-empty user after trimmed', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -205,7 +205,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    it('create another legal user', function (done) {
+    it('create another legal user', function(done) {
         co(function* () {
             var res = yield request(app)
                 .post('/user')
@@ -220,7 +220,7 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    after('drop all users after tests', function (done) {
+    after('drop all users after tests', function(done) {
         User.remove({}, done);
     });
 });

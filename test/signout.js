@@ -15,7 +15,7 @@ describe('User Sign Out', function () {
     var cookie;
     var noCookie = '';
     before('create a user', function (done) {
-        co(function* (){
+        co(function* () {
             var res = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
@@ -43,7 +43,7 @@ describe('User Sign Out', function () {
         }).catch(done);
     });
     it('just signed up but have not signed in yet', function (done) {
-        co(function* (){
+        co(function* () {
             var res = yield request(app)
                 .get('/user/sign-out')
                 .set('Accept', 'application/json')
@@ -54,7 +54,7 @@ describe('User Sign Out', function () {
         }).catch(done);
     });
     it('have not signed in or signed up yet', function (done) {
-        co(function* (){
+        co(function* () {
             var res = yield request(app)
                 .get('/user/sign-out')
                 .set('Accept', 'application/json')
