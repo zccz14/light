@@ -1,3 +1,6 @@
 [submodule "public"]
 	path = public
 	url = git@github.com:function-x/Online-Judge-FrontEnd-Sample.git
+[submodule "assets"]
+	path = assets
+	url = git@github.com:function-x/Online-Judge-FrontEnd-Sample.git

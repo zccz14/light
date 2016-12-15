@@ -12,7 +12,7 @@ const configuration = {
     },
     system: {
         assets: {
-            path: require('path').join(__dirname, 'public')
+            path: require('path').join(__dirname, 'assets')
         },
         mongodb: {
             URI: "mongodb://" + (process.env.MONGO_SERVER || "localhost:27017") + "/OrangeJuice"
