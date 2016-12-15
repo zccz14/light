@@ -1,11 +1,9 @@
 module.exports = {
     signIn: function (req, res, next) {
-        if (req.session.userId) {
+        if (req.session.user) {
             next();
         } else {
-            res.json({
-                code: 23
-            });
+            res.json({ code: 7 });
         }
     }
 };

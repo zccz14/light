@@ -1,228 +1,86 @@
+const co = require('co');
 const express = require('express');
-const ObjectId = require('mongodb').ObjectId;
-const IsEmail = require('isemail');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 const configuration = require('../config');
 const AccessControl = require('./assess_control');
-
-var db = require('../db');
+const User = require('../models/user');
+const UserRole = require('../models/user_role');
+const OnError = require('./on_error');
 // User CRUD API
 module.exports = express.Router()
-  // Create User (Sign Up)
-  .post('/', (req, res, next) => {
-    var email = req.body.email;
-    var password = req.body.password;
-    // non-empty validate
-    if (!email) {
-      res.json({
-        code: 13,
-        msg: 'expect the field(s) to be nonempty',
-        body: 'email'
-      });
-      return;
-    }
-    if (!password) {
-      res.json({
-        code: 13,
-        msg: 'expect the field to be nonempty',
-        body: 'password'
-      });
-      return;
-    }
-    // validate email and password format
-    if (!IsEmail.validate(email)) {
-      res.json({
-        code: 2,
-        msg: 'the email is illegal',
-        body: {}
-      });
-      return;
-    }
-    // password length check
-    var lengthLimit = configuration.user.password.minimumLength;
-    if (password.length < lengthLimit) {
-      res.json({
-        code: 3,
-        msg: `the password's length should be at least ${lengthLimit}`
-      });
-      return;
-    }
-    // check the number of letters in the password
-    {
-      let lowercaseLimit = configuration.user.password.minimumLowercaseLetter;
-      let lowercases = password.match(/[a-z]/g);
-      if (!lowercases || lowercases.length < lowercaseLimit) {
-        res.json({
-          code: 5,
-          msg: `the password should contain at least ${lowercaseLimit} lowercase letter${lowercaseLimit > 1 ? 's' : ''}.`
-        });
-        return;
-      }
-    }
-    // check the number of numberals in the password
-    {
-      let numberalLimit = configuration.user.password.minimumNumeral;
-      let numberals = password.match(/\d/g);
-      if (!numberals || numberals.length < numberalLimit) {
-        res.json({
-          code: 7,
-          msg: `the password should contain at least ${numberalLimit} numberal${numberalLimit > 1 ? 's' : ''}.`
-        });
-        return;
-      }
-    }
-    // using Hash to crypto password
-    password = configuration.system.passwordHash.store(password);
-    db.collection('users').insertOne({ email, password }, (err, user) => {
-      if (err) {
-        if (err.code == 11000) {
-          // email duplicated
-          res.json({
-            code: 11,
-            msg: 'the email has been used'
-          });
-          return;
-        }
-        throw err;
-      }
-      res.json({
-        code: 0,
-        msg: 'ok',
-      });
-    });
-  })
-  // Sign In
-  .post('/sign-in', function (req, res, next) {
-    var email = req.body.email;
-    var password = req.body.password;
-    if (!email) {
-      res.json({
-        code: 13,
-        msg: 'email'
-      });
-      return;
-    }
-    if (!IsEmail.validate(email)) {
-      res.json({
-        code: 2,
-        msg: 'illegal email'
-      });
-      return;
-    }
-    if (!password) {
-      res.json({
-        code: 13,
-        msg: 'password'
-      });
-      return;
-    }
-    db.collection('users').findOne({ email }, function (err, user) {
-      if (err) throw err;
-      if (user) {
-        if (configuration.system.passwordHash.verify(password, user.password)) {
-          req.session.userId = user._id;
-          res.json({
-            code: 0
-          });
-        } else {
-          res.json({
-            code: 17
-          });
-        }
-      } else {
-        res.json({
-          code: 19
-        });
-      }
+    // Create User (Sign Up)
+    .post('/', (req, res, next) => {
+        co(function* () {
+            let newUser = new User({
+                username: (req.body.username || '').trim(),
+                email: (req.body.email || '').trim(),
+                password: req.body.password || ''
+            });
+            newUser = yield newUser.save();
+            res.json({ code: 0 });
+        }).catch(OnError(res));
     })
-  })
-  // Sign Out
-  .get('/sign-out', function (req, res, next) {
-    req.session.destroy(function (err) {
-      if (err) throw err;
-      res.json({
-        code: 0
-      });
-    });
-  })
-  // Retrieve User Profile
-  .get('/profile', AccessControl.signIn)
-  .get('/profile', function (req, res, next) {
-    db.collection('users').findOne({ _id: new ObjectId(req.session.userId) }, (err, user) => {
-      if (err) throw err;
-      res.json({
-        code: 0,
-        body: user
-      });
-    });
-  })
-  // Retrieve Users
-  .get('/', (req, res, next) => {
-    db.collection('users').find(req.query).toArray((err, users) => {
-      if (err) throw err;
-      res.json({
-        code: 0,
-        msg: 'ok',
-        body: users
-      });
-    });
-  })
-  // Update User
-  .put('/:_id', (req, res, next) => {
-    if (ObjectId.isValid(req.params._id) === false) {
-      res.json({
-        code: 1,
-        msg: 'invalid user id',
-        body: {}
-      });
-      return;
-    }
-    db.collection('users').findOneAndUpdate({
-      _id: new ObjectId(req.params._id)
-      // this would crash when _id is illegal
-    }, { $set: req.body }, (err, result) => {
-      if (err) throw err;
-      if (result.value) {
-        res.json({
-          code: 0,
-          msg: 'ok',
-          body: result
+    // Sign In
+    .post('/sign-in', function (req, res, next) {
+        co(function* () {
+            let username = (req.body.username || '').trim();
+            let password = req.body.password || '';
+            let user = yield User.findOne({ username }).exec();
+            if (user) {
+                if (configuration.system.passwordHash.verify(password, user.password)) {
+                    req.session.user = user;
+                    res.json({ code: 0 });
+                } else {
+                    res.json({
+                        code: 5,
+                        msg: 'wrong username or password'
+                    });
+                }
+            } else {
+                res.json({
+                    code: 11,
+                    msg: 'user not found'
+                });
+            }
         });
-      } else {
-        res.json({
-          code: 1,
-          msg: 'user not found',
-          body: result
-        })
-      }
-    });
-  })
-  // Delete User
-  .delete('/:_id', (req, res, next) => {
-    if (ObjectId.isValid(req.params._id) === false) {
-      res.json({
-        code: 1,
-        msg: 'invalid user id',
-        body: {}
-      });
-      return;
-    }
-    db.collection('users').findOneAndDelete({
-      _id: new ObjectId(req.params._id)
-      // this would crash when _id is illegal
-    }, (err, result) => {
-      if (err) throw err;
-      if (result.value) {
-        res.json({
-          code: 0,
-          msg: 'ok',
-          body: result
-        });
-      } else {
-        res.json({
-          code: 1,
-          msg: 'user not found',
-          body: result
-        })
-      }
     })
-  })
+    // Sign Out
+    .get('/sign-out', function (req, res, next) {
+        req.session.destroy(function (err) {
+            if (err) throw err;
+            res.json({
+                code: 0
+            });
+        });
+    })
+    // Retrieve User Profile
+    .get('/profile', AccessControl.signIn)
+    .get('/profile', function (req, res, next) {
+        co(function* () {
+            let user = req.session.user;
+            user = yield User.findById(user._id).exec();
+            res.json({
+                code: 0,
+                body: user
+            });
+        });
+    })
+    // Update role name
+    .put('/role/:_id', AccessControl.signIn)
+    .put('/role/:_id', function (req, res, next) {
+        co(function* () {
+            let user = req.session.user;
+            user = yield User.update(
+                {
+                    _id: new ObjectId(user._id),
+                    "roles._id": new ObjectId(req.params._id),
+                },
+                {
+                    $set: { "roles.$.name": (req.body.name || '').trim() }
+                }
+            ).exec();
+            req.session.user = user;
+            res.json({ code: 0 });
+        }).catch(OnError(res));
+    })

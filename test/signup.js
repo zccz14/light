@@ -1,153 +1,241 @@
+const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../server');
-const db = require('../db');
 const config = require('../config');
+const User = require('../models/user');
 
 describe('User Sign Up', function () {
-    // create index on users before all the tests
-    before(function (done) {
-        db.collection('users').createIndex({ email: 1 }, { unique: true }, done);
-    });
-
+    var aUserEmail = 'hello@function-x.org';
+    var aUserName = 'zccz14';
     var aUser = {
-        email: 'hello@function-x.org',
-        password: 'world233'
+        email: aUserEmail,
+        password: 'world233',
+        username: aUserName
     };
+    var mustLegalName = 'zccz16';
     var mustLegalEmail = 'zccz14@function-x.org';
     var mustLegalPassword =
         '1'.repeat(config.user.password.minimumLength) +
         'a'.repeat(config.user.password.minimumLowercaseLetter) +
         '1'.repeat(config.user.password.minimumNumeral);
+    var mustIllegalEmail = 'hello';
+    var lengthIllegelPassword =
+        '1' + 'a'.repeat(config.user.password.minimumLength - 2);
+    var noEnoughLowercaseLetterPassword =
+        '1'.repeat(config.user.password.minimumLength) +
+        'a'.repeat(config.user.password.minimumLowercaseLetter - 1);
+    var noEnoughNumeralPassword =
+        'a'.repeat(config.user.password.minimumLength) +
+        '1'.repeat(config.user.password.minimumNumeral - 1);
+    var trimmedToAUserName = '  zccz14  ';
+    var trimmedToEmptyName = '      ';
 
     it('create a user', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send(aUser)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.equal(0);
-                done();
-            });
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send(aUser)
+                .expect(200)
+            res.body.code.should.equal(0);
+            done();
+        }).catch(done);
     });
     it('create an email-duplicated user', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send(aUser)
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(11);
-                done();
-            });
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/jason')
+                .send({
+                    email: aUserEmail,
+                    password: mustLegalPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res2.body.code.should.equal(3);
+            done();
+        }).catch(done);
     });
-    it('create a user whose email is illegal', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({
-                email: 'hello',
-                password: 'world233'
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(2);
-                done();
-            });
-    });
-    it('create a user whose password is empty', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({ email: mustLegalEmail })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(13);
-                res.body.body.should.be.equal('password');
-                done();
-            });
+    it('create an name-duplicated user', function (done) {
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: mustLegalPassword,
+                    username: aUserName
+                })
+                .expect(200)
+            res2.body.code.should.equal(3);
+            done();
+        }).catch(done);
     });
     it('create a user whose email is empty', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({ password: 'zc123213' })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(13);
-                res.body.body.should.be.equal('email');
-                done();
-            });
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    password: mustLegalPassword,
+                    name: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
+    });
+    it('create a user whose password is empty', function (done) {
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
+    });
+    it('create a user whose name is empty', function (done) {
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: mustLegalPassword
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
+    });
+    it('create a user whose email is illegal', function (done) {
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustIllegalEmail,
+                    password: mustLegalPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
     });
     it('create a user whose password is too short', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({
-                email: mustLegalEmail,
-                password: 'a'.repeat(config.user.password.minimumLength - 1)
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(3);
-                done();
-            });
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: lengthIllegelPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
     });
     it('create a user whose password has not enough lowercase letter', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({
-                email: mustLegalEmail,
-                password: '1'.repeat(config.user.password.minimumLength) + 'a'.repeat(config.user.password.minimumLowercaseLetter - 1)
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(5);
-                done();
-            });
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: noEnoughLowercaseLetterPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
     });
-    it('create a user whose password has not enough numberals', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({
-                email: mustLegalEmail,
-                password: 'a'.repeat(config.user.password.minimumLength) + '1'.repeat(config.user.password.minimumNumeral - 1)
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(7);
-                done();
-            });
+    it('create a user whose password has not enough numerals', function (done) {
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: noEnoughNumeralPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
+    });
+    it('create a name-dupicated user after trimmed', function (done) {
+        co(function* () {
+            var res1 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send ( aUser)
+                .expect(200)
+            var res2 = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: mustLegalPassword,
+                    username: trimmedToAUserName
+                })
+                .expect(200)
+            res2.body.code.should.equal(3);
+            done();
+        }).catch(done);
+    });
+    it('create a name-empty user after trimmed', function (done) {
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: mustLegalPassword,
+                    username: trimmedToEmptyName
+                })
+                .expect(200)
+            res.body.code.should.equal(2);
+            done();
+        }).catch(done);
     });
     it('create another legal user', function (done) {
-        request(app)
-            .post('/user')
-            .set('Accept', 'application/json')
-            .send({
-                email: mustLegalEmail,
-                password: mustLegalPassword
-            })
-            .expect(200)
-            .end((err, res) => {
-                expect(err).to.be.null;
-                res.body.code.should.be.equal(0);
-                done();
-            });
+        co(function* () {
+            var res = yield request(app)
+                .post('/user')
+                .set('Accept', 'application/json')
+                .send({
+                    email: mustLegalEmail,
+                    password: mustLegalPassword,
+                    username: mustLegalName
+                })
+                .expect(200)
+            res.body.code.should.equal(0);
+            done();
+        }).catch(done);
     });
-    // drop users after all the test
-    after(function (done) {
-        db.collection('users').drop(done);
+    afterEach('drop all users after tests', function(done) {
+        User.remove({}, done);
     });
 });
