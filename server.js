@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
+mongoose.Promise = Promise;
 // 引入配置
 const configuration = require('./config');
 // 连接数据库
