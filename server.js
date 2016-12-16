@@ -23,6 +23,7 @@ server.use(session(configuration.system.session));
 server.use(express.static(configuration.system.assets.path));
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
+server.use('/problem', require('./routes/problem'));
 
 // 导出服务器
 module.exports = server;
