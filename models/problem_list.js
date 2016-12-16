@@ -10,7 +10,7 @@ var ProblemSchema = new Schema({
 });
 
 var ProblemListSchema = new Schema({
-  ListName: {
+  listName: {
     type: String,
     required: true,
     unique: true

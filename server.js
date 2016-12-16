@@ -22,6 +22,7 @@ server.use(session(configuration.system.session));
 server.use(express.static(path.join(__dirname, 'public')));
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
+server.use('/problem_list',require('./routes/problem_list'))
 
 // 导出服务器
 module.exports = server;

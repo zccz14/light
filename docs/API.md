@@ -76,3 +76,10 @@ posiible error code:
 + 3: user role name duplicated
 + 7: not login yet
 + 11: user role not found
+
+
+###Problem list find 
+GET `/problem_list/:problemListName`
+
++  7 problem list not found
+

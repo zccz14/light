@@ -59,8 +59,6 @@ describe('Update group name', function () {
     }).catch(done);
   });
 
-
-
   after('drop users after tests', function (done) {
     User.remove({}, done);
     Group.remove({}, done);

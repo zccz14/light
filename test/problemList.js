@@ -4,7 +4,7 @@ const expect = require('chai').expect;
 const request = require('supertest');
 const app = require('../server');
 const User = require('../models/user');
-const Group = require('../models/group');
+const ProblemList = require('../models/problem_list');
 
 describe('update problemlist', function () {
   var aUser = {
@@ -36,7 +36,7 @@ describe('update problemlist', function () {
         .expect(200);
       res2.body.code.should.equal(0);
       var res3 = yield request(app)
-        .post('/problemlist')
+        .post('/problem_list')
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
         .send({ listName: thisListName })

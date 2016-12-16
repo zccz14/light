@@ -8,8 +8,8 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = express.Router()
-//访问权限控制考虑采用group和role
-//不过还没加==
+  //访问权限控制考虑采用group和role
+  //不过还没加==
 
 
   //create a new problemlist
@@ -32,10 +32,21 @@ module.exports = express.Router()
   })
 
   //find a problemlist
-  .get('/', function (req, res, next) {
+  .get('/:problemListName', function (req, res, next) {
     co(function* () {
-      let listname = (req.body.listname || '').trim();
-
+      let thisProblemListName = req.params.problemListName;
+      //let problemList = 
+      ProblemList.find(({ listName: thisProblemListName }), function (err, docs) {
+        if (err) {
+          res.json({
+            code: 11,
+            msg: 'Problem list not found'
+          })
+        }
+        else return res.json({
+          docs
+        })
+      });
     }).catch(OnError(res));
   })
 
@@ -49,7 +60,7 @@ module.exports = express.Router()
   .put('/:problemListName', function (req, res, next) {
     co(function* () {
       let thisProblemName = (req.body.problemName).trim();
-      let thisProblemListName = (req.body.problemListName).trim();
+      let thisProblemListName = req.params.problemListName;
       problemList = yield ProblemList.update(
 
         {
@@ -64,5 +75,6 @@ module.exports = express.Router()
           }
         }
       )
+      res.json(problemList);
     }).catch(OnError(res));
   })
