@@ -30,7 +30,11 @@ var UserSchema = new Schema({
             message: 'password illegal'
         }
     },
-    roles: [UserRoleSchema]
+    roles: [UserRoleSchema],
+    admin: {
+        type: Boolean,
+        default: false
+    }
 });
 
 UserSchema.post('validate', function (user) {
