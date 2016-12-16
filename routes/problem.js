@@ -23,7 +23,7 @@ module.exports = express.Router()
     // get problem list
     .get('/', function(req, res, next) {
         co(function* () {
-            let problems = yield Problem.find({}).exec();
+            let problems = yield Problem.find(req.query).exec();
             res.json({
                 code: 0,
                 problems
