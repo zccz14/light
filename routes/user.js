@@ -12,12 +12,20 @@ module.exports = express.Router()
     // Create User (Sign Up)
     .post('/', (req, res, next) => {
         co(function* () {
-            let newUser = new User({
+            let newUser = {
                 username: (req.body.username || '').trim(),
                 email: (req.body.email || '').trim(),
                 password: req.body.password || ''
-            });
-            newUser = yield newUser.save();
+            };
+            if (req.body.admin) {
+                let admin = yield User.findOne({ admin: true }).exec();
+                if (admin) {
+                    res.json({ code: 7 });
+                } else {
+                    newUser.admin = true;
+                }
+            }
+            newUser = yield new User(newUser).save();
             res.json({ code: 0 });
         }).catch(OnError(res));
     })
