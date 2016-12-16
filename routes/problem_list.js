@@ -2,7 +2,7 @@ const co = require('co');
 const express = require('express');
 const AccessControl = require('./assess_control');
 const User = require('../models/user');
-const Group = require('../models/group');
+const ProblemList = require('../models/problem_list');
 const OnError = require('./on_error');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
@@ -44,6 +44,8 @@ module.exports = express.Router()
   //add a problem into a problemlist
   .put('/', function (req, res, next) {
     co(function* () {
-      let problemName=(req.body.problemName).trim();
+      let problemName = (req.body.problemName).trim();
+
+
     }).catch(OnError(res));
   })
