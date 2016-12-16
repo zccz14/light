@@ -43,12 +43,12 @@ module.exports = express.Router()
         }).catch(OnError(res));
     })
 
-    //delete a exist group
+    //delete an existing group
     .delete('/:_id', function (req, res, next) {
         res.json();
     })
 
-    //update a exist group
+    //update an existing group
     .put('/:_id', AccessControl.signIn)
     .put('/:_id', function (req, res, next) {
         co(function* () {
