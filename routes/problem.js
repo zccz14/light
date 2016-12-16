@@ -1,7 +1,7 @@
 const co = require('co');
 const express = require('express');
 const mongoose = require('mongoose');
-
+const ObjectId = mongoose.Types.ObjectId;
 const AccessControl = require('./access_control');
 const Problem = require('../models/problem');
 const OnError = require('./on_error');
