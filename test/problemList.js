@@ -17,7 +17,7 @@ describe('update problemlist', function () {
   var wrongPassword = 'world333';
   var thisListName = "xjtuse";
   var newListName = 'xjtuse42';
-  var groupId = "";
+  var problemListName = "BUZUOBUSHIZHONGGUOREN";
   var cookie;
   before('create a user and a list before update', function (done) {
     co(function* () {
@@ -39,10 +39,9 @@ describe('update problemlist', function () {
         .post('/problemlist')
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
-        .send({ listname: thisListName })
+        .send({ listName: thisListName })
         .expect(200);
       res3.body.code.should.equal(0);
-      groupId = res3.body.group._id;
       done();
     }).catch(done);
   });
@@ -52,10 +51,10 @@ describe('update problemlist', function () {
   it('add a problem to the list', function (done) {
     co(function* () {
       var res1 = yield request(app)
-        .put(`/group/${groupId}`)
+        .put(`/problem_list/${problemListName}`)
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
-        .send({ name: newGroupName })
+        .send({ listName: newListName })
         .expect(200);
       res1.body.code.should.equal(0);
       done();
@@ -65,10 +64,9 @@ describe('update problemlist', function () {
   it('get the problemlist', function (done) {
     co(function* () {
       var res1 = yield request(app)
-        .put(`/group/${groupId}`)
+        .get(`/problem_list/${problemListName}`)
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
-        .send({ name: newGroupName })
         .expect(200);
       res1.body.code.should.equal(0);
       done();
@@ -81,5 +79,3 @@ describe('update problemlist', function () {
     ProblemList.remove({}, done);
   });
 });
-
-

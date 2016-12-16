@@ -8,14 +8,18 @@ const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = express.Router()
+//访问权限控制考虑采用group和role
+//不过还没加==
+
+
   //create a new problemlist
   .post('/', AccessControl.signIn)
   .post('/', function (req, res, next) {
     co(function* () {
-      let user = req.session.user;
+      var user = req.session.user;
       let name = (req.body.listName || '').trim();
       var newProblemList = new ProblemList({
-        name,
+        listName,
         problems: null
       });
       newProblemList = yield newProblemList.save();
@@ -42,10 +46,23 @@ module.exports = express.Router()
 
   //update a problemlist
   //add a problem into a problemlist
-  .put('/', function (req, res, next) {
+  .put('/:problemListName', function (req, res, next) {
     co(function* () {
-      let problemName = (req.body.problemName).trim();
+      let thisProblemName = (req.body.problemName).trim();
+      let thisProblemListName = (req.body.problemListName).trim();
+      problemList = yield ProblemList.update(
 
-
+        {
+          listName: thisProblemListName
+        },
+        {
+          $push: {
+            Problem: [{
+              problemName: thisProblemName
+              //insert promlem content here
+            }]
+          }
+        }
+      )
     }).catch(OnError(res));
   })
