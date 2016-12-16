@@ -49,6 +49,7 @@ module.exports = express.Router()
     })
 
     //update an existing group
+    //change group name
     .put('/:_id', AccessControl.signIn)
     .put('/:_id', function (req, res, next) {
         co(function* () {

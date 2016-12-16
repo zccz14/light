@@ -6,7 +6,7 @@ const app = require('../server');
 const User = require('../models/user');
 const Group = require('../models/group');
 
-describe('Update group name', function () {
+describe('update problemlist', function () {
   var aUser = {
     email: 'zccz14@function-x.org',
     password: 'world233',
@@ -15,11 +15,11 @@ describe('Update group name', function () {
   var illegalEmail = 'zccz14';
   var nonExistEmail = 'zccz1444@function-x.org';
   var wrongPassword = 'world333';
-  var groupName = "xjtuse";
-  var newGroupName = 'xjtuse42';
+  var thisListName = "xjtuse";
+  var newListName = 'xjtuse42';
   var groupId = "";
   var cookie;
-  before('create a user before sign in', function (done) {
+  before('create a user and a list before update', function (done) {
     co(function* () {
       var res1 = yield request(app)
         .post('/user')
@@ -36,17 +36,33 @@ describe('Update group name', function () {
         .expect(200);
       res2.body.code.should.equal(0);
       var res3 = yield request(app)
-        .post('/group')
+        .post('/problemlist')
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
-        .send({ name: groupName })
+        .send({ listname: thisListName })
         .expect(200);
       res3.body.code.should.equal(0);
       groupId = res3.body.group._id;
       done();
     }).catch(done);
   });
-  it('give this group a legal name', function (done) {
+
+
+
+  it('add a problem to the list', function (done) {
+    co(function* () {
+      var res1 = yield request(app)
+        .put(`/group/${groupId}`)
+        .set('Accept', 'application/json')
+        .set('Cookie', cookie)
+        .send({ name: newGroupName })
+        .expect(200);
+      res1.body.code.should.equal(0);
+      done();
+    }).catch(done);
+  });
+
+  it('get the problemlist', function (done) {
     co(function* () {
       var res1 = yield request(app)
         .put(`/group/${groupId}`)
@@ -60,9 +76,10 @@ describe('Update group name', function () {
   });
 
 
-
   after('drop users after tests', function (done) {
     User.remove({}, done);
-    Group.remove({}, done);
+    ProblemList.remove({}, done);
   });
 });
+
+
