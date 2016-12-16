@@ -2,11 +2,14 @@ const co = require('co');
 const express = require('express');
 const mongoose = require('mongoose');
 
+const AccessControl = require('./access_control');
 const Problem = require('../models/problem');
 
 module.exports = express.Router()
+    // Admin API
+    .use('/', AccessControl.admin)
     // create a problem
-    .post('/', function (req, res, next) {
+    .post('/', function(req, res, next) {
         co(function* () {
             let newProblem = new Problem({
                 title: (req.body.title || '').trim(),
@@ -17,7 +20,7 @@ module.exports = express.Router()
         }).catch(OnError(res));
     })
     // get problem list
-    .get('/', function (req, res, next) {
+    .get('/', function(req, res, next) {
         co(function* () {
             let problems = yield Problem.find({}).exec();
             res.json({
@@ -27,7 +30,7 @@ module.exports = express.Router()
         }).catch(OnError(res));
     })
     // update a problem
-    .put('/:_id', function (req, res, next) {
+    .put('/:_id', function(req, res, next) {
         co(function* () {
             let problem = yield Problem.update(
                 {
@@ -41,7 +44,7 @@ module.exports = express.Router()
         }).catch(OnError(res));
     })
     // delete a problem
-    .delete('/:_id', function (req, res, next) {
+    .delete('/:_id', function(req, res, next) {
         co(function* () {
             let problem = yield Problem.findByIdAndRemove(req.params._id).exec();
             res.json({ code: 0 });
