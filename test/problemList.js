@@ -5,6 +5,7 @@ const request = require('supertest');
 const app = require('../server');
 const User = require('../models/user');
 const ProblemList = require('../models/problem_list');
+const Group = require('../models/group');
 
 describe('update problemlist', function () {
   var aUser = {
@@ -18,8 +19,10 @@ describe('update problemlist', function () {
   var groupName = "xjtuse";
   var newGroupName = 'xjtuse42';
   var groupId = "";
-  var thisListName = "BUZUOBUSHIZHONGGUOREN";
-  var newListName = 'goodList';
+  var groupListName = "BUZUOBUSHIZHONGGUOREN";
+  var userListName = 'goodList';
+  var thisProblemTitle = 'nobody can answer this';
+  var thisProblemDescription = 'I am nobody';
   var problemListId;
   var cookie;
   var thisUser;
@@ -38,7 +41,6 @@ describe('update problemlist', function () {
         .set('Cookie', cookie)
         .send(aUser)
         .expect(200);
-      thisUser = req.session.user;
       res2.body.code.should.equal(0);
       var res3 = yield request(app)
         .post('/group')
@@ -53,20 +55,64 @@ describe('update problemlist', function () {
   });
 
 
-  it('create a problem list owned by group',function(done){
-
+  it('create a problem list owned by group', function (done) {
+    co(function* () {
+      var res1 = yield request(app)
+        .post('/problem_list')
+        .set('Accept', 'application/json')
+        .set('Cookie', cookie)
+        .send({
+          groupId,
+          name: groupListName
+        })
+        .expect(200);
+      res1.body.code.should.equal(0);
+      done();
+    }).catch(done);
   });
 
-  it('create a problem list owned by user')
+  it('create a problem list owned by group with existing name', function (done) {
+    co(function* () {
+      var res1 = yield request(app)
+        .post('/problem_list')
+        .set('Accept', 'application/json')
+        .set('Cookie', cookie)
+        .send({
+          groupId: groupId,
+          name: groupListName
+        })
+        .expect(200);
+      res1.body.code.should.equal(0);
+      done();
+    }).catch(done);
+  });
+
+  it('create a problem list owned by user', function (done) {
+    co(function* () {
+      var res1 = yield request(app)
+        .post('/problem_list')
+        .set('Accept', 'application/json')
+        .set('Cookie', cookie)
+        .send({
+          name: userListName
+        })
+        .expect(200);
+      res1.body.code.should.equal(0);
+      problemListId = res1.body.problemList._id;
+      done();
+    }).catch(done);
+  });
 
   it('add a problem to the list', function (done) {
     co(function* () {
       var res1 = yield request(app)
-        .put(`/problem_list/${problemListName}`)
+        .put(`/problem_list/${problemListId}`)
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
         .send({
-          listName: newListName
+          problemTitle: thisProblemTitle,
+          problemDescription: thisProblemDescription
+
         })
         .expect(200);
       res1.body.code.should.equal(0);
@@ -77,7 +123,7 @@ describe('update problemlist', function () {
   it('get the problemlist', function (done) {
     co(function* () {
       var res1 = yield request(app)
-        .get(`/problem_list/${problemListName}`)
+        .get(`/problem_list/${problemListId}`)
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
         .expect(200);
@@ -93,6 +139,6 @@ describe('update problemlist', function () {
       yield Group.remove({}).exec();
       yield ProblemList.remove({}).exec();
       done();
-    })
+    }).catch(done);
   });
 });

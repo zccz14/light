@@ -7,6 +7,7 @@ const Problem = require('../models/problem')
 const OnError = require('./on_error');
 const mongoose = require('mongoose');
 const UserRole = require('../models/user_role')
+const Group = require('../models/group')
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = express.Router()
@@ -26,7 +27,7 @@ module.exports = express.Router()
           res.json({ code: 11 });
           return;
         }
-        if (theGroup.members.some(v => v.userId === user._id && v.role === 'owner')) {
+        if (theGroup.members.some(v => v.userId.toString() === user._id && v.role === 'owner')) {
           thisOwnerId = req.body.groupId;
         } else {
           res.json({ code: 7 });
@@ -80,12 +81,16 @@ module.exports = express.Router()
       let thisProblemTitle = req.body.problemTitle;
       let thisProblemDescription = req.body.problemDescription;
       let thisProblemListId = req.params._id;
-      var isOwner = flase;
-      let thisProblemList = yield ProblemList.findById(new ObjectId(thisProblemListId).exec())
-      if (User._id === thisProblemList.ownerId) {
+      var isOwner = false;
+      let thisProblemList = yield ProblemList.findById(new ObjectId(thisProblemListId)).exec();
+      if (thisProblemList == null) {
+        res.json({ code: 11 });
+        return;
+      }
+      if (user._id.toString() === thisProblemList.ownerId.toString()) {
         isOwner = true;
       }
-      let judgeGroup = yield User.find({
+      let judgeGroup = yield User.findOne({
         '_id': new ObjectId(user._id),
         'roles.$.role': 'owner',
         'roles.$.group': thisProblemList._id
