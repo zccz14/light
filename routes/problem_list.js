@@ -45,7 +45,7 @@ module.exports = express.Router()
         }
         else return res.json({
           docs
-        })
+        });
       });
     }).catch(OnError(res));
   })
