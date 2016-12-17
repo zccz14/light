@@ -20,7 +20,7 @@ module.exports = express.Router()
                 return;
             }
             let admins = yield Administrator.find({}).exec();
-            if (admins.length === 0 || admins.every(v => v.userId === user._id)) {
+            if (admins.length === 0 || admins.some(v => v.userId === user._id)) {
                 let newAdmin = new Administrator({
                     userId: new ObjectId(userId)
                 });
