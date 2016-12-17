@@ -18,13 +18,24 @@ module.exports = express.Router()
   .post('/', AccessControl.signIn)
   .post('/', function (req, res, next) {
     co(function* () {
-      var user = req.session.user;
-      let thisOwnerId = req.body.ownerId;
-      let name = (req.body.listName || '').trim();
-      var newProblemList = new ProblemList({
-        ownerId: thisOwnerId,
-        listName: name,
-        problems: null
+      let user = req.session.user;
+      let thisOwnerId = user._id;
+      if (req.body.groupId) {
+        let theGroup = yield Group.findById(req.body.groupId).exec();
+        if (theGroup === null) {
+          res.json({ code: 11 });
+          return;
+        }
+        if (theGroup.members.some(v => v.userId === user._id && v.role === 'owner')) {
+          thisOwnerId = req.body.groupId;
+        } else {
+          res.json({ code: 7 });
+          return;
+        }
+      }
+      let newProblemList = new ProblemList({
+        ownerId: new ObjectId(thisOwnerId),
+        name: (req.body.name || '').trim()
       });
       newProblemList = yield newProblemList.save();
       console.log(`new problemlist '${newProblemList.name}' created by ${user.username}`)
@@ -38,18 +49,19 @@ module.exports = express.Router()
   //find a problemlist
   .get('/:_id', function (req, res, next) {
     co(function* () {
-      let thisProblemListId = req.params.problemListId;
-      //let problemList = 
-      ProblemList.find(({ problemListId: new Object(thisProblemListId) }), function (err, docs) {
-        if (err) {
-          res.json({
-            code: 11,
-            msg: 'Problem list not found'
-          })
+      let problemList = yield ProblemList.findById(req.params._id).exec();
+      if (problemList === null) {
+        res.json({ code: 11 });
+        return;
+      }
+      problemList.problems = yield Problem.find({
+        _id: {
+          $in: problemList.problems.map(v => new ObjectId(v))
         }
-        else return res.json({
-          docs
-        });
+      }).exec();
+      res.json({
+        code: 0,
+        problemList
       });
     }).catch(OnError(res));
   })

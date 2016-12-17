@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
-const
 const Schema = mongoose.Schema;
-
 
 var ProblemListSchema = new Schema({
   ownerId: {
@@ -9,12 +7,12 @@ var ProblemListSchema = new Schema({
     required: true,
     unique: true
   },
-  listName: {
+  name: {
     type: String,
     required: true,
     unique: true
   },
-  problems: [ProblemSchema]
+  problems: [Schema.Types.ObjectId]
 });
 
 const ProblemList = mongoose.model('problemList', ProblemListSchema);
