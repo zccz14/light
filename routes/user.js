@@ -92,3 +92,13 @@ module.exports = express.Router()
             res.json({ code: 0 });
         }).catch(OnError(res));
     })
+    // query user
+    .get('/', function(req, res, next){
+        co(function *() {
+            let users = yield User.find(req.query).exec();
+            res.json({
+                code: 0,
+                users
+            });
+        }).catch(OnError(res));
+    })
