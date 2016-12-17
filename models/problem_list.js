@@ -12,7 +12,11 @@ var ProblemListSchema = new Schema({
     required: true,
     unique: true
   },
-  problems: [Schema.Types.ObjectId]
+  problems: [Schema.Types.ObjectId],
+  public: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const ProblemList = mongoose.model('problemList', ProblemListSchema);
