@@ -1,6 +1,6 @@
 const co = require('co');
 const express = require('express');
-const AccessControl = require('./assess_control');
+const AccessControl = require('./access_control');
 const User = require('../models/user');
 const Group = require('../models/group');
 const OnError = require('./on_error');

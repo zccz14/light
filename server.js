@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
+mongoose.Promise = Promise;
 // 引入配置
 const configuration = require('./config');
 // 连接数据库
@@ -19,9 +20,10 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(session(configuration.system.session));
 // 注册路由
-server.use(express.static(path.join(__dirname, 'public')));
+server.use(express.static(configuration.system.assets.path));
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
+server.use('/problem', require('./routes/problem'));
 
 // 导出服务器
 module.exports = server;
