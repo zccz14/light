@@ -4,7 +4,8 @@ const Schema = mongoose.Schema;
 const AdministratorSchema = new Schema({
     userId: {
         type: Schema.Types.ObjectId,
-        required: true
+        required: true,
+        unique: true
     }
 });
 
