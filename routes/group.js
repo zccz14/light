@@ -4,6 +4,8 @@ const AccessControl = require('./access_control');
 const User = require('../models/user');
 const Group = require('../models/group');
 const OnError = require('./on_error');
+const mongoose = require('mongoose');
+const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = express.Router()
     // create a group
@@ -35,7 +37,51 @@ module.exports = express.Router()
             }).exec();
             req.session.user = user;
             res.json({
-                code: 0
+                code: 0,
+                group: newGroup
             });
         }).catch(OnError(res));
-    });
+    })
+
+    //delete an existing group
+    .delete('/:_id', function (req, res, next) {
+        res.json();
+    })
+
+    //update an existing group
+    //change group name
+    .put('/:_id', AccessControl.signIn)
+    .put('/:_id', function (req, res, next) {
+        co(function* () {
+            let user = req.session.user;
+            let groupId = req.params._id;
+            let newName = (req.body.name || '').trim();
+            group = yield Group.update(
+                {
+                    "_id": new ObjectId(groupId),
+                    "members.userId": new ObjectId(user._id),
+                    "members.role": 'owner'
+                },
+                {
+                    $set: {
+                        "name": newName
+                    }
+                }
+            ).exec();
+            if (group.nModified === 1) {
+                res.json({
+                    code: 0
+                });
+            } else {
+                res.json({
+                    code: 11
+                });
+            }
+        }).catch(OnError(res));
+    })
+
+    //find a exist group
+    .get('/', function (req, res, next) {
+
+        res.json();
+    })

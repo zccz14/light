@@ -98,3 +98,19 @@ posiible error code:
 + 3: user role name duplicated
 + 7: not login yet
 + 11: user role not found
+
+
+###Problem list add
+POST `/problem_list/`
+
+
+###Problem list find 
+GET `/problem_list/:problemListId`
+
++  11 problem list not found
+
+
+###Problem list Update
+PUT `/problem_list/:problemListId`
+
++  7 Authentication denied
