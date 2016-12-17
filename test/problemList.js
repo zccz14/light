@@ -15,10 +15,11 @@ describe('update problemlist', function () {
   var illegalEmail = 'zccz14';
   var nonExistEmail = 'zccz1444@function-x.org';
   var wrongPassword = 'world333';
-  var thisListName = "xjtuse";
-  var newListName = 'xjtuse42';
-  var problemListName = "BUZUOBUSHIZHONGGUOREN";
+  var thisListName = "BUZUOBUSHIZHONGGUOREN";
+  var newListName = 'goodList';
+  var problemListId;
   var cookie;
+  var thisUser;
   before('create a user and a list before update', function (done) {
     co(function* () {
       var res1 = yield request(app)
@@ -34,14 +35,8 @@ describe('update problemlist', function () {
         .set('Cookie', cookie)
         .send(aUser)
         .expect(200);
+      thisUser = req.session.user;
       res2.body.code.should.equal(0);
-      var res3 = yield request(app)
-        .post('/problem_list')
-        .set('Accept', 'application/json')
-        .set('Cookie', cookie)
-        .send({ listName: thisListName })
-        .expect(200);
-      res3.body.code.should.equal(0);
       done();
     }).catch(done);
   });
@@ -54,7 +49,9 @@ describe('update problemlist', function () {
         .put(`/problem_list/${problemListName}`)
         .set('Accept', 'application/json')
         .set('Cookie', cookie)
-        .send({ listName: newListName })
+        .send({
+          listName: newListName
+        })
         .expect(200);
       res1.body.code.should.equal(0);
       done();
@@ -75,7 +72,10 @@ describe('update problemlist', function () {
 
 
   after('drop users after tests', function (done) {
-    User.remove({}, done);
-    ProblemList.remove({}, done);
+    co(function* () {
+      yield User.remove({}).exec();
+      yield ProblemList.remove({}).exec();
+      done();
+    })
   });
 });

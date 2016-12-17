@@ -60,7 +60,10 @@ describe('Update group name', function () {
   });
 
   after('drop users after tests', function (done) {
-    User.remove({}, done);
-    Group.remove({}, done);
+    co(function* () {
+      yield User.remove({}).exec();
+      yield Group.remove({}).exec();
+      done();
+    })
   });
 });

@@ -1,15 +1,14 @@
 const mongoose = require('mongoose');
+const
 const Schema = mongoose.Schema;
 
-var ProblemSchema = new Schema({
-  problemName: {
-    type: String,
-    required: true,
-    unique: true
-  }
-});
 
 var ProblemListSchema = new Schema({
+  ownerId: {
+    type: Schema.Types.ObjectId,
+    required: true,
+    unique: true
+  },
   listName: {
     type: String,
     required: true,

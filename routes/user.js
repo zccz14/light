@@ -3,7 +3,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const ObjectId = mongoose.Types.ObjectId;
 const configuration = require('../config');
-const AccessControl = require('./assess_control');
+const AccessControl = require('./access_control');
 const User = require('../models/user');
 const UserRole = require('../models/user_role');
 const OnError = require('./on_error');
@@ -12,12 +12,20 @@ module.exports = express.Router()
     // Create User (Sign Up)
     .post('/', (req, res, next) => {
         co(function* () {
-            let newUser = new User({
+            let newUser = {
                 username: (req.body.username || '').trim(),
                 email: (req.body.email || '').trim(),
                 password: req.body.password || ''
-            });
-            newUser = yield newUser.save();
+            };
+            if (req.body.admin) {
+                let admin = yield User.findOne({ admin: true }).exec();
+                if (admin) {
+                    res.json({ code: 7 });
+                } else {
+                    newUser.admin = true;
+                }
+            }
+            newUser = yield new User(newUser).save();
             res.json({ code: 0 });
         }).catch(OnError(res));
     })
@@ -25,7 +33,7 @@ module.exports = express.Router()
     .post('/sign-in', function (req, res, next) {
         co(function* () {
             let username = (req.body.username || '').trim();
-            let password = req.body.password;
+            let password = req.body.password || '';
             let user = yield User.findOne({ username }).exec();
             if (user) {
                 if (configuration.system.passwordHash.verify(password, user.password)) {
@@ -39,7 +47,7 @@ module.exports = express.Router()
                 }
             } else {
                 res.json({
-                    code: 5,
+                    code: 11,
                     msg: 'user not found'
                 });
             }

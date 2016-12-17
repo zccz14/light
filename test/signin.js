@@ -44,7 +44,7 @@ describe('User Sign In', function() {
                 .set('Accept', 'application/json')
                 .send({ email: nonExistEmail, password: aUser.password })
                 .expect(200);
-            res1.body.code.should.equal(5);
+            res1.body.code.should.equal(11);
             done();
         }).catch(done);
     });
@@ -53,7 +53,7 @@ describe('User Sign In', function() {
             var res1 = yield request(app)
                 .post('/user/sign-in')
                 .set('Accept', 'application/json')
-                .send({ email: aUser.email, password: wrongPassword })
+                .send({ username: aUser.username, password: wrongPassword })
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
@@ -66,7 +66,7 @@ describe('User Sign In', function() {
                 .set('Accept', 'application/json')
                 .send({ password: wrongPassword })
                 .expect(200);
-            res1.body.code.should.equal(5);
+            res1.body.code.should.equal(11);
             done();
         }).catch(done);
     });
@@ -75,7 +75,7 @@ describe('User Sign In', function() {
             var res1 = yield request(app)
                 .post('/user/sign-in')
                 .set('Accept', 'application/json')
-                .send({ email: aUser.email })
+                .send({ username: aUser.username })
                 .expect(200);
             res1.body.code.should.equal(5);
             done();
@@ -88,7 +88,7 @@ describe('User Sign In', function() {
                 .set('Accept', 'application/json')
                 .send({ email: illegalEmail, password: aUser.password })
                 .expect(200);
-            res1.body.code.should.equal(5);
+            res1.body.code.should.equal(11);
             done();
         }).catch(done);
     });

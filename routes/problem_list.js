@@ -3,8 +3,10 @@ const express = require('express');
 const AccessControl = require('./assess_control');
 const User = require('../models/user');
 const ProblemList = require('../models/problem_list');
+const Problem = require('../models/problem')
 const OnError = require('./on_error');
 const mongoose = require('mongoose');
+const UserRole = require('../models/user_role')
 const ObjectId = mongoose.Types.ObjectId;
 
 module.exports = express.Router()
@@ -17,9 +19,11 @@ module.exports = express.Router()
   .post('/', function (req, res, next) {
     co(function* () {
       var user = req.session.user;
+      let thisOwnerId = req.body.ownerId;
       let name = (req.body.listName || '').trim();
       var newProblemList = new ProblemList({
-        listName,
+        ownerId: thisOwnerId,
+        listName: name,
         problems: null
       });
       newProblemList = yield newProblemList.save();
@@ -32,11 +36,11 @@ module.exports = express.Router()
   })
 
   //find a problemlist
-  .get('/:problemListName', function (req, res, next) {
+  .get('/:_id', function (req, res, next) {
     co(function* () {
-      let thisProblemListName = req.params.problemListName;
+      let thisProblemListId = req.params.problemListId;
       //let problemList = 
-      ProblemList.find(({ listName: thisProblemListName }), function (err, docs) {
+      ProblemList.find(({ problemListId: new Object(thisProblemListId) }), function (err, docs) {
         if (err) {
           res.json({
             code: 11,
@@ -55,26 +59,56 @@ module.exports = express.Router()
 
 
 
-  //update a problemlist
+  //update a problemlist======================
   //add a problem into a problemlist
-  .put('/:problemListName', function (req, res, next) {
+  .put(':/_id', AccessControl.signIn)
+  .put('/:_id', function (req, res, next) {
     co(function* () {
-      let thisProblemName = (req.body.problemName).trim();
-      let thisProblemListName = req.params.problemListName;
-      problemList = yield ProblemList.update(
-
-        {
-          listName: thisProblemListName
-        },
-        {
-          $push: {
-            Problem: [{
-              problemName: thisProblemName
-              //insert promlem content here
-            }]
+      let user = req.session.user;
+      let thisProblemTitle = req.body.problemTitle;
+      let thisProblemDescription = req.body.problemDescription;
+      let thisProblemListId = req.params._id;
+      var isOwner = flase;
+      let thisProblemList = yield ProblemList.findById(new ObjectId(thisProblemListId).exec())
+      if (User._id === thisProblemList.ownerId) {
+        isOwner = true;
+      }
+      let judgeGroup = yield User.find({
+        '_id': new ObjectId(user._id),
+        'roles.$.role': 'owner',
+        'roles.$.group': thisProblemList._id
+      })
+      if (judgeGroup) {
+        isOwner = true;
+      }
+      if (isOwner) {
+        problemList = yield ProblemList.update(
+          {
+            "_id": new Object(thisProblemListId)
+          },
+          {
+            $push: {
+              Problem: [{
+                title: thisProblemTitle,
+                description: thisProblemDescription
+                //insert promlem content here
+              }]
+            }
           }
-        }
-      )
-      res.json(problemList);
+        )
+        res.json({
+          code: 0,
+          problemList
+        });
+      } else {
+        res.json({
+          code: 7,
+          msg: "Authentication denied"
+        })
+      }
+
     }).catch(OnError(res));
   })
+  //delete a problem from a problemlist
+
+  //
