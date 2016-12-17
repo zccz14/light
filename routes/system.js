@@ -20,10 +20,14 @@ module.exports = express.Router()
                 return;
             }
             let admins = yield Administrator.find({}).exec();
-            let newAdmin = new Administrator({
-                userId: new ObjectId(userId)
-            });
-            newAdmin = yield newAdmin.save();
-            res.json({ code: 0 });
+            if (admins.length === 0 || admins.every(v => v.userId === user._id)) {
+                let newAdmin = new Administrator({
+                    userId: new ObjectId(userId)
+                });
+                newAdmin = yield newAdmin.save();
+                res.json({ code: 0 });
+            } else {
+                res.json({ code: 7 });
+            }
         }).catch(OnError(res));
     })
