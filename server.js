@@ -25,6 +25,7 @@ server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
 server.use('/problem_list',require('./routes/problem_list'))
 server.use('/problem', require('./routes/problem'));
+server.use('/system', require('./routes/system'));
 
 // 导出服务器
 module.exports = server;
