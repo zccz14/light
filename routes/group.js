@@ -61,17 +61,25 @@ module.exports = express.Router()
             let existMemberIds = new Set();
             theGroup.members.forEach(v => existMemberIds.add(v.userId));
             members = members.filter(v => !existMemberIds.has(v));
-            yield members.map(v => User.findByIdAndUpdate(v, {
+            let WResults = yield members.map(v => User.findByIdAndUpdate(v, {
                 $push: {
                     InvitedTo: groupId
                 }
             }).exec());
+            let result = WResults.map((v, i) => {
+                return {
+                    userId: members[i],
+                    message: v.nMatched === 1 ? 'sent' : 'not found'
+                };
+            });
             res.json({
                 code: 0,
-                members
+                result
             });
         }).catch(OnError(res));
     })
+
+    // accept some invitations
     .post('/:_id/accept', AccessControl.signIn)
     .post('/:_id/accept', function (req, res, next) {
         co(function* () {
