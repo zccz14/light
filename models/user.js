@@ -34,7 +34,8 @@ var UserSchema = new Schema({
     admin: {
         type: Boolean,
         default: false
-    }
+    },
+    InvitedTo: [Schema.Types.ObjectId]
 });
 
 UserSchema.post('validate', function (user) {
