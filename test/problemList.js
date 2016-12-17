@@ -15,6 +15,9 @@ describe('update problemlist', function () {
   var illegalEmail = 'zccz14';
   var nonExistEmail = 'zccz1444@function-x.org';
   var wrongPassword = 'world333';
+  var groupName = "xjtuse";
+  var newGroupName = 'xjtuse42';
+  var groupId = "";
   var thisListName = "BUZUOBUSHIZHONGGUOREN";
   var newListName = 'goodList';
   var problemListId;
@@ -37,11 +40,24 @@ describe('update problemlist', function () {
         .expect(200);
       thisUser = req.session.user;
       res2.body.code.should.equal(0);
+      var res3 = yield request(app)
+        .post('/group')
+        .set('Accept', 'application/json')
+        .set('Cookie', cookie)
+        .send({ name: groupName })
+        .expect(200);
+      res3.body.code.should.equal(0);
+      groupId = res3.body.group._id;
       done();
     }).catch(done);
   });
 
 
+  it('create a problem list owned by group',function(done){
+
+  });
+
+  it('create a problem list owned by user')
 
   it('add a problem to the list', function (done) {
     co(function* () {
@@ -74,6 +90,7 @@ describe('update problemlist', function () {
   after('drop users after tests', function (done) {
     co(function* () {
       yield User.remove({}).exec();
+      yield Group.remove({}).exec();
       yield ProblemList.remove({}).exec();
       done();
     })
