@@ -4,13 +4,11 @@ const Schema = mongoose.Schema;
 var ProblemListSchema = new Schema({
   ownerId: {
     type: Schema.Types.ObjectId,
-    required: true,
-    unique: true
+    required: true
   },
   name: {
     type: String,
-    required: true,
-    unique: true
+    required: true  
   },
   problems: [Schema.Types.ObjectId],
   public: {
