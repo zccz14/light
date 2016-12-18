@@ -12,21 +12,23 @@ module.exports = express.Router()
     // Create User (Sign Up)
     .post('/', (req, res, next) => {
         co(function* () {
-            let newUser = {
+            let user = {
                 username: (req.body.username || '').trim(),
                 email: (req.body.email || '').trim(),
                 password: req.body.password || ''
             };
-            if (req.body.admin) {
+            if (req.body.admin) { // [Deprecated] ADMIN
+                console.log(`[Deprecated] post to 'system/administrator' instead.`);
                 let admin = yield User.findOne({ admin: true }).exec();
                 if (admin) {
                     res.json({ code: 7 });
                 } else {
-                    newUser.admin = true;
+                    user.admin = true;
                 }
             }
-            newUser = yield new User(newUser).save();
-            res.json({ code: 0 });
+            user = yield new User(user).save();
+            user.password = undefined; // hide password
+            res.json({ code: 0, user });
         }).catch(OnError(res));
     })
     // Sign In
@@ -37,8 +39,9 @@ module.exports = express.Router()
             let user = yield User.findOne({ username }).exec();
             if (user) {
                 if (configuration.system.passwordHash.verify(password, user.password)) {
+                    user.password = undefined;
                     req.session.user = user;
-                    res.json({ code: 0 });
+                    res.json({ code: 0, user });
                 } else {
                     res.json({
                         code: 5,
@@ -89,16 +92,18 @@ module.exports = express.Router()
                 }
             ).exec();
             req.session.user = user;
-            res.json({ code: 0 });
+            res.json({ code: 0, user });
         }).catch(OnError(res));
     })
     // query user
-    .get('/', function(req, res, next){
-        co(function *() {
-            let users = yield User.find(req.query).exec();
-            res.json({
-                code: 0,
-                users
-            });
+    .get('/', function (req, res, next) {
+        co(function* () {
+            let limit = req.query.limit || 15;
+            let skip = req.query.skip || 0;
+            delete req.query.limit;
+            delete req.query.skip;
+            delete req.query.password;
+            let users = yield User.find(req.query, { password: 0 }).limit(limit).skip(skip).exec();
+            res.json({ code: 0, users });
         }).catch(OnError(res));
     })
