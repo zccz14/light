@@ -20,7 +20,6 @@ server.use(bodyParser.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(session(configuration.system.session));
 // 注册路由
-server.use(express.static(configuration.system.assets.path));
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
 server.use('/problem_list',require('./routes/problem_list'))
