@@ -4,7 +4,7 @@ const AccessControl = require('./access_control');
 const User = require('../models/user');
 const ProblemList = require('../models/problem_list');
 const Problem = require('../models/problem')
-const OnError = require('./on_error');
+const OnError = require('../lib/on_error');
 const mongoose = require('mongoose');
 const UserRole = require('../models/user_role')
 const Group = require('../models/group')
@@ -47,12 +47,12 @@ module.exports = express.Router()
     }).catch(OnError(res));
   })
   // find available problemlist
-  .get('/', function(req, res, next){
-    co(function*(){
+  .get('/', function (req, res, next) {
+    co(function* () {
       // all public problem lists with query
       let $query = Object.assign({
         $or: [
-          {public: true}
+          { public: true }
         ]
       }, req.query);
       // if user has signed in
@@ -69,7 +69,7 @@ module.exports = express.Router()
         });
       }
       let problemLists = yield ProblemList.find($query).exec();
-      res.json({code: 0, problemLists});
+      res.json({ code: 0, problemLists });
     }).catch(OnError(res));
   })
 
