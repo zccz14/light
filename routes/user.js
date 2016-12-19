@@ -98,8 +98,8 @@ module.exports = express.Router()
     // query user
     .get('/', function (req, res, next) {
         co(function* () {
-            let limit = req.query.limit || 15;
-            let skip = req.query.skip || 0;
+            let limit = parseInt(req.query.limit) || 15;
+            let skip = parseInt(req.query.skip) || 0;
             delete req.query.limit;
             delete req.query.skip;
             delete req.query.password;
