@@ -19,6 +19,14 @@ server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
 server.use(cookieParser());
 server.use(session(configuration.system.session));
+
+server.use(function(req, res, next) {
+    res.header('Access-Control-Allow-Origin', '*');
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+
+    next();
+})
+
 // 注册路由
 server.use(express.static(configuration.system.assets.path));
 server.use('/user', require('./routes/user'));
