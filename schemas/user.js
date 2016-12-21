@@ -4,7 +4,6 @@ const IsEmail = require('isemail');
 const config = require('../config');
 
 const UserRoleSchema = require('./user_role');
-const ProblemSchema = require('./problem');
 
 const UserSchema = new Schema({
     username: {
@@ -38,7 +37,7 @@ const UserSchema = new Schema({
         default: false
     },
     InvitedTo: [Schema.Types.ObjectId],
-    problems: [ProblemSchema]
+    problems: [Schema.Types.ObjectId]
 });
 
 module.exports = UserSchema;
