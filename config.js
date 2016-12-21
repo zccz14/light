@@ -10,7 +10,7 @@ const configuration = {
             minimumNumeral: 1
         }
     },
-    frontEndURL: "http://function-x.org", // Allow API ref
+    originFrontEnd: "https://function-x.github.io/", // Allow API ref
     system: {
         assets: {
             path: require('path').join(__dirname, 'assets')
