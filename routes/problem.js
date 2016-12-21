@@ -1,6 +1,6 @@
 module.exports = require('express').Router()
     // Admin API
-    .use('/', require('../lib/require_administrator'))
+    // .use('/', require('../lib/require_administrator'))
     // create a problem
     .post('/', require('../lib/problem_create'))
     // get problem list

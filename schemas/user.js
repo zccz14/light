@@ -41,9 +41,4 @@ const UserSchema = new Schema({
     problems: [ProblemSchema]
 });
 
-UserSchema.post('validate', function (user) {
-    // encryptoed after validation
-    user.password = config.system.passwordHash.store(user.password);
-});
-
 module.exports = UserSchema;
