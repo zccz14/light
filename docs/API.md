@@ -1,116 +1,29 @@
-# Full API Document
-## Error Code
+# API 文档概览
+## 基本属性
 
-0 for OK, 1 for BUG(if you get a BUG, report it to us please), and others are all **primes**.
+每个 API 分别对 请求/响应 进行说明。
 
-[See Also](../errors/index.js)
+请求中主要包含查询 (query) 、参数 (params) 与正文 (body) 。 
 
-## User API
-### User Sign Up
-POST `/user` and send:
+响应中主要包含正文 (body) 。
 
-```js
-{
-    "username": String, // passport
-    "email": String,
-    "password": String
-}
-```
-Actually, `username` and `email` will be trimmed, but `password` won't.
+## 错误码
 
-For example, if you post:
+**任何** API 的**响应正文**中都应至少包含一个 `code` 域，其值与含义如下表所示：
 
-```json
-{
-    "username": "  admin  ",
-    "email": " hello@function-x.org",
-    "password": " a123456 "
-}
-```
-
-The API Server will distinguish it as:
-
-```json
-{
-    "username": "admin",
-    "email": "hello@function-x.org",
-    "password": " a123456 "
-}
-```
-
-possible error code:
-
-+ 2: validation failed
-+ 3: duplicated
-
-### User Sign In
-POST `/user/sign-in` and send:
-
-```js
-{
-    "username": String,
-    "password": String
-}
-```
-
-possible error code:
-
-+ 5: wrong passport
-+ 11: user not found
-
-### User Sign Out
-GET `/user/sign-out`
-
-### User Profile
-GET `/user/profile`
-
-Fetch the current user information.
-
-response json:
-
-```js
-{
-    "code": 0,
-    "body": UserProfile
-}
-```
-
-possible error code:
-
-+ 7: authentication failed
-
-### User Update role name
-PUT `/user/role/:_id` and send:
-
-The param `_id` is a BSON Object ID. It's the ID of UserRole.
-
-> You can get user profile to get the ID.
-
-```js
-{
-    "name": ObjectId
-}
-```
-
-posiible error code:
-
-+ 2: user role name is illegal
-+ 3: user role name duplicated
-+ 7: not login yet
-+ 11: user role not found
+| 代码   | 说明                   | 备注               |
+| ---- | -------------------- | ---------------- |
+| 0    | OK                   | 操作成功。            |
+| 1    | BUG                  | BUG 出现，请提 Issue。 |
+| 2    | Validation Failed    | 非法的数据、缺少必填项等     |
+| 3    | Data Duplicated      | 唯一的名字重复等         |
+| 5    | Wrong Passport       | 用户名或密码错误         |
+| 7    | Permission Denied    | 权限不足             |
+| 11   | Resource Unavailable | 资源不可用            |
 
 
-###Problem list add
-POST `/problem_list/`
 
+## Next
 
-###Problem list find 
-GET `/problem_list/:problemListId`
-
-+  11 problem list not found
-
-
-###Problem list Update
-PUT `/problem_list/:problemListId`
-
-+  7 Authentication denied
++ [用户 API](api/user.md)
++ [User Retrieve - 用户检索](api/user_retrieve.md)

@@ -29,7 +29,6 @@ server.use(function(req, res, next) {
 })
 
 // 注册路由
-server.use(express.static(configuration.system.assets.path));
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
 server.use('/problem_list',require('./routes/problem_list'))
