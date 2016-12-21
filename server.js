@@ -16,7 +16,7 @@ var server = express();
 // 注册中间件
 // ALlow Origin
 server.use(function (req, res, next) {
-    res.header('Access-Control-Allow-Origin', configuration.frontEndURL);
+    res.header('Access-Control-Allow-Origin', configuration.originFrontEnd);
     res.header('Access-Control-Allow-Headers', 'Content-Type');
     res.header('Access-Control-Allow-Credentials', 'true');
     next();
