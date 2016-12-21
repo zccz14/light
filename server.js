@@ -13,7 +13,14 @@ const configuration = require('./config');
 mongoose.connect(configuration.system.mongodb.URI);
 
 var server = express();
-// 注册
+// 注册中间件
+// ALlow Origin
+server.use(function (req, res, next) {
+    res.header('Access-Control-Allow-Origin', configuration.frontEndURL);
+    res.header('Access-Control-Allow-Headers', 'Content-Type');
+    res.header('Access-Control-Allow-Credentials', 'true');
+    next();
+});
 server.use(morgan(configuration.system.morgan.format, configuration.system.morgan.options));
 server.use(bodyParser.json());
 server.use(bodyParser.urlencoded({ extended: false }));
@@ -22,7 +29,7 @@ server.use(session(configuration.system.session));
 // 注册路由
 server.use('/user', require('./routes/user'));
 server.use('/group', require('./routes/group'));
-server.use('/problem_list',require('./routes/problem_list'))
+server.use('/problem_list', require('./routes/problem_list'))
 server.use('/problem', require('./routes/problem'));
 server.use('/system', require('./routes/system'));
 
