@@ -61,6 +61,7 @@ module.exports = function testUserCreate() {
                     username: mustLegalName
                 })
                 .expect(200)
+            console.log(res1.body, res2.body);
             res2.body.code.should.equal(3);
             done();
         }).catch(done);
