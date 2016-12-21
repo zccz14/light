@@ -2,11 +2,13 @@ const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
-const app = require('../server');
-const config = require('../config');
-const User = require('../models/user');
+const app = require('../../server');
+const config = require('../../config');
 
-describe('User Sign Up', function () {
+
+module.exports = function testUserCreate() {
+    before(require('./system_install'));
+    after(require('./system_uninstall'));
     var aUserEmail = 'hello@function-x.org';
     var aUserName = 'zccz14';
     var aUser = {
@@ -48,7 +50,7 @@ describe('User Sign Up', function () {
             var res1 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
-                .send ( aUser)
+                .send(aUser)
                 .expect(200)
             var res2 = yield request(app)
                 .post('/user')
@@ -68,7 +70,7 @@ describe('User Sign Up', function () {
             var res1 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
-                .send ( aUser)
+                .send(aUser)
                 .expect(200)
             var res2 = yield request(app)
                 .post('/user')
@@ -190,7 +192,7 @@ describe('User Sign Up', function () {
             var res1 = yield request(app)
                 .post('/user')
                 .set('Accept', 'application/json')
-                .send ( aUser)
+                .send(aUser)
                 .expect(200)
             var res2 = yield request(app)
                 .post('/user')
@@ -235,7 +237,4 @@ describe('User Sign Up', function () {
             done();
         }).catch(done);
     });
-    afterEach('drop all users after tests', function(done) {
-        User.remove({}, done);
-    });
-});
+}

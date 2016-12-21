@@ -2,11 +2,11 @@ const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
-const app = require('../server');
-const config = require('../config');
-const User = require('../models/user');
+const app = require('../../server');
 
-describe('profile', function () {
+function testUserProfileRetrieve() {
+    before(require('./system_install'));
+    after(require('./system_uninstall'));
     var aUser = {
         email: 'zccz14@function-x.org',
         password: 'world233',
@@ -56,8 +56,6 @@ describe('profile', function () {
             done();
         }).catch(done);
     });
-    after('drop users after tests', function (done) {
-        User.remove({}, done);
-    });
-});
+}
 
+module.exports = testUserProfileRetrieve;

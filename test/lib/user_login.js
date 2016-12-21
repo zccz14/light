@@ -2,10 +2,11 @@ const co = require('co');
 const should = require('chai').should();
 const expect = require('chai').expect;
 const request = require('supertest');
-const app = require('../server');
-const User = require('../models/user');
+const app = require('../../server');
 
-describe('User Sign In', function() {
+module.exports = function testUserLogin() {
+    before(require('./system_install'));
+    after(require('./system_uninstall'));
     var aUser = {
         email: 'zccz14@function-x.org',
         password: 'world233',
@@ -15,7 +16,7 @@ describe('User Sign In', function() {
     var nonExistEmail = 'zccz1444@function-x.org';
     var wrongPassword = 'world333';
 
-    before('create a user before sign in', function(done) {
+    before('create a user before sign in', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user')
@@ -26,7 +27,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('correct sign in', function(done) {
+    it('correct sign in', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -37,7 +38,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('a nonexist user', function(done) {
+    it('a nonexist user', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -48,7 +49,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('wrong password', function(done) {
+    it('wrong password', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -59,7 +60,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('empty email', function(done) {
+    it('empty email', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -70,7 +71,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('empty password', function(done) {
+    it('empty password', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -81,7 +82,7 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    it('illegal email', function(done) {
+    it('illegal email', function (done) {
         co(function* () {
             var res1 = yield request(app)
                 .post('/user/sign-in')
@@ -92,7 +93,4 @@ describe('User Sign In', function() {
             done();
         }).catch(done);
     });
-    after('drop users after tests', function(done) {
-        User.remove({}, done);
-    });
-});
+}
