@@ -2,7 +2,9 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const IsEmail = require('isemail');
 const config = require('../config');
+
 const UserRoleSchema = require('./user_role');
+const ProblemSchema = require('./problem');
 
 const UserSchema = new Schema({
     username: {
@@ -35,7 +37,8 @@ const UserSchema = new Schema({
         type: Boolean,
         default: false
     },
-    InvitedTo: [Schema.Types.ObjectId]
+    InvitedTo: [Schema.Types.ObjectId],
+    problems: [ProblemSchema]
 });
 
 UserSchema.post('validate', function (user) {

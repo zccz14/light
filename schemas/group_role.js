@@ -1,20 +1,21 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserRoleSchema = new Schema({
+const GroupRoleSchema = new Schema({
+    userId: {
+        type: Schema.Types.ObjectId,
+        required: true,
+    },
     name: {
         type: String,
         required: true,
     },
-    group: {
-        type: Schema.Types.ObjectId,
-        required: true
-    },
     role: {
         type: String,
+        required: true,
         enum: ['owner', 'member'],
-        required: true
+        default: 'member'
     }
 });
 
-module.exports = UserRoleSchema;
+module.exports = GroupRoleSchema;
