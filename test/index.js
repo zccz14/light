@@ -10,6 +10,7 @@ describe('[OrangeJuice]', function() {
     afterEach(() => require('./helpers/system_uninstall')());
     describe('[User Create]', require('./specs/user_create'));
     describe('[User Login]', require('./specs/user_login'));
+    describe('[User Logout]', require('./specs/user_logout'));
   });
   // describe('[User Login]', testUserLogin);
   // describe('[User Logout]', require('./lib/user_logout'));
