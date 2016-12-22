@@ -19,6 +19,7 @@ function UserCreateSpec() {
             yield UserCreateHelper(tConfig.theUser);
             let res = yield UserCreateHelper(tConfig.theUser);
             res.body.code.should.equal(3);
+            done();
         }).catch(done);
     });
 }

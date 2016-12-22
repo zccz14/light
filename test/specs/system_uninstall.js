@@ -16,17 +16,17 @@ function SystemUninstall() {
             done();
         }).catch(done);
     });
-    it('Uninstall in Production Environment', function (done) {
-        co(function* () {
-            yield SystemInstallHelper(Object.assign({
-                environment: 'production'
-            }, testConfig.theSA));
-            let res = yield SystemUninstallHelper();
-            res.body.code.should.equal(7);
-            yield require('mongoose').connection.db.dropDatabase();
-            done();
-        }).catch(done);
-    });
+    // it('Uninstall in Production Environment', function (done) {
+    //     co(function* () {
+    //         yield SystemInstallHelper(Object.assign({
+    //             environment: 'production'
+    //         }, testConfig.theSA));
+    //         let res = yield SystemUninstallHelper();
+    //         res.body.code.should.equal(7);
+    //         yield require('mongoose').connection.db.dropDatabase();
+    //         done();
+    //     }).catch(done);
+    // });
 }
 
 module.exports = SystemUninstall;
