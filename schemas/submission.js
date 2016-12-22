@@ -7,7 +7,8 @@ const SubmissionSchema = new Schema({
   problemId: Schema.Types.ObjectId,
   problemListId: Schema.Types.ObjectId,
   type: {type: String, default: 'plain'},
-  body: Schema.Types.Buffer
+  body: Schema.Types.Buffer,
+  sentence: String
 });
 
 module.exports = SubmissionSchema;
