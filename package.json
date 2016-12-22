@@ -7,7 +7,8 @@
     "test": "mocha",
     "start": "node index.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha",
-    "doc": "jsdoc -c conf.json"
+    "doc": "jsdoc -c conf.json",
+    "apidoc": "apidoc -i lib -o docs/api"
   },
   "repository": {
     "type": "git",
@@ -36,8 +37,10 @@
     "superagent": "^3.3.1"
   },
   "devDependencies": {
+    "apidoc": "^0.16.1",
     "chai": "^3.5.0",
     "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.3",
     "mocha": "^3.1.2",
     "supertest": "^2.0.1"
   }
