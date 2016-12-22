@@ -1,7 +1,8 @@
 {
     "source": {
         "include": [
-            "."
+            ".",
+            "./readme.md"
         ],
         "exclude": [
             "node_modules"

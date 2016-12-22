@@ -99,7 +99,3 @@ $ forever start index.js
 + 公开的题单
 
 被判定为用户私有的题单将存放在用户文档中，用户组私有的题单将存放在用户组文档中，而只有公开的题单才会存放在 `ProblemList` 集合中。
-
-***
-## API 文档
-[API](docs/API.md)
