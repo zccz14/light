@@ -17,7 +17,13 @@ An opensource API Server of Online Judge.
 
 2. 打开 `config.js` 进行必要的配置。
 
-3. 启动服务器
+3. 安装依赖
+
+```bash
+$ npm install
+```
+
+4. 启动服务器
 
 ```bash
 $ npm start
@@ -29,7 +35,7 @@ $ npm start
 $ forever start index.js
 ```
 
-4. 向 `/system` 发送 POST 请求来进行系统安装：
+5. 向 `/system` 发送 POST 请求来进行系统安装：
 
 ```js
 {
@@ -48,7 +54,18 @@ $ forever start index.js
 
 > 这个 API 是一次性的，成功使用过后产生的副作用可以保证此 API 无法被第二次调用。
 
-***
+## 文档
+
+构建 HTML 格式的文档
+
+```bash
+$ npm run docs
+```
+
++ JSDOC: `/docs/index.html`
++ APIDOC: `/docs/api/index.html`
+
+> 代码覆盖测试通过 `npm run cover` 来生成，要求先满足所有运行条件，位于 `/docs/coverage/lcov_rep/index.html`
 
 ## 用户系统
 
