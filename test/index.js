@@ -9,6 +9,7 @@ describe('[OrangeJuice]', function() {
     beforeEach(() => require('./helpers/system_install')(testConfig.theSA));
     afterEach(() => require('./helpers/system_uninstall')());
     describe('[User Create]', require('./specs/user_create'));
+    describe('[User Login]', require('./specs/user_login'));
   });
   // describe('[User Login]', testUserLogin);
   // describe('[User Logout]', require('./lib/user_logout'));
