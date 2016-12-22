@@ -1,7 +1,6 @@
 {
-    "name": "example",
+    "name": "Orange Juice API",
     "version": "0.1.0",
-    "description": "apiDoc basic example",
-    "title": "Custom apiDoc browser title",
-    "url": "https://api.github.com/v1"
+    "description": "Orange Juice Full API Documentation",
+    "title": "Orange Juice API"
 }
