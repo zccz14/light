@@ -8,7 +8,7 @@ module.exports = require('express')
 
                      // find a problemlist
                      .get('/:_id', require('../lib/problem_list_detail'))
-                     .post('/:_id/problem', require('../lib/problem_list_problem_create'))
+                     .post('/:problemListId/problem', require('../lib/problem_list_problem_create'))
                      // delete an existing problemlist
 
                      // update a problemlist======================
