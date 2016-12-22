@@ -42,7 +42,8 @@ function testUserGroupInvite() {
                     .set('Accept', 'application/json')
                     .set('cookie', cookie)
                     .send({name: aGroupName})
-                    .expect(200) res.body.code.should.equal(0);
+                    .expect(200);
+      res.body.code.should.equal(0);
       done();
     }).catch(done);
   });
@@ -54,7 +55,8 @@ function testUserGroupInvite() {
                     .set('cookie', cookie)
                     .set('Accept', 'application/json')
                     .send({name: anotherLegalName})
-                    .expect(200) res.body.code.should.equal(0);
+                    .expect(200);
+      res.body.code.should.equal(0);
       done();
     }).catch(done);
   });
