@@ -6,6 +6,7 @@ const SubmissionSchema = new Schema({
   judgerId: Schema.Types.ObjectId,
   problemId: Schema.Types.ObjectId,
   problemListId: Schema.Types.ObjectId,
+  type: {type: String, default: 'plain'},
   body: Schema.Types.Buffer
 });
 
