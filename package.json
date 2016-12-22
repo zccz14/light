@@ -4,7 +4,7 @@
   "description": "An opensource API Server of Online Judge",
   "main": "index.js",
   "scripts": {
-    "test": "mocha && ava",
+    "test": "mocha",
     "start": "node index.js",
     "cover": "istanbul cover node_modules/mocha/bin/_mocha"
   },
@@ -35,14 +35,9 @@
     "superagent": "^3.3.1"
   },
   "devDependencies": {
-    "ava": "^0.17.0",
     "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
     "mocha": "^3.1.2",
     "supertest": "^2.0.1"
-  },
-  "ava": {
-    "files": [
-      "test/ava/index.js"
-    ]
   }
 }
