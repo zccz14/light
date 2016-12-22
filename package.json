@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha",
     "start": "node index.js",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha"
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha",
+    "doc": "jsdoc -c conf.json"
   },
   "repository": {
     "type": "git",

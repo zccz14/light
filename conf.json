@@ -1,5 +1,8 @@
 {
     "source": {
+        "include": [
+            "."
+        ],
         "exclude": [
             "node_modules"
         ]
@@ -7,6 +10,7 @@
     "opts": {
         "encoding": "utf8",
         "destination": "./docs/",
-        "recurse": true
+        "recurse": true,
+        "verbose": true
     }
 }
