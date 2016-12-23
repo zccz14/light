@@ -4,8 +4,12 @@
   "description": "An opensource API Server of Online Judge",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
-    "start": "node index.js"
+    "test": "mocha && npm run cover && npm run docs",
+    "start": "node index.js",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha",
+    "jsdoc": "jsdoc -c conf.json",
+    "apidoc": "apidoc -i lib -o docs/api",
+    "docs": "npm run jsdoc && npm run apidoc"
   },
   "repository": {
     "type": "git",
@@ -34,7 +38,10 @@
     "superagent": "^3.3.1"
   },
   "devDependencies": {
+    "apidoc": "^0.16.1",
     "chai": "^3.5.0",
+    "istanbul": "^0.4.5",
+    "jsdoc": "^3.4.3",
     "mocha": "^3.1.2",
     "supertest": "^2.0.1"
   }

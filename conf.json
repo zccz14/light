@@ -1,0 +1,18 @@
+{
+    "source": {
+        "include": [
+            ".",
+            "./readme.md"
+        ],
+        "exclude": [
+            "node_modules",
+            "docs"
+        ]
+    },
+    "opts": {
+        "encoding": "utf8",
+        "destination": "./docs/",
+        "recurse": true,
+        "verbose": true
+    }
+}
