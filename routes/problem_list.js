@@ -7,7 +7,7 @@ module.exports = require('express')
                      .get('/', require('../lib/problem_list_retrieve'))
 
                      // find a problemlist
-                     .get('/:_id', require('../lib/problem_list_detail'))
+                     .get('/:problemListId', require('../lib/problem_list_detail'))
                      .post('/:problemListId/problem', require('../lib/problem_list_problem_create'))
                      // delete an existing problemlist
 
