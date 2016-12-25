@@ -26,7 +26,8 @@ const configuration = {
   },
   originFrontEnds: [
     "https://function-x.github.io",  // Allow API ref
-    "http://127.0.0.1", // Temporarily Local Debugging
+    "http://127.0.0.1:8080", // Temporarily Local Debugging
+    "http://localhost:8080", // Temporarily Local Debugging
   ],
   system: {
     assets: {path: require('path').join(__dirname, 'assets')},
