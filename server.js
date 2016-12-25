@@ -17,10 +17,8 @@ var server = express();
 // 注册中间件
 // ALlow Origin
 server.use(cors({
-  origin: function(origin, callback){
-    var originIsWhitelisted = configuration.originFrontEnds.indexOf(origin) !== -1;
-    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
-  }
+  origin: configuration.originFrontEnds,
+  credentials: true
 }))
 
 server.use(morgan(configuration.system.morgan.format,
