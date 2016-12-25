@@ -8,3 +8,5 @@ module.exports = require('express')
                      .put('/:problemId', require('../lib/problem_update'))
                      // delete a problem
                      .delete('/:problemId', require('../lib/problem_delete'))
+                     .get('/:problemId', require('../lib/require_login'))
+                     .get('/:problemId', require('../lib/problem_detail'))
