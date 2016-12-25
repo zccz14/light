@@ -24,7 +24,10 @@ const configuration = {
   user: {
     password: {minimumLength: 7, minimumLowercaseLetter: 1, minimumNumeral: 1}
   },
-  originFrontEnd: "https://function-x.github.io/",  // Allow API ref
+  originFrontEnds: [
+    "https://function-x.github.io",  // Allow API ref
+    "http://127.0.0.1", // Temporarily Local Debugging
+  ],
   system: {
     assets: {path: require('path').join(__dirname, 'assets')},
     mongodb: {

@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const session = require('express-session');
 const path = require('path');
 const mongoose = require('mongoose');
+const cors = require('cors');
 mongoose.Promise = Promise;
 // 引入配置
 const configuration = require('./config');
@@ -15,12 +16,13 @@ mongoose.connect(configuration.system.mongodb.URI);
 var server = express();
 // 注册中间件
 // ALlow Origin
-server.use(function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', configuration.originFrontEnd);
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  next();
-});
+server.use(cors({
+  origin: function(origin, callback){
+    var originIsWhitelisted = configuration.originFrontEnds.indexOf(origin) !== -1;
+    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+  }
+}))
+
 server.use(morgan(configuration.system.morgan.format,
                   configuration.system.morgan.options));
 server.use(bodyParser.json());
