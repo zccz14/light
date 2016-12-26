@@ -1,12 +1,19 @@
-module.exports = require('express')
-                     .Router()
-                     // create a problem
-                     .post('/', require('../lib/problem_create'))
-                     // get problem list
-                     .get('/', require('../lib/problem_retrieve'))
-                     // update a problem
-                     .put('/:problemId', require('../lib/problem_update'))
-                     // delete a problem
-                     .delete('/:problemId', require('../lib/problem_delete'))
-                     .get('/:problemId', require('../lib/require_login'))
-                     .get('/:problemId', require('../lib/problem_detail'))
+/**
+ * @module
+ * @author zccz14 <zccz14@outlook.com>
+ */
+const ProblemRouter = require('express').Router();
+
+ProblemRouter.post('/', require('../lib/problem_create'));
+
+ProblemRouter.get('/', require('../lib/problem_retrieve'));
+ProblemRouter.get('/', require('../lib/problem_retrieve'));
+
+ProblemRouter.put('/:problemId', require('../lib/problem_update'));
+
+ProblemRouter.delete('/:problemId', require('../lib/problem_delete'));
+
+ProblemRouter.get('/:problemId', require('../lib/require_login'));
+ProblemRouter.get('/:problemId', require('../lib/problem_detail'));
+
+module.exports = ProblemRouter;

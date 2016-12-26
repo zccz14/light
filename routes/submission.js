@@ -1,7 +1,16 @@
-module.exports =
-    require('express')
-        .Router()
-        .post('/', require('../lib/submission_create'))
-        .get('/', require('../lib/submission_retrieve'))
-        .get('/:submissionId', require('../lib/submission_detail'))
-        .put('/:submissionId', require('../lib/submission_sentence_update'))
+/**
+ * @module
+ * @author zccz14 <zccz14@outlook.com>
+ */
+
+const SubmissionRouter = require('express').Router();
+
+SubmissionRouter.post('/', require('../lib/submission_create'));
+
+SubmissionRouter.get('/', require('../lib/submission_retrieve'));
+
+SubmissionRouter.get('/:submissionId', require('../lib/submission_detail'));
+
+SubmissionRouter.put('/:submissionId', require('../lib/submission_sentence_update'));
+
+module.exports = SubmissionRouter;
