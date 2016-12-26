@@ -48,7 +48,13 @@ const ProblemListSchema = new Schema({
   allowSubmitting: {
     type: Boolean,
     default: true
-  }
+  },
+  /**
+   * @memberof ProblemList~
+   * @desc 提交ID列表
+   * @type {ObjectId[]}
+   */
+  submissions: [Schema.Types.ObjectId]
 });
 
 module.exports = ProblemListSchema;
