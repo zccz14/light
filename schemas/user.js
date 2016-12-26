@@ -1,7 +1,3 @@
-/**
- * @module
- * @author zccz14 <zccz14@outlook.com>
- */
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const IsEmail = require('isemail');
@@ -12,24 +8,31 @@ const UserRoleSchema = require('./user_role');
  */
 const UserSchema = new Schema({
   /**
-   * @member 
+   * @memberof User~
    * @desc 用户名 不可重复
    * @type {String}
    */
-  username: { type: String, required: true, unique: true },
+  username: {
+    type: String,
+    required: true,
+    unique: true
+  },
   /**
-   * @member
+   * @memberof User~
    * @desc 电子邮件 不可重复
    * @type {String}
    */
   email: {
     type: String,
     required: true,
-    validate: { validator: IsEmail.validate, message: 'email illegal' },
+    validate: {
+      validator: IsEmail.validate,
+      message: 'email illegal'
+    },
     unique: true
   },
   /**
-   * @member
+   * @memberof User~
    * @desc 密码 存储时会被加密
    * @type {String}
    */
@@ -47,13 +50,15 @@ const UserSchema = new Schema({
   InvitedTo: [Schema.Types.ObjectId],
   problems: [Schema.Types.ObjectId],
   /**
-   * @member
+   * @memberof User~
    * @desc 用户作为裁判时的代理URL
    * @type {String}
    */
-  judgeProxy: { type: String },
+  judgeProxy: {
+    type: String
+  },
   /**
-   * @member
+   * @memberof User~
    * @desc 用户作为裁判时的尚未判决的问题
    * @type {ObjectId[]}
    */
