@@ -5,6 +5,7 @@
 
 const SubmissionRouter = require('express').Router();
 
+SubmissionRouter.post('/', require('../lib/require_login'));
 SubmissionRouter.post('/', require('../lib/submission_create'));
 
 SubmissionRouter.get('/', require('../lib/submission_retrieve'));
