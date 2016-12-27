@@ -6,7 +6,7 @@ const ProblemRouter = require('express').Router();
 
 ProblemRouter.post('/', require('../lib/problem_create'));
 
-ProblemRouter.get('/', require('../lib/problem_retrieve'));
+ProblemRouter.get('/', require('../lib/require_login'));
 ProblemRouter.get('/', require('../lib/problem_retrieve'));
 
 ProblemRouter.put('/:problemId', require('../lib/problem_update'));
