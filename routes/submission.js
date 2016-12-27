@@ -11,6 +11,6 @@ SubmissionRouter.get('/', require('../lib/submission_retrieve'));
 
 SubmissionRouter.get('/:submissionId', require('../lib/submission_detail'));
 
-SubmissionRouter.put('/:submissionId', require('../lib/submission_sentence_update'));
+SubmissionRouter.put('/:submissionId/sentence', require('../lib/submission_sentence_update'));
 
 module.exports = SubmissionRouter;
