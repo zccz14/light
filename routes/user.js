@@ -6,6 +6,8 @@ const UserRouter = require('express').Router();
 
 UserRouter.get('/', require('../lib/user_retrieve'));
 
+UserRouter.get('/:userId', require('../lib/user_detail'));
+
 UserRouter.post('/', require('../lib/user_create'));
 
 UserRouter.post('/sign-in', require('../lib/user_login'));
