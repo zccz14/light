@@ -18,4 +18,6 @@ UserRouter.get('/profile', require('../lib/user_profile_detail'));
 UserRouter.put('/role/:_id', require('../lib/require_login'));
 UserRouter.put('/role/:_id', require('../lib/user_role_update'));
 
+UserRouter.get('/:userId', require('../lib/user_detail'));
+
 module.exports = UserRouter;
