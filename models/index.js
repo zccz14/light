@@ -5,10 +5,6 @@
  */
 
 /**
- * @member System
- */
-const System = require('./system');
-/**
  * @member User
  */
 const User = require('./user');
@@ -32,6 +28,6 @@ const Submission = require('./submission');
  * @member Model
  */
 
-const Models = {System, User, Problem, ProblemList, Group, Submission};
+const Models = {User, Problem, ProblemList, Group, Submission};
 
 module.exports = Models;
