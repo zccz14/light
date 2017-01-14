@@ -2,10 +2,8 @@ language: node_js
 node_js:
   - "6"
 services: mongodb
-# Handle git submodules yourself
-git:
-    submodules: false
-# Use sed to replace the SSH URL with the public URL, then initialize submodules
-before_install:
-    - sed -i 's/git@github.com:/https:\/\/github.com\//' .gitmodules
-    - git submodule update --init --recursive
+after_success:
+  - cd docs
+  - git init
+  - git commit -a -m "Travis Deploy"
+  - git push -f -q https://$GITHUB_TOKEN@github.com/function-x/Orange-Juice-Docs.git master
