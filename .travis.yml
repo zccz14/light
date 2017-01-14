@@ -2,6 +2,9 @@ language: node_js
 node_js:
   - "6"
 services: mongodb
+before_install:
+    - git config --global user.email "zccz14@outlook.com"
+    - git config --global user.name "zccz14"
 after_success:
   - cd docs
   - git init
