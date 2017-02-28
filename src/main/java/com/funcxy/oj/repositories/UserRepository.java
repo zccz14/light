@@ -9,8 +9,7 @@ import java.util.List;
  * Created by DDHEE on 2017/2/28.
  */
 public interface UserRepository extends MongoRepository<User, String> {
-    List<User> findByUsername(String Username);
-    List<User> findByUsernameLike (String Username);
-
-
+    List<User> findByUsername(String username);
+    List<User> findByUsernameLike (String username);
+    List<User> findByEmail(String email);
 }

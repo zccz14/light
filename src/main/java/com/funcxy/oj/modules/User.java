@@ -1,13 +1,9 @@
 package com.funcxy.oj.modules;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import javafx.util.StringConverter;
 import org.bson.types.ObjectId;
-import org.springframework.beans.factory.ListableBeanFactory;
-import org.springframework.beans.factory.parsing.Problem;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -30,9 +26,9 @@ public class User {
     private String email;
     @JsonIgnore
     private String password;
-
-
-
+    @JsonIgnore
+    private String avatar;
+    @JsonIgnore
     private String profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
@@ -106,9 +102,7 @@ public class User {
         return problemOwned;
     }
 
-    public void addProblemOwned(List<ObjectId> problemOwned) {
-
-
+    public void setProblemOwned(List<ObjectId> problemOwned) {
         this.problemOwned = problemOwned;
     }
 
@@ -150,5 +144,13 @@ public class User {
 
     public void setProblemListLiked(List<ObjectId> problemListLiked) {
         this.problemListLiked = problemListLiked;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }
