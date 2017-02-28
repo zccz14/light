@@ -10,6 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,6 +27,14 @@ public class User {
     private String email;
     @JsonIgnore
     private String password;
+    @JsonIgnore
+    private int sex;
+    @JsonIgnore
+    private Date birthday;
+    @JsonIgnore
+    private String location;
+    @JsonIgnore
+    private String personalUrl;
     @JsonIgnore
     private String avatar;
     @JsonIgnore
@@ -152,5 +161,37 @@ public class User {
 
     public void setAvatar(String avatar) {
         this.avatar = avatar;
+    }
+
+    public int getSex() {
+        return sex;
+    }
+
+    public void setSex(int sex) {
+        this.sex = sex;
+    }
+
+    public Date getBirthday() {
+        return birthday;
+    }
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
+    }
+
+    public String getPersonalUrl() {
+        return personalUrl;
+    }
+
+    public void setPersonalUrl(String personalUrl) {
+        this.personalUrl = personalUrl;
     }
 }
