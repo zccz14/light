@@ -9,3 +9,4 @@ cache:
   directories:
   - .autoconf
   - $HOME/.m2
+services: mongodb
