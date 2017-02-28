@@ -7,6 +7,8 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  */
@@ -23,5 +25,10 @@ public class ProblemController {
     @RequestMapping("/addProblem")
     public Problem save(Problem problem){
         return problemRepository.save(problem);
+    }
+
+    @RequestMapping("/findByTitle")
+    public List<Problem> findByName(String title){
+        return problemRepository.findByTitle(title);
     }
 }
