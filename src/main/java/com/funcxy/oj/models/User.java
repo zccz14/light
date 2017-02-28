@@ -1,8 +1,9 @@
-package com.funcxy.oj.modules;
+package com.funcxy.oj.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -14,7 +15,8 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * Created by DDHEE on 2017/2/28.
+ * User DOM
+ * @author ddhee
  */
 @Document
 public class User {
@@ -52,6 +54,15 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
+    private static String encrypt(String algorithm, String clearText) {
+        try {
+            MessageDigest pwd = MessageDigest.getInstance(algorithm);
+            pwd.update(clearText.getBytes());
+            return HexBin.encode(pwd.digest());
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("No Such Algorithm: " + algorithm);
+        }
+    }
 
     public ObjectId getId() {
         return id;
@@ -78,25 +89,11 @@ public class User {
     }
 
     public void setPassword(String password) {
-        try{
-            MessageDigest pwd = MessageDigest.getInstance("SHA1");
-            pwd.update(password.getBytes());
-            password = pwd.digest().toString();
-        }catch (NoSuchAlgorithmException e){
-            System.out.println("No such algorithm as SHA1");
-        }
-        this.password = password;
+        this.password = encrypt("SHA1", password);
     }
 
     public boolean passwordVerify(String password) {
-        try{
-            MessageDigest pwd = MessageDigest.getInstance("SHA1");
-            pwd.update(password.getBytes());
-            password = pwd.digest().toString();
-        }catch (NoSuchAlgorithmException e){
-            System.out.println("No such algorithm as SHA1");
-        }
-        return this.password.equals(password);
+        return this.password.equals(encrypt("SHA1", password));
     }
 
     public String getProfile() {
