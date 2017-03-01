@@ -63,7 +63,7 @@ public class ProblemServiceTest {
         } catch (Exception e) {
             System.out.println("Saving process occurs an Exception.");
             e.printStackTrace();
-        }finally {
+        } finally {
             problem.setType(INVALID_TYPE_1);
             problem.setTitle(INVALID_TITLE_1);
             problem.setDescription(INVALID_DESCRIPTION_1);
@@ -72,62 +72,44 @@ public class ProblemServiceTest {
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidProblemService1() {
-        try {
-            System.out.println(problem.getTitle()+"===111111======================");
-            Problem problem1 = problemService.save(problem);
-            Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
-            Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), VALID_TITLE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), VALID_TYPE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), VALID_DESCRIPTION.trim());
-            Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), VALID_REFERENCE_ANSWER.trim());
-        } catch (Exception e) {
-            System.out.println("Saving process occurs an Exception.");
-            e.printStackTrace();
-        }finally {
-            problem.setType(INVALID_TYPE_2);
-            problem.setTitle(INVALID_TITLE_2);
-            problem.setDescription(INVALID_DESCRIPTION_2);
-            problem.setReferenceAnswer(INVALID_REFERENCE_ANSWER_2);
-        }
+    public void testInvalidProblemService1() throws Exception {
+        Problem problem1 = problemService.save(problem);
+        
+        problem.setType(INVALID_TYPE_2);
+        problem.setTitle(INVALID_TITLE_2);
+        problem.setDescription(INVALID_DESCRIPTION_2);
+        problem.setReferenceAnswer(INVALID_REFERENCE_ANSWER_2);
+
+        Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
+        Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), INVALID_TITLE_1.trim());
+        Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), INVALID_TYPE_1.trim());
+        Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), INVALID_DESCRIPTION_1.trim());
+        Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), INVALID_REFERENCE_ANSWER_1.trim());
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidProblemService2() {
-        try {
-            System.out.println(problem.getTitle()+"===222222======================");
+    public void testInvalidProblemService2() throws Exception {
+        Problem problem1 = problemService.save(problem);
 
-            Problem problem1 = problemService.save(problem);
-            Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
-            Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), VALID_TITLE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), VALID_TYPE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), VALID_DESCRIPTION.trim());
-            Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), VALID_REFERENCE_ANSWER.trim());
-        } catch (Exception e) {
-            System.out.println("Saving process occurs an Exception.");
-            e.printStackTrace();
-        }finally {
-            problem.setType(INVALID_TYPE_3);
-            problem.setTitle(INVALID_TITLE_3);
-            problem.setDescription(INVALID_DESCRIPTION_3);
-            problem.setReferenceAnswer(INVALID_REFERENCE_ANSWER_3);
-        }
+        problem.setType(INVALID_TYPE_3);
+        problem.setTitle(INVALID_TITLE_3);
+        problem.setDescription(INVALID_DESCRIPTION_3);
+        problem.setReferenceAnswer(INVALID_REFERENCE_ANSWER_3);
+
+        Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
+        Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), INVALID_TITLE_2.trim());
+        Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), INVALID_TYPE_2.trim());
+        Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), INVALID_DESCRIPTION_2.trim());
+        Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), INVALID_REFERENCE_ANSWER_2.trim());
     }
 
     @Test(expected = Exception.class)
-    public void testInvalidProblemService3() {
-        try {
-            System.out.println(problem.getTitle()+"=========333333================");
-
-            Problem problem1 = problemService.save(problem);
-            Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
-            Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), VALID_TITLE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), VALID_TYPE.trim());
-            Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), VALID_DESCRIPTION.trim());
-            Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), VALID_REFERENCE_ANSWER.trim());
-        } catch (Exception e) {
-            System.out.println("Saving process occurs an Exception.");
-            e.printStackTrace();
-        }
+    public void testInvalidProblemService3() throws Exception {
+        Problem problem1 = problemService.save(problem);
+        Assert.assertEquals("Problems ocurrs when comparing creator Id.", problem1.getCreatorId(), CREATOR_ID);
+        Assert.assertEquals("Problems ocurrs when comparing title.", problem1.getTitle(), INVALID_TITLE_3.trim());
+        Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), INVALID_TYPE_3.trim());
+        Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), INVALID_DESCRIPTION_3.trim());
+        Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), INVALID_REFERENCE_ANSWER_3.trim());
     }
 }
