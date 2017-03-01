@@ -22,7 +22,7 @@ import java.util.List;
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId id;
+    private ObjectId userId;
     @Indexed
     private String username;
     @Indexed
@@ -30,10 +30,11 @@ public class User {
     @JsonIgnore
     private String password;
     @JsonIgnore
-    private int sex;
+    private int gender;
     @JsonIgnore
     private Date birthday;
     @JsonIgnore
+    @Indexed
     private String location;
     @JsonIgnore
     private String personalUrl;
@@ -64,12 +65,12 @@ public class User {
         }
     }
 
-    public ObjectId getId() {
-        return id;
+    public ObjectId getUserId() {
+        return userId;
     }
 
-    public void setId(ObjectId id) {
-        this.id = id;
+    public void setUserId(ObjectId userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
@@ -160,12 +161,12 @@ public class User {
         this.avatar = avatar;
     }
 
-    public int getSex() {
-        return sex;
+    public int getGender() {
+        return gender;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public Date getBirthday() {
