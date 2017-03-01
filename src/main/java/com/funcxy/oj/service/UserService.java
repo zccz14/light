@@ -1,7 +1,10 @@
 package com.funcxy.oj.service;
 
-import com.funcxy.oj.dao.UserDao;
-import com.funcxy.oj.model.User;
+import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.models.User;
+import com.funcxy.oj.utils.InvalidException;
+import com.funcxy.oj.utils.UserUtil;
+import com.funcxy.oj.utils.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,16 +17,9 @@ import java.security.NoSuchAlgorithmException;
 @Service
 public class UserService {
     @Autowired
-    UserDao userDao;
-    public void save(User user){
-        final String algorithm = "SHA1";
-        try{
-            MessageDigest messageDigest = MessageDigest.getInstance(algorithm);
-            messageDigest.update(user.getPassword().getBytes());
-            user.setPassword(messageDigest.digest().toString());
-            userDao.save(user);
-        }catch(NoSuchAlgorithmException exception){
-            System.out.print("no such algorithm");
-        }
+    UserRepository userRepository;
+    public void save(User user) throws InvalidException{
+        if (Validation.notValid(user))throw new InvalidException();
+        userRepository.save(user);
     }
 }
