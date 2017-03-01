@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Created by wtupc96 on 2017/2/28.
  */
 
-@Document
+@Document(collection = "user")
 public class Problem {
     @Id
     private ObjectId id;
