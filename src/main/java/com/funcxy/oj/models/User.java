@@ -3,12 +3,14 @@ package com.funcxy.oj.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.funcxy.oj.utils.UserUtil;
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
@@ -24,6 +26,7 @@ public class User {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId userId;
     @Indexed
+    @NotNull
     private String username;
     @Indexed
     private String email;
@@ -55,15 +58,7 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-    private static String encrypt(String algorithm, String clearText) {
-        try {
-            MessageDigest pwd = MessageDigest.getInstance(algorithm);
-            pwd.update(clearText.getBytes());
-            return HexBin.encode(pwd.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("No Such Algorithm: " + algorithm);
-        }
-    }
+
 
     public ObjectId getUserId() {
         return userId;
@@ -90,11 +85,13 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = encrypt("SHA1", password);
+        this.password = UserUtil.encrypt("SHA1", password);
     }
 
+    public String getPassword() {return this.password;}
+
     public boolean passwordVerify(String password) {
-        return this.password.equals(encrypt("SHA1", password));
+        return this.password.equals(UserUtil.encrypt("SHA1", password));
     }
 
     public String getProfile() {

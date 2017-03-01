@@ -5,13 +5,14 @@ import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
+import java.util.stream.Stream;
 
 /**
  * User DAO
  * @author ddhee
  */
 public interface UserRepository extends MongoRepository<User, String> {
-    List<User> findByUserId (ObjectId userId);
+    Stream<User> findByUserId (ObjectId userId);
 
     List<User> findByUsername (String username);
 
