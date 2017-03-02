@@ -11,21 +11,21 @@ public class Submission {
     @Id
     private ObjectId id;
     @Indexed
-    private ObjectId problemlistid;
+    private ObjectId problemListId;
     @Indexed
-    private ObjectId problemid;
+    private ObjectId problemId;
     @Indexed
     private String status;
     private String condition;
     private String sentence;
     private String content;
 
-    public ObjectId getProblemlistid() {
-        return problemlistid;
+    public ObjectId getProblemListId() {
+        return problemListId;
     }
 
-    public void setProblemlistid(ObjectId problemlistid) {
-        this.problemlistid = problemlistid;
+    public void setProblemListId(ObjectId problemListId) {
+        this.problemListId = problemListId;
     }
 
     public ObjectId getId() {
@@ -36,13 +36,6 @@ public class Submission {
         this.id = id;
     }
 
-    public ObjectId getProblemid() {
-        return problemid;
-    }
-
-    public void setProblemid(ObjectId problemid) {
-        this.problemid = problemid;
-    }
 
     public String getStatus() {
         return status;
@@ -74,5 +67,13 @@ public class Submission {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public ObjectId getProblemId() {
+        return problemId;
+    }
+
+    public void setProblemId(ObjectId problemId) {
+        this.problemId = problemId;
     }
 }
