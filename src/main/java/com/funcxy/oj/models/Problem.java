@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
  * Created by wtupc96 on 2017/2/28.
  */
 
-@Document
+@Document(collection = "problem")
 public class Problem {
     @Id
     private ObjectId id;
@@ -50,7 +50,7 @@ public class Problem {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(String type){
         this.type = type;
     }
 

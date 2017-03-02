@@ -1,0 +1,12 @@
+language: java
+install:
+  - mvn install
+script:
+  - mvn package
+jdk:
+  - oraclejdk8
+cache:
+  directories:
+  - .autoconf
+  - $HOME/.m2
+services: mongodb
