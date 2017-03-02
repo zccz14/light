@@ -3,6 +3,7 @@ package com.funcxy.oj.services;
 import com.funcxy.oj.Application;
 import com.funcxy.oj.models.Problem;
 import org.bson.types.ObjectId;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class ProblemServiceTest {
     @Test(expected = Exception.class)
     public void testInvalidProblemService1() throws Exception {
         Problem problem1 = problemService.save(problem);
-        
+
         problem.setType(INVALID_TYPE_2);
         problem.setTitle(INVALID_TITLE_2);
         problem.setDescription(INVALID_DESCRIPTION_2);
@@ -111,5 +112,10 @@ public class ProblemServiceTest {
         Assert.assertEquals("Problems ocurrs when comparing type.", problem1.getType(), INVALID_TYPE_3.trim());
         Assert.assertEquals("Problems ocurrs when comparing description.", problem1.getDescription(), INVALID_DESCRIPTION_3.trim());
         Assert.assertEquals("Problems ocurrs when comparing reference answer.", problem1.getReferenceAnswer(), INVALID_REFERENCE_ANSWER_3.trim());
+    }
+
+    @After
+    public void disposeProblem() {
+        problemService.delete(problem.getId());
     }
 }
