@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  */
@@ -26,10 +28,10 @@ public class ProblemController {
         return problemService.save(problem);
     }
 
-//    @RequestMapping(method = RequestMethod.GET)
-//    public List<Problem> getProblem(Problem problem){
-//        return problemService.find(problem);
-//    }
+    @RequestMapping(method = RequestMethod.GET)
+    public List<Problem> getProblem(Problem problem){
+        return problemService.find(problem);
+    }
 
     @RequestMapping(method = RequestMethod.PUT)
     public Problem updateProblem(Problem problem){
@@ -40,9 +42,4 @@ public class ProblemController {
     public Problem deleteProblem(Problem problem){
         return problemService.delete(problem);
     }
-
-//    @RequestMapping("/findByTitle")
-//    public List<Problem> findByName(String title){
-//        return problemService.findByTitle(title);
-//    }
 }

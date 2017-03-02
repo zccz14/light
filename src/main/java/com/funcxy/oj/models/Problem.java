@@ -20,7 +20,7 @@ public class Problem {
     private ObjectId id;
 
     @Indexed
-//    @NotNull
+    @NotNull
     @DBRef(lazy = true)
     private User creator;
 
@@ -86,5 +86,13 @@ public class Problem {
 
     public void setReferenceAnswer(String referenceAnswer) {
         this.referenceAnswer = referenceAnswer;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this.getId().equals(((Problem)obj).getId()))
+            return true;
+        else
+            return false;
     }
 }
