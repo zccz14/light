@@ -50,12 +50,48 @@ public class UserTest{
 
     // Duplicated username
     @Test(expected = InvalidException.class)
-    public void signUpTest1()throws InvalidException{
+    public void signUpTest1() throws InvalidException{
         userService.save(user);
         userService.save(user);
     }
+    // Duplicated username
+    @Test(expected = InvalidException.class)
+    public static void signUpTest2() throws InvalidException{
+        userService.save(user);
+        user.setUsername(usernameDuplicated);
+        userService.save(user);
+    }
     // Empty username
+    @Test(expected = InvalidException.class)
+    public static void signUpTest3() throws InvalidException{
+        user.setUsername(usernameEmpty);
+        userService.save(user);
+    }
 
+    // Empty email
+    @Test(expected = InvalidException.class)
+    public static void signUpTest4() throws InvalidException{
+        user.setEmail(emailEmpty);
+        userService.save(user);
+    }
+    // Invalid email
+    @Test(expected = InvalidException.class)
+    public static void signUpTest5() throws InvalidException{
+        user.setEmail(emailInvalid);
+        userService.save(user);
+    }
 
+    // Empty password
+    @Test(expected = InvalidException.class)
+    public static void signUpTest6() throws InvalidException{
+        user.setPassword(passwordEmpty);
+        userService.save(user);
+    }
+    // Invalid password
+    @Test(expected = InvalidException.class)
+    public static void signUpTest7() throws InvalidException{
+        user.setPassword(passwordInvalid);
+        userService.save(user);
+    }
 
 }
