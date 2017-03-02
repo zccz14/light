@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -18,16 +20,18 @@ import java.util.List;
  * User DOM
  * @author ddhee
  */
-@Document
+@Document(collection = "users")
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     @Indexed
+    @NotBlank
     private String username;
     @Indexed
+    @Email
     private String email;
-    @JsonIgnore
+    @NotBlank
     private String password;
     @JsonIgnore
     private int sex;
