@@ -19,7 +19,10 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
     public void save(User user) throws InvalidException{
-        if (Validation.notValid(user))throw new InvalidException();
+        user.setUsername(user.getUsername().trim());
+        user.setEmail(user.getEmail().trim());
+        if (Validation.userNotValid(user))throw new InvalidException();
+        user.passwordEncrypt();
         userRepository.save(user);
     }
 }

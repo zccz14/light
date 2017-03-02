@@ -4,17 +4,17 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import javax.validation.constraints.NotNull;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
+
+import static com.funcxy.oj.utils.ComUtil.properties;
 
 /**
  * User DOM
@@ -26,11 +26,13 @@ public class User {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId userId;
     @Indexed
-    @NotNull
+    @NotBlank
     private String username;
     @Indexed
+    @NotBlank
     private String email;
     @JsonIgnore
+    @NotEmpty
     private String password;
     @JsonIgnore
     private int gender;
@@ -58,8 +60,6 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-
-
     public ObjectId getUserId() {
         return userId;
     }
@@ -85,13 +85,21 @@ public class User {
     }
 
     public void setPassword(String password) {
-        this.password = UserUtil.encrypt("SHA1", password);
+        this.password = password;
     }
 
-    public String getPassword() {return this.password;}
+    public String getPassword() {
+        return password;
+    }
+
+    public void passwordEncrypt() {
+        String algorithm = properties.getProperty("encryptAlgorithm");
+        this.password = UserUtil.encrypt(algorithm, password);
+    }
 
     public boolean passwordVerify(String password) {
-        return this.password.equals(UserUtil.encrypt("SHA1", password));
+        String algorithm = properties.getProperty("encryptAlgorithm");
+        return this.password.equals(UserUtil.encrypt(algorithm, password));
     }
 
     public String getProfile() {

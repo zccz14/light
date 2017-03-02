@@ -26,7 +26,7 @@ public class UserController {
 
     //注册
     @RequestMapping(value = "/user",method = RequestMethod.POST)
-    public void signup(@RequestParam User user) throws InvalidException{
+    public void signUp(@RequestParam User user) throws InvalidException{
 //        User user=new User();
 //        user.setUsername(username);
 //        user.setPassword(password);
@@ -40,7 +40,7 @@ public class UserController {
         return userRepository.findByUsername(username).toString();
     }
     @RequestMapping(value = "/user",method = RequestMethod.GET)
-    public String signin(@RequestParam User user){
+    public String signIn(@RequestParam User user){
         return "success";
     }
 }
