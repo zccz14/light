@@ -21,8 +21,8 @@ public class ProblemController {
     MongoTemplate mongoTemplate;
 
     @RequestMapping("/addProblem")
-    public Problem save(Problem problem) throws Exception {
-        return problemService.save(problem);
+    public void save(Problem problem) throws Exception {
+//        return problemService.save(problem);
     }
 
 //    @RequestMapping("/findByTitle")

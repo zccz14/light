@@ -41,8 +41,15 @@ public class ProblemService {
     }
 
     public Problem delete(Problem problem){
-        Problem tempProblem = problemRepository.findById(problem.getId());
-        problemRepository.delete(problem);
-        return tempProblem;
+        return delete(problem.getId());
+    }
+
+    public Problem update(Problem formerProblem, Problem newProblem){
+        return update(formerProblem.getId(), newProblem);
+    }
+
+    public Problem update(ObjectId formerObjectId, Problem newProblem){
+        problemRepository.delete(formerObjectId.toString());
+        return problemRepository.save(newProblem);
     }
 }
