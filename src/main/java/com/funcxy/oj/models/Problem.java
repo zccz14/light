@@ -5,20 +5,27 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  */
 
-@Document
+@Document(collection = "problem")
 public class Problem {
     @Id
+    @NotNull
     private ObjectId id;
     @Indexed
+    @NotNull
     private ObjectId creatorId;
     @Indexed
+    @NotNull
     private String title;
     @Indexed
+    @NotNull
     private String type;
+    @NotNull
     private String description;
     private String referenceAnswer;
 
@@ -50,7 +57,7 @@ public class Problem {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(String type){
         this.type = type;
     }
 

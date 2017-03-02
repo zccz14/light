@@ -14,7 +14,7 @@ public class Validation {
     static UserRepository userRepository;
     public static boolean userNotValid(User user){
         String username = user.getUsername().trim();
-        if (userRepository.findByUsername(username) != null || username.length() > Integer.parseInt(properties.getProperty("maximumLengthOfUsername")) || !isEmail(user.getEmail())) return true;
+        if (userRepository.findOneByUsername(username) != null || username.length() > Integer.parseInt(properties.getProperty("maximumLengthOfUsername"))) return true;
         if (user.getPassword().length() < Integer.parseInt(properties.getProperty("minimumLengthOfPassword")) ||  user.getPassword().length() > Integer.parseInt(properties.getProperty("maximumLengthOfPassword"))) return true;
         if (!(hasAtLeastXLetters(user.getPassword(), Integer.parseInt(properties.getProperty("minimumLengthOfLettersInPassword")))) || !(hasAtLeastXNumerals(user.getPassword(), Integer.parseInt(properties.getProperty("minimumLengthOfNumeralsInPassword"))))) return true;
         return false;

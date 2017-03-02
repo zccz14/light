@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
@@ -20,7 +21,7 @@ import static com.funcxy.oj.utils.ComUtil.properties;
  * User DOM
  * @author ddhee
  */
-@Document
+@Document(collection = "users")
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
@@ -29,7 +30,7 @@ public class User {
     @NotBlank
     private String username;
     @Indexed
-    @NotBlank
+    @Email
     private String email;
     @JsonIgnore
     @NotEmpty

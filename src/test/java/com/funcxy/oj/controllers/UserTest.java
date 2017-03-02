@@ -75,7 +75,7 @@ public class UserTest{
         userService.save(user);
     }
     // Invalid email
-    @Test(expected = InvalidException.class)
+    @Test(expected = Exception.class)
     public void signUpTest5() throws InvalidException{
         user.setEmail(emailInvalid);
         userService.save(user);

@@ -14,11 +14,11 @@ import java.util.stream.Stream;
 public interface UserRepository extends MongoRepository<User, String> {
     Stream<User> findByUserId (ObjectId userId);
 
-    List<User> findByUsername (String username);
-
     List<User> findByUsernameLike (String username);
 
-    List<User> findByEmail (String email);
+    List<User> findByEmail(String email);
+
+    User findOneByUsername(String username);
 
     List<User> findByLocation (String location);
 }
