@@ -60,17 +60,20 @@ public class ProblemService {
     }
 
 
-//    // retainAll方法仅比较引用。
-//    public List<Problem> find(Problem problem) {
-//        List<Problem> problemList = new ArrayList<>();
-//        if (problem.getType() != null)
-//            problemList.addAll(findByType(problem.getType()));
-//        System.out.println(problemList);
-//        if (problem.getTitle() != null)
-//            problemList.retainAll(findByTitle(problem.getTitle()));
-//        System.out.println(problemList);
-//        if (problem.getCreator() != null)
-//            problemList.addAll(findByCreator(problem.getCreator()));
-//        return problemList;
-//    }
+    public List<Problem> find(Problem problem) {
+        List<Problem> problemList = new ArrayList<>();
+        if (problem.getType() != null)
+            problemList.addAll(findByType(problem.getType()));
+        if (problem.getTitle() != null)
+            if (problemList.isEmpty())
+                problemList.addAll(findByTitle(problem.getTitle()));
+            else
+                problemList.retainAll(findByTitle(problem.getTitle()));
+        if (problem.getCreator() != null)
+            if (problemList.isEmpty())
+                problemList.addAll(findByCreator(problem.getCreator()));
+            else
+                problemList.addAll(findByCreator(problem.getCreator()));
+        return problemList;
+    }
 }
