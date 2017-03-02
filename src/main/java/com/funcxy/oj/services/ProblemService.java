@@ -6,6 +6,8 @@ import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  */
@@ -19,14 +21,10 @@ public class ProblemService {
         return problem.getTitle().trim().equals("") ||
                 problem.getDescription().trim().equals("") ||
                 problem.getType().trim().equals("") ||
-                problem.getReferenceAnswer().trim().equals("") ||
-                problem.getTitle() == null ||
-                problem.getCreatorId() == null ||
-                problem.getDescription() == null ||
-                problem.getType() == null;
+                problem.getReferenceAnswer().trim().equals("");
     }
 
-    public Problem save(Problem problem) throws Exception {
+    public Problem save(@Valid Problem problem) throws Exception {
         if (isNotValid(problem))
             throw new Exception("Problem's information is invalid");
         problem.setTitle(problem.getTitle().trim());
