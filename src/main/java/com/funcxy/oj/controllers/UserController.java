@@ -2,15 +2,13 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.models.User;
-import com.funcxy.oj.service.UserService;
+import com.funcxy.oj.services.UserService;
 import com.funcxy.oj.utils.InvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import static java.lang.System.out;
 
 /**
  * Created by aak1247 on 2017/2/28.

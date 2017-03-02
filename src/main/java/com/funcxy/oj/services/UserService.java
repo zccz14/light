@@ -1,4 +1,4 @@
-package com.funcxy.oj.service;
+package com.funcxy.oj.services;
 
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.models.User;
