@@ -1,4 +1,4 @@
-package com.funcxy.oj.controllers;
+package com.funcxy.oj.models;
 
 import com.funcxy.oj.Application;
 import com.funcxy.oj.models.Problem;

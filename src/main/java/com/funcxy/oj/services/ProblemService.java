@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
+import java.util.List;
 
 /**
  * Created by wtupc96 on 2017/2/28.
@@ -51,5 +52,21 @@ public class ProblemService {
     public Problem update(ObjectId formerObjectId, Problem newProblem){
         problemRepository.delete(formerObjectId.toString());
         return problemRepository.save(newProblem);
+    }
+
+    public Problem findById(ObjectId id){
+        return problemRepository.findById(id);
+    }
+
+    public List<Problem> findByCreatorId(ObjectId creatorId){
+        return problemRepository.findByCreatorId(creatorId);
+    }
+
+    public List<Problem> findByType(String type){
+        return problemRepository.findByType(type);
+    }
+
+    public List<Problem> findByTitle(String title){
+        return problemRepository.findByTitle(title);
     }
 }

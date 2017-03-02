@@ -26,6 +26,7 @@ public class Problem {
     @NotNull
     private String type;
     @NotNull
+    @Indexed(unique = true)
     private String description;
     private String referenceAnswer;
 
