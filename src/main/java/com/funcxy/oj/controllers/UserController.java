@@ -35,7 +35,7 @@ public class UserController {
         } else if (user.passwordVerify(passport.password)) {
             System.out.println("user login");
             System.out.println(user.getUsername());
-            httpSession.setAttribute("userId", user.getId().toString());
+            httpSession.setAttribute("userId", user.getUserId().toString());
             return user;
         } else {
             System.out.println("wrong username or password");
