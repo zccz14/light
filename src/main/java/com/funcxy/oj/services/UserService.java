@@ -40,12 +40,16 @@ public class UserService {
         return null;
     }
 
-    public User signUp(@Valid Passport passport){
+    public User signUp(@Valid Passport passport) throws InvalidException{
         if(Validation.isValid(passport)){
             User userFoundByUsername = userRepository.findByUsername(passport.email);
-            if (userFoundByUsername!=null)return userFoundByUsername;
+            if (userFoundByUsername!=null){
+                throw new InvalidException();
+            }
             User userFoundByEmail = userRepository.findByEmail(passport.email);
-            if (userFoundByEmail!=null)return userFoundByEmail;
+            if (userFoundByEmail!=null) {
+                throw new InvalidException();
+            }
             User user = new User();
             user.setUsername(passport.username);
             user.setEmail(passport.email);
