@@ -10,7 +10,7 @@ import java.util.List;
  * Created by lqp on 2017/3/1.
  */
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
-    List<Submission> findById(ObjectId id);
+    Submission findById(ObjectId id);
 
     List<Submission> findByUserId(ObjectId userId);
 
