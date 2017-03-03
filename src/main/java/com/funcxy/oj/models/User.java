@@ -30,21 +30,14 @@ public class User {
     @Indexed(unique = true)
     @Email
     private String email;
-    @JsonIgnore
     @NotEmpty
     private String password;
-    @JsonIgnore
     private int gender;
-    @JsonIgnore
     private Date birthday;
-    @JsonIgnore
     @Indexed
     private String location;
-    @JsonIgnore
     private String personalUrl;
-    @JsonIgnore
     private String avatar;
-    @JsonIgnore
     private String profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
