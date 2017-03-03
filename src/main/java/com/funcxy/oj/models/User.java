@@ -3,6 +3,7 @@ package com.funcxy.oj.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.funcxy.oj.utils.UserUtil;
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
@@ -15,6 +16,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
+
+import static com.funcxy.oj.utils.UserUtil.encrypt;
 
 /**
  * User DOM
@@ -33,17 +36,17 @@ public class User {
     private String email;
     @NotBlank
     private String password;
-    @JsonIgnore
-    private int sex;
-    @JsonIgnore
+    private int gender;
+/*
+    0:not setted
+    1:male
+    2:female
+    3:other
+ */
     private Date birthday;
-    @JsonIgnore
     private String location;
-    @JsonIgnore
     private String personalUrl;
-    @JsonIgnore
     private String avatar;
-    @JsonIgnore
     private String profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
@@ -57,16 +60,6 @@ public class User {
     private List<ObjectId> problemLiked;
     @JsonIgnore
     private List<ObjectId> problemListLiked;
-
-    private static String encrypt(String algorithm, String clearText) {
-        try {
-            MessageDigest pwd = MessageDigest.getInstance(algorithm);
-            pwd.update(clearText.getBytes());
-            return HexBin.encode(pwd.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("No Such Algorithm: " + algorithm);
-        }
-    }
 
     public ObjectId getId() {
         return id;
@@ -164,12 +157,12 @@ public class User {
         this.avatar = avatar;
     }
 
-    public int getSex() {
-        return sex;
+    public int getGender() {
+        return gender;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public Date getBirthday() {
