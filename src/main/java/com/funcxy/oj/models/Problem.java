@@ -16,7 +16,6 @@ import javax.validation.constraints.NotNull;
 @Document(collection = "problem")
 public class Problem {
     @Id
-    @NotNull
     private ObjectId id;
 
     @Indexed
@@ -61,7 +60,7 @@ public class Problem {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title.trim();
     }
 
     public String getType() {
@@ -69,7 +68,7 @@ public class Problem {
     }
 
     public void setType(String type){
-        this.type = type;
+        this.type = type.trim();
     }
 
     public String getDescription() {
@@ -77,7 +76,7 @@ public class Problem {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.trim();
     }
 
     public String getReferenceAnswer() {
@@ -85,14 +84,14 @@ public class Problem {
     }
 
     public void setReferenceAnswer(String referenceAnswer) {
-        this.referenceAnswer = referenceAnswer;
+        this.referenceAnswer = referenceAnswer.trim();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(this.getId().equals(((Problem)obj).getId()))
-            return true;
+        if(this.getId() != null)
+            return this.getId().equals(((Problem)obj).getId());
         else
-            return false;
+            return super.equals(obj);
     }
 }
