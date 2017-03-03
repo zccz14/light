@@ -2,6 +2,7 @@ package com.funcxy.oj.services;
 
 import com.funcxy.oj.Application;
 import com.funcxy.oj.models.User;
+import org.bson.types.ObjectId;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,7 +31,8 @@ public class UserServiceTest {
     UserService userService;
 
     @Before
-    public static void validUser() throws Exception{
+    public void validUser() throws Exception{
+        user.setUserId(ObjectId.get());
         user.setUsername(usernameValid);
         user.setEmail(emailValid);
         user.setPassword(passwordValid);

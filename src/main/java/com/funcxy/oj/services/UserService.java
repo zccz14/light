@@ -31,10 +31,10 @@ public class UserService {
             return null;
         }
         if(passport.username!=null){
-            User userFound = userRepository.findByUsername(passport.username);
+            User userFound = userRepository.findOneByUsername(passport.username);
             if (userFound.passwordVerify(passport.password))return userFound;
         }else{
-            User userFound = userRepository.findByEmail(passport.email);
+            User userFound = userRepository.findOneByEmail(passport.email);
             if (userFound.passwordVerify(passport.password))return userFound;
         }
         return null;
@@ -42,11 +42,11 @@ public class UserService {
 
     public User signUp(@Valid Passport passport) throws InvalidException{
         if(Validation.isValid(passport)){
-            User userFoundByUsername = userRepository.findByUsername(passport.email);
+            User userFoundByUsername = userRepository.findOneByUsername(passport.email);
             if (userFoundByUsername!=null){
                 throw new InvalidException();
             }
-            User userFoundByEmail = userRepository.findByEmail(passport.email);
+            User userFoundByEmail = userRepository.findOneByEmail(passport.email);
             if (userFoundByEmail!=null) {
                 throw new InvalidException();
             }
