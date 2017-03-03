@@ -4,20 +4,18 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
-import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
+import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
-import static com.funcxy.oj.utils.UserUtil.encrypt;
+import static com.funcxy.oj.utils.ComUtil.properties;
 
 /**
  * User DOM
@@ -27,26 +25,28 @@ import static com.funcxy.oj.utils.UserUtil.encrypt;
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId id;
+    private ObjectId userId;
     @Indexed(unique = true)
     @NotBlank
     private String username;
     @Indexed(unique = true)
     @Email
     private String email;
-    @NotBlank
+    @JsonIgnore
+    @NotEmpty
     private String password;
+    @JsonIgnore
     private int gender;
-/*
-    0:not setted
-    1:male
-    2:female
-    3:other
- */
+    @JsonIgnore
     private Date birthday;
+    @JsonIgnore
+    @Indexed
     private String location;
+    @JsonIgnore
     private String personalUrl;
+    @JsonIgnore
     private String avatar;
+    @JsonIgnore
     private String profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
@@ -61,20 +61,21 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-    public ObjectId getId() {
-        return id;
+    public ObjectId getUserId() {
+        return userId;
     }
 
-    public void setId(ObjectId id) {
-        this.id = id;
+    public void setUserId(ObjectId userId) {
+        this.userId = userId;
     }
 
     public String getUsername() {
+        username.trim();
         return username;
     }
 
     public void setUsername(String username) {
-        this.username = username.trim();
+        this.username = username;
     }
 
     public String getEmail() {
@@ -82,15 +83,26 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email.trim();
+        email.trim();
+        this.email = email;
     }
 
     public void setPassword(String password) {
-        this.password = encrypt("SHA1", password).trim();
+        this.password = password;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword() {
+        String algorithm = properties.getProperty("encryptAlgorithm");
+        this.password = UserUtil.encrypt(algorithm, password);
     }
 
     public boolean passwordVerify(String password) {
-        return this.password.equals(encrypt("SHA1", password));
+        String algorithm = properties.getProperty("encryptAlgorithm");
+        return this.password.equals(UserUtil.encrypt(algorithm, password));
     }
 
     public String getProfile() {
