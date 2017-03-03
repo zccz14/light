@@ -12,13 +12,14 @@ import java.util.List;
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
     List<Submission> findById(ObjectId id);
 
-    List<Submission> findByProblemListId(ObjectId problemlistid);
+    List<Submission> findByUserId(ObjectId userId);
 
-    List<Submission> findByProblemId(ObjectId problemid);
+    List<Submission> findByProblemListId(ObjectId problemlistId);
+
+    List<Submission> findByProblemId(ObjectId problemId);
 
     List<Submission> findByStatus(String status);
 
-    List<Submission> findByCondition(String condition);
 
     List<Submission> findBySentence(String sentence);
 
