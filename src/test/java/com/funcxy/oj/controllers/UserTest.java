@@ -19,10 +19,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
-@SpringBootConfiguration
 @SpringBootTest(classes = Application.class)
 public class UserTest{
-    User user;
+    User user = new User();
     String usernameValid = "zccz14";
     String usernameDuplicated = "  z ccz 1  4 ";
     String usernameEmpty = "      ";
@@ -45,6 +44,10 @@ public class UserTest{
     // All valid
     @Test
     public void signUpTest0() throws InvalidException{
+        User user = new User();
+        user.setUsername(usernameValid);
+        user.setPassword("fsfd");
+        user.setEmail(emailValid);
         userService.save(user);
     }
 

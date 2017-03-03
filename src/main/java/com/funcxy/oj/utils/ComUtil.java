@@ -16,11 +16,13 @@ public class ComUtil {
     static public Properties properties;
     static {
         Properties properties = new Properties();
+        System.out.println("class loaded");
         try {
             String root = new File("").getAbsolutePath();
             properties.load(new BufferedInputStream(new FileInputStream(root+"\\src\\main\\java\\com\\funcxy\\oj\\Properties.properties")));
         } catch (IOException e) {
             e.printStackTrace();
+            System.out.println("no such file");
         }
     }
     static public boolean isEmail(String str) {

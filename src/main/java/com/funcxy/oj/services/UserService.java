@@ -8,6 +8,7 @@ import com.funcxy.oj.utils.Validation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.validation.Valid;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
@@ -18,7 +19,7 @@ import java.security.NoSuchAlgorithmException;
 public class UserService {
     @Autowired
     UserRepository userRepository;
-    public void save(User user) throws InvalidException{
+    public void save(@Valid User user) throws InvalidException{
         user.setUsername(user.getUsername().trim());
         user.setEmail(user.getEmail().trim());
         if (Validation.userNotValid(user))throw new InvalidException();
