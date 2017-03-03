@@ -1,12 +1,9 @@
 package com.funcxy.oj.controllers;
 
-import com.fasterxml.jackson.databind.util.JSONPObject;
 import com.funcxy.oj.models.Passport;
 import com.funcxy.oj.models.User;
-import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.services.UserService;
 import com.funcxy.oj.utils.InvalidException;
-import com.mongodb.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,16 +27,15 @@ public class UserController {
     @RequestMapping(value = "/login", method = POST)
     public Object login(@RequestBody Passport passport, HttpSession httpSession) {
         User user = userService.login(passport);
-        if (user != null){
-            httpSession.setAttribute("userId",user.getUserId().toString());
+        if (user != null) {
+            httpSession.setAttribute("userId", user.getUserId().toString());
             return user;
-        }
-        else return null;
+        } else return null;
     }
 
     @RequestMapping(value = "/signup", method = POST)
-    public User signup(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
-        System.out.println(passport.username+"signup");
+    public User signup(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException {
+        System.out.println(passport.username + "signup");
         return userService.signUp(passport);
     }
 

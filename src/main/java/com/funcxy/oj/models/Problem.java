@@ -1,5 +1,7 @@
 package com.funcxy.oj.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
@@ -13,10 +15,10 @@ import javax.validation.constraints.NotNull;
  * Created by wtupc96 on 2017/2/28.
  */
 
-@Document(collection = "problem")
+@Document(collection = "problems")
 public class Problem {
     @Id
-    @NotNull
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
 
     @Indexed
@@ -61,7 +63,7 @@ public class Problem {
     }
 
     public void setTitle(String title) {
-        this.title = title;
+        this.title = title.trim();
     }
 
     public String getType() {
@@ -69,7 +71,7 @@ public class Problem {
     }
 
     public void setType(String type){
-        this.type = type;
+        this.type = type.trim();
     }
 
     public String getDescription() {
@@ -77,7 +79,7 @@ public class Problem {
     }
 
     public void setDescription(String description) {
-        this.description = description;
+        this.description = description.trim();
     }
 
     public String getReferenceAnswer() {
@@ -85,14 +87,14 @@ public class Problem {
     }
 
     public void setReferenceAnswer(String referenceAnswer) {
-        this.referenceAnswer = referenceAnswer;
+        this.referenceAnswer = referenceAnswer.trim();
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(this.getId().equals(((Problem)obj).getId()))
-            return true;
+        if(this.getId() != null)
+            return this.getId().equals(((Problem)obj).getId());
         else
-            return false;
+            return super.equals(obj);
     }
 }

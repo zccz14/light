@@ -1,11 +1,10 @@
 package com.funcxy.oj.services;
 
 import com.funcxy.oj.models.Passport;
-import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.models.User;
+import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.InvalidException;
 import com.funcxy.oj.utils.Validation;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,35 +18,35 @@ public class UserService {
     @Autowired
     UserRepository userRepository;
 
-    public void save(User user) throws InvalidException{
-        if (Validation.notValid(user))throw new InvalidException("user input invalid");
+    public void save(User user) throws InvalidException {
+        if (Validation.notValid(user)) throw new InvalidException("user input invalid");
         userRepository.save(user);
     }
 
 
-    public User login(Passport passport){
-        if(passport.email==null&&passport.username==null){
+    public User login(Passport passport) {
+        if (passport.email == null && passport.username == null) {
             //throw new InvalidException("username or email must be setted");
             return null;
         }
-        if(passport.username!=null){
+        if (passport.username != null) {
             User userFound = userRepository.findOneByUsername(passport.username);
-            if (userFound.passwordVerify(passport.password))return userFound;
-        }else{
+            if (userFound.passwordVerify(passport.password)) return userFound;
+        } else {
             User userFound = userRepository.findOneByEmail(passport.email);
-            if (userFound.passwordVerify(passport.password))return userFound;
+            if (userFound.passwordVerify(passport.password)) return userFound;
         }
         return null;
     }
 
-    public User signUp(@Valid Passport passport) throws InvalidException{
-        if(Validation.isValid(passport)){
+    public User signUp(@Valid Passport passport) throws InvalidException {
+        if (Validation.isValid(passport)) {
             User userFoundByUsername = userRepository.findOneByUsername(passport.email);
-            if (userFoundByUsername!=null){
+            if (userFoundByUsername != null) {
                 throw new InvalidException();
             }
             User userFoundByEmail = userRepository.findOneByEmail(passport.email);
-            if (userFoundByEmail!=null) {
+            if (userFoundByEmail != null) {
                 throw new InvalidException();
             }
             User user = new User();
@@ -55,14 +54,14 @@ public class UserService {
             user.setEmail(passport.email);
             user.setPassword(passport.password);
             return userRepository.insert(user);
-        }else {
+        } else {
             System.out.println("passport not valid");
             return null;
         }
     }
 
-    public User findOne(String id){
-        if (id==null||id==""){
+    public User findOne(String id) {
+        if (id == null || id == "") {
             System.out.println("userid not setted");
             return null;
         }

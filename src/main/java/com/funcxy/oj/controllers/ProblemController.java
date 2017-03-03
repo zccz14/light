@@ -1,13 +1,14 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.models.Problem;
-import com.funcxy.oj.services.ProblemService;
+import com.funcxy.oj.repositories.ProblemRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,31 +16,60 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/problem")
+@RequestMapping("/problems")
 public class ProblemController {
     @Autowired
-    ProblemService problemService;
+    ProblemRepository problemRepository;
 
     @Autowired
     MongoTemplate mongoTemplate;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Problem saveProblem(Problem problem) throws Exception {
-        return problemService.save(problem);
+    public Problem saveProblem(@Valid Problem problem) {
+        problem.setTitle(problem.getTitle());
+        problem.setDescription(problem.getDescription());
+        if (problem.getReferenceAnswer() != null)
+            problem.setReferenceAnswer(problem.getReferenceAnswer());
+        problem.setType(problem.getType());
+        return problemRepository.save(problem);
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public Problem getOneSpecificProblem(@PathVariable ObjectId id){
+        return problemRepository.findById(id);
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Problem> getProblem(Problem problem){
-        return problemService.find(problem);
+        List<Problem> problemList = new ArrayList<>();
+        if (problem.getType() != null)
+            problemList.addAll(problemRepository.findByType(problem.getType()));
+        if (problem.getTitle() != null)
+            if (problemList.isEmpty())
+                problemList.addAll(problemRepository.findByTitle(problem.getTitle()));
+            else
+                problemList.retainAll(problemRepository.findByTitle(problem.getTitle()));
+        if (problem.getCreator() != null)
+            if (problemList.isEmpty())
+                problemList.addAll(problemRepository.findByCreator(problem.getCreator()));
+            else
+                problemList.addAll(problemRepository.findByCreator(problem.getCreator()));
+        return problemList;
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public Problem updateProblem(Problem problem){
-        return problemService.update(problem);
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Problem updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id){
+        Problem tempProblem = problemRepository.findById(id);
+        if(problem.getReferenceAnswer() != null)
+            problem.setReferenceAnswer(tempProblem.getReferenceAnswer());
+        problem.setId(id);
+        return problemRepository.save(problem);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
-    public Problem deleteProblem(Problem problem){
-        return problemService.delete(problem);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public Problem deleteProblem(@PathVariable ObjectId id){
+        Problem tempProblem = problemRepository.findById(id);
+        problemRepository.delete(tempProblem);
+        return tempProblem;
     }
 }

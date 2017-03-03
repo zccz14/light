@@ -1,27 +1,31 @@
-package com.funcxy.oj.services;
 
-import com.funcxy.oj.Application;
-import com.funcxy.oj.models.Problem;
-import com.funcxy.oj.models.User;
-import org.bson.types.ObjectId;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+//package com.funcxy.oj.services;
+//
+//import com.funcxy.oj.Application;
+//import com.funcxy.oj.models.Problem;
+//import com.funcxy.oj.models.User;
+//import org.bson.types.ObjectId;
+//import org.junit.After;
+//import org.junit.Assert;
+//import org.junit.BeforeClass;
+//import org.junit.Test;
+//import org.junit.runner.RunWith;
+//import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.boot.SpringBootConfiguration;
+//import org.springframework.boot.test.context.SpringBootTest;
+//import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+//
+///**
+// * Created by wtupc96 on 2017/3/1.
+// */
 
-/**
- * Created by wtupc96 on 2017/3/1.
- */
 //
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringBootTest(classes = Application.class)
 //@SpringBootConfiguration
-public class ProblemServiceTest {
+
+//public class ProblemServiceTest {
+
 //    private static final User USER = new User();
 //    private static final String INVALID_TYPE_1 = null;
 //    private static final String INVALID_TYPE_2 = "";
@@ -116,4 +120,6 @@ public class ProblemServiceTest {
 //    public void disposeProblem() {
 //        problemService.delete(problem.getId());
 //    }
-}
+
+//}
+
