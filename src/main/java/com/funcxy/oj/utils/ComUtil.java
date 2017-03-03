@@ -1,5 +1,7 @@
 package com.funcxy.oj.utils;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -15,7 +17,7 @@ import java.util.regex.Pattern;
 public class ComUtil {
     static public Properties properties;
     static {
-        Properties properties = new Properties();
+        properties = new Properties();
         System.out.println("class loaded");
         try {
             String root = new File("").getAbsolutePath();
@@ -29,17 +31,18 @@ public class ComUtil {
         String regex = "[a-zA-Z_]{1,}[0-9]{0,}@(([a-zA-Z0-9]-*){1,}\\.){1,3}[a-zA-Z\\-]{1,}";
         return match(regex, str);
     }
-    static public boolean hasAtLeastXLetters(String str, int number) {
-        String regex = "[a-zA-Z]{" + number + "}";
+    static public boolean hasAtLeastXLetters(String str) {
+        String regex = "[a-zA-Z]+";
+        System.out.println(str+match(regex,str));
         return match(regex, str);
     }
-    static public boolean hasAtLeastXNumerals(String str, int number) {
-        String regex = "\\d{" + number + "}";
+    static public boolean hasAtLeastXNumerals(String str) {
+        String regex = "\\d+";
+        System.out.println(str+match(regex,str));
         return match(regex, str);
     }
     private static boolean match(String regex, String str){
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(str);
-        return matcher.matches();
+        RegularExpression regularExpression = new RegularExpression(regex);
+        return regularExpression.matches(str);
     }
 }

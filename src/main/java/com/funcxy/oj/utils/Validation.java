@@ -5,19 +5,22 @@ import com.funcxy.oj.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 //import static com.funcxy.oj.utils.ComUtil.*;
 import com.funcxy.oj.utils.ComUtil;
+import org.springframework.stereotype.Service;
+
 /**
  * Created by aak1247 on 2017/3/1.
  */
-
+@Service
 public class Validation {
     @Autowired
-    static UserRepository userRepository;
-    public static boolean userNotValid(User user){
+    UserRepository userRepository;
+    public boolean userNotValid(User user){
         String username = user.getUsername().trim();
-        if (userRepository.findOneByUsername(username) != null
-                || username.length() > Integer.parseInt(ComUtil.properties.getProperty("maximumLengthOfUsername"))) return true;
-        if (user.getPassword().length() < Integer.parseInt(ComUtil.properties.getProperty("minimumLengthOfPassword")) ||  user.getPassword().length() > Integer.parseInt(ComUtil.properties.getProperty("maximumLengthOfPassword"))) return true;
-        if (!(ComUtil.hasAtLeastXLetters(user.getPassword(), Integer.parseInt(ComUtil.properties.getProperty("minimumLengthOfLettersInPassword")))) || !(ComUtil.hasAtLeastXNumerals(user.getPassword(), Integer.parseInt(ComUtil.properties.getProperty("minimumLengthOfNumeralsInPassword"))))) return true;
-        return false;
+        if (username.length() <= Integer.parseInt(ComUtil.properties.getProperty("maximumLengthOfUsername"))
+                && user.getPassword().length() >= Integer.parseInt(ComUtil.properties.getProperty("minimumLengthOfPassword"))
+                && user.getPassword().length() <= Integer.parseInt(ComUtil.properties.getProperty("maximumLengthOfPassword"))
+                && ComUtil.hasAtLeastXLetters(user.getPassword())
+                && ComUtil.hasAtLeastXNumerals(user.getPassword())) return false;
+        return true;
     }
 }

@@ -19,10 +19,12 @@ import java.security.NoSuchAlgorithmException;
 public class UserService {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    Validation validation;
     public void save(@Valid User user) throws InvalidException{
         user.setUsername(user.getUsername().trim());
         user.setEmail(user.getEmail().trim());
-        if (Validation.userNotValid(user))throw new InvalidException();
+        if (validation.userNotValid(user))throw new InvalidException();
         user.passwordEncrypt();
         userRepository.save(user);
     }

@@ -21,21 +21,21 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 @RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
 @SpringBootTest(classes = Application.class)
 public class UserTest{
-    User user = new User();
-    String usernameValid = "zccz14";
-    String usernameDuplicated = "  z ccz 1  4 ";
-    String usernameEmpty = "      ";
-    String emailValid = "hell@funcxy.com";
-    String emailEmpty = "";
-    String emailInvalid = "asfdjklas@.com";
-    String passwordValid = "6789067890";
-    String passwordEmpty = "";
-    String passwordInvalid = "243";
+    static User user = new User();
+    static String usernameValid = "zccz14";
+    static String usernameDuplicated = "  z ccz 1  4 ";
+    static String usernameEmpty = "      ";
+    static String emailValid = "hell@funcxy.com";
+    static String emailEmpty = "";
+    static String emailInvalid = "asfdjklas@.com";
+    static String passwordValid = "abc6789067890";
+    static String passwordEmpty = "";
+    static String passwordInvalid = "243";
     @Autowired
     UserService userService;
 
-    @Before
-    public void validUser() throws InvalidException{
+    @BeforeClass
+    public static void validUser() throws InvalidException{
         user.setUsername(usernameValid);
         user.setEmail(emailValid);
         user.setPassword(passwordValid);
@@ -44,10 +44,6 @@ public class UserTest{
     // All valid
     @Test
     public void signUpTest0() throws InvalidException{
-        User user = new User();
-        user.setUsername(usernameValid);
-        user.setPassword("fsfd");
-        user.setEmail(emailValid);
         userService.save(user);
     }
 
@@ -65,27 +61,27 @@ public class UserTest{
         userService.save(user);
     }
     // Empty username
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidException.class)
     public void signUpTest3() throws InvalidException{
         user.setUsername(usernameEmpty);
         userService.save(user);
     }
 
     // Empty email
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidException.class)
     public void signUpTest4() throws InvalidException{
         user.setEmail(emailEmpty);
         userService.save(user);
     }
     // Invalid email
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidException.class)
     public void signUpTest5() throws InvalidException{
         user.setEmail(emailInvalid);
         userService.save(user);
     }
 
     // Empty password
-    @Test(expected = Exception.class)
+    @Test(expected = InvalidException.class)
     public void signUpTest6() throws InvalidException{
         user.setPassword(passwordEmpty);
         userService.save(user);

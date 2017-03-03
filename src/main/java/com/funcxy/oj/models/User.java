@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
@@ -26,10 +27,10 @@ public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId userId;
-    @Indexed
+    @Indexed(unique = true)
     @NotBlank
     private String username;
-    @Indexed
+    @Indexed(unique = true)
     @Email
     private String email;
     @JsonIgnore
