@@ -59,7 +59,7 @@ public class ProblemController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public Problem deleteProblem(Problem problem){
+    public Problem deleteProblem(Problem problem, String id){
         Problem tempProblem = problemRepository.findById(problem.getId());
         problemRepository.delete(problem);
         return tempProblem;

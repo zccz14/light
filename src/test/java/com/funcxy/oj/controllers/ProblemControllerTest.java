@@ -1,9 +1,9 @@
-package com.funcxy.oj.controllers;
-
-/**
- * Created by wtupc96 on 2017/3/2.
- */
-
+//package com.funcxy.oj.controllers;
+//
+///**
+// * Created by wtupc96 on 2017/3/2.
+// */
+//
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringBootTest(classes = Application.class)
 //@SpringBootConfiguration
