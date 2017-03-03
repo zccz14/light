@@ -1,16 +1,11 @@
-package com.funcxy.oj.controllers;
+package com.funcxy.oj.services;
 
 import com.funcxy.oj.Application;
 import com.funcxy.oj.models.User;
-import com.funcxy.oj.services.UserService;
-import com.funcxy.oj.utils.InvalidException;
-import org.bson.types.ObjectId;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
@@ -20,7 +15,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 @RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
 @SpringBootTest(classes = Application.class)
-public class UserTest{
+public class UserServiceTest {
     static User user = new User();
     static String usernameValid = "zccz14";
     static String usernameDuplicated = "  z ccz 1  4 ";
@@ -34,8 +29,8 @@ public class UserTest{
     @Autowired
     UserService userService;
 
-    @BeforeClass
-    public static void validUser() throws InvalidException{
+    @Before
+    public static void validUser() throws Exception{
         user.setUsername(usernameValid);
         user.setEmail(emailValid);
         user.setPassword(passwordValid);
@@ -43,52 +38,52 @@ public class UserTest{
 
     // All valid
     @Test
-    public void signUpTest0() throws InvalidException{
+    public void signUpTest0() throws Exception{
         userService.save(user);
     }
 
     // Duplicated username
-    @Test(expected = InvalidException.class)
-    public void signUpTest1() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest1() throws Exception{
         userService.save(user);
         userService.save(user);
     }
     // Duplicated username
-    @Test(expected = InvalidException.class)
-    public void signUpTest2() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest2() throws Exception{
         userService.save(user);
         user.setUsername(usernameDuplicated);
         userService.save(user);
     }
     // Empty username
-    @Test(expected = InvalidException.class)
-    public void signUpTest3() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest3() throws Exception{
         user.setUsername(usernameEmpty);
         userService.save(user);
     }
 
     // Empty email
-    @Test(expected = InvalidException.class)
-    public void signUpTest4() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest4() throws Exception{
         user.setEmail(emailEmpty);
         userService.save(user);
     }
     // Invalid email
-    @Test(expected = InvalidException.class)
-    public void signUpTest5() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest5() throws Exception{
         user.setEmail(emailInvalid);
         userService.save(user);
     }
 
     // Empty password
-    @Test(expected = InvalidException.class)
-    public void signUpTest6() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest6() throws Exception{
         user.setPassword(passwordEmpty);
         userService.save(user);
     }
     // Invalid password
-    @Test(expected = InvalidException.class)
-    public void signUpTest7() throws InvalidException{
+    @Test(expected = Exception.class)
+    public void signUpTest7() throws Exception{
         user.setPassword(passwordInvalid);
         userService.save(user);
     }

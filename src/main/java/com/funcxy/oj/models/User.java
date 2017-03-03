@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
-import org.hibernate.validator.constraints.Length;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.data.annotation.Id;
@@ -71,6 +70,7 @@ public class User {
     }
 
     public String getUsername() {
+        username.trim();
         return username;
     }
 
@@ -83,6 +83,7 @@ public class User {
     }
 
     public void setEmail(String email) {
+        email.trim();
         this.email = email;
     }
 
@@ -94,7 +95,7 @@ public class User {
         return password;
     }
 
-    public void passwordEncrypt() {
+    public void setPassword() {
         String algorithm = properties.getProperty("encryptAlgorithm");
         this.password = UserUtil.encrypt(algorithm, password);
     }
