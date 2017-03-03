@@ -1,3 +1,4 @@
+
 //package com.funcxy.oj.services;
 //
 //import com.funcxy.oj.Application;
@@ -17,11 +18,14 @@
 ///**
 // * Created by wtupc96 on 2017/3/1.
 // */
+
 //
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringBootTest(classes = Application.class)
 //@SpringBootConfiguration
+
 //public class ProblemServiceTest {
+
 //    private static final User USER = new User();
 //    private static final String INVALID_TYPE_1 = null;
 //    private static final String INVALID_TYPE_2 = "";
@@ -116,4 +120,6 @@
 //    public void disposeProblem() {
 //        problemService.delete(problem.getId());
 //    }
+
 //}
+

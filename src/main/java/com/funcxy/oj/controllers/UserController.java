@@ -2,7 +2,8 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.models.Passport;
 import com.funcxy.oj.models.User;
-import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.services.UserService;
+import com.funcxy.oj.utils.InvalidException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,44 +19,29 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
  * Created by zccz14 on 2017/3/2.
  */
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
     @Autowired
-    private UserRepository userRepository;
+    private UserService userService;
 
     @RequestMapping(value = "/login", method = POST)
-    public User login(@RequestBody Passport passport, HttpSession httpSession) {
-        System.out.println(passport.username);
-        System.out.println(passport.password);
-        User user = userRepository.findOneByUsername(passport.username);
-        if (user == null) {
-            System.out.println("no such user");
-            // TODO: Change Response
-            return null;
-        } else if (user.passwordVerify(passport.password)) {
-            System.out.println("user login");
-            System.out.println(user.getUsername());
-            httpSession.setAttribute("userId", user.getId().toString());
+    public Object login(@RequestBody Passport passport, HttpSession httpSession) {
+        User user = userService.login(passport);
+        if (user != null) {
+            httpSession.setAttribute("userId", user.getUserId().toString());
             return user;
-        } else {
-            System.out.println("wrong username or password");
-            // TODO: Change Response
-            return null;
-        }
+        } else return null;
     }
 
     @RequestMapping(value = "/signup", method = POST)
-    public User signup(@RequestBody User user, HttpSession httpSession) {
-        return userRepository.insert(user);
+    public User signup(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException {
+        System.out.println(passport.username + "signup");
+        return userService.signUp(passport);
     }
 
     @RequestMapping(value = "/profile", method = GET)
     public User profile(HttpSession httpSession) {
-        String userId = (String) httpSession.getAttribute("userId");
-        if (userId == null) {
-            System.out.println("not login yet");
-            return null;
-        }
-        return userRepository.findOne(userId);
+        //TODO: handle with the
+        return userService.findOne(httpSession.getAttribute("userId").toString());
     }
 }

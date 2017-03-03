@@ -5,18 +5,19 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
- * Created by Administrator on 2017/2/28 0028.
+ * Created by niyou2016 on 2017/2/28 0028.
  */
 public class Submission {
     @Id
     private ObjectId id;
     @Indexed
+    private ObjectId userId;
+    @Indexed
     private ObjectId problemListId;
     @Indexed
     private ObjectId problemId;
-    @Indexed
+
     private String status;
-    private String condition;
     private String sentence;
     private String content;
 
@@ -45,13 +46,7 @@ public class Submission {
         this.status = status;
     }
 
-    public String getCondition() {
-        return condition;
-    }
 
-    public void setCondition(String condition) {
-        this.condition = condition;
-    }
 
     public String getSentence() {
         return sentence;
@@ -75,5 +70,13 @@ public class Submission {
 
     public void setProblemId(ObjectId problemId) {
         this.problemId = problemId;
+    }
+
+    public ObjectId getUserId() {
+        return userId;
+    }
+
+    public void setUserId(ObjectId userId) {
+        this.userId = userId;
     }
 }
