@@ -31,7 +31,7 @@ public class UserController {
     public Object login(@RequestBody Passport passport, HttpSession httpSession) {
         User user = userService.login(passport);
         if (user != null){
-            httpSession.setAttribute("userId",user.getId().toString());
+            httpSession.setAttribute("userId",user.getUserId().toString());
             return user;
         }
         else return null;

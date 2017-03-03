@@ -1,8 +1,10 @@
 package com.funcxy.oj.models;
 
 import org.bson.types.ObjectId;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -16,17 +18,26 @@ public class Problem {
     @Id
     @NotNull
     private ObjectId id;
+
     @Indexed
     @NotNull
-    private ObjectId creatorId;
+    @DBRef(lazy = true)
+    private User creator;
+
     @Indexed
     @NotNull
+    @NotBlank
     private String title;
+
     @Indexed
+    @NotBlank
     @NotNull
     private String type;
+
     @NotNull
+    @NotBlank
     private String description;
+
     private String referenceAnswer;
 
     public ObjectId getId() {
@@ -37,12 +48,12 @@ public class Problem {
         this.id = id;
     }
 
-    public ObjectId getCreatorId() {
-        return creatorId;
+    public User getCreator() {
+        return creator;
     }
 
-    public void setCreatorId(ObjectId creatorId) {
-        this.creatorId = creatorId;
+    public void setCreator(User creator) {
+        this.creator = creator;
     }
 
     public String getTitle() {
@@ -75,5 +86,13 @@ public class Problem {
 
     public void setReferenceAnswer(String referenceAnswer) {
         this.referenceAnswer = referenceAnswer;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this.getId().equals(((Problem)obj).getId()))
+            return true;
+        else
+            return false;
     }
 }
