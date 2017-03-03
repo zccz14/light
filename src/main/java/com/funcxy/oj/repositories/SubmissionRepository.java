@@ -18,7 +18,6 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
 
     List<Submission> findByStatus(String status);
 
-    List<Submission> findByCondition(String condition);
 
     List<Submission> findBySentence(String sentence);
 
