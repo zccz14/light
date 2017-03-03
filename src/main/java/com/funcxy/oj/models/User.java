@@ -15,8 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-import static com.funcxy.oj.utils.ComUtil.properties;
-
 /**
  * User DOM
  * @author ddhee
@@ -96,13 +94,11 @@ public class User {
     }
 
     public void setPassword() {
-        String algorithm = properties.getProperty("encryptAlgorithm");
-        this.password = UserUtil.encrypt(algorithm, password);
+        this.password = UserUtil.encrypt("SHA1", password);
     }
 
     public boolean passwordVerify(String password) {
-        String algorithm = properties.getProperty("encryptAlgorithm");
-        return this.password.equals(UserUtil.encrypt(algorithm, password));
+        return this.password.equals(UserUtil.encrypt("SHA1", password));
     }
 
     public String getProfile() {
