@@ -28,10 +28,10 @@ public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
-    @Indexed
+    @Indexed(unique = true)
     @NotBlank
     private String username;
-    @Indexed
+    @Indexed(unique = true)
     @Email
     private String email;
     @NotBlank
@@ -74,7 +74,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
 
     public String getEmail() {
@@ -82,11 +82,11 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.trim();
     }
 
     public void setPassword(String password) {
-        this.password = encrypt("SHA1", password);
+        this.password = encrypt("SHA1", password).trim();
     }
 
     public boolean passwordVerify(String password) {
