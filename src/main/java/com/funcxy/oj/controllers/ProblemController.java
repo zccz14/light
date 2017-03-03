@@ -2,11 +2,10 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.repositories.ProblemRepository;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
@@ -53,13 +52,17 @@ public class ProblemController {
         return problemList;
     }
 
-    @RequestMapping(method = RequestMethod.PUT)
-    public Problem updateProblem(Problem problem){
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+    public Problem updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id){
+        Problem tempProblem = problemRepository.findById(id);
+        if(problem.getReferenceAnswer() != null)
+            problem.setReferenceAnswer(tempProblem.getReferenceAnswer());
+        problem.setId(id);
         return problemRepository.save(problem);
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public Problem deleteProblem(Problem problem, String id){
+    public Problem deleteProblem(Problem problem){
         Problem tempProblem = problemRepository.findById(problem.getId());
         problemRepository.delete(problem);
         return tempProblem;

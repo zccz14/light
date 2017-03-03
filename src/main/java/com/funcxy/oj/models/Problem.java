@@ -1,5 +1,7 @@
 package com.funcxy.oj.models;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
@@ -13,13 +15,14 @@ import javax.validation.constraints.NotNull;
  * Created by wtupc96 on 2017/2/28.
  */
 
-@Document(collection = "problem")
+@Document(collection = "problems")
 public class Problem {
     @Id
+    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
 
     @Indexed
-    @NotNull
+//    @NotNull
     @DBRef(lazy = true)
     private User creator;
 
