@@ -3,6 +3,7 @@ package com.funcxy.oj.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.funcxy.oj.utils.UserUtil;
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
@@ -16,6 +17,8 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.List;
 
+import static com.funcxy.oj.utils.UserUtil.encrypt;
+
 /**
  * User DOM
  * @author ddhee
@@ -25,25 +28,25 @@ public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
-    @Indexed
+    @Indexed(unique = true)
     @NotBlank
     private String username;
-    @Indexed
+    @Indexed(unique = true)
     @Email
     private String email;
     @NotBlank
     private String password;
-    @JsonIgnore
-    private int sex;
-    @JsonIgnore
+    private int gender;
+/*
+    0:not setted
+    1:male
+    2:female
+    3:other
+ */
     private Date birthday;
-    @JsonIgnore
     private String location;
-    @JsonIgnore
     private String personalUrl;
-    @JsonIgnore
     private String avatar;
-    @JsonIgnore
     private String profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
@@ -58,16 +61,6 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-    private static String encrypt(String algorithm, String clearText) {
-        try {
-            MessageDigest pwd = MessageDigest.getInstance(algorithm);
-            pwd.update(clearText.getBytes());
-            return HexBin.encode(pwd.digest());
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("No Such Algorithm: " + algorithm);
-        }
-    }
-
     public ObjectId getId() {
         return id;
     }
@@ -81,7 +74,7 @@ public class User {
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
 
     public String getEmail() {
@@ -89,11 +82,11 @@ public class User {
     }
 
     public void setEmail(String email) {
-        this.email = email;
+        this.email = email.trim();
     }
 
     public void setPassword(String password) {
-        this.password = encrypt("SHA1", password);
+        this.password = encrypt("SHA1", password).trim();
     }
 
     public boolean passwordVerify(String password) {
@@ -164,12 +157,12 @@ public class User {
         this.avatar = avatar;
     }
 
-    public int getSex() {
-        return sex;
+    public int getGender() {
+        return gender;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setGender(int gender) {
+        this.gender = gender;
     }
 
     public Date getBirthday() {
