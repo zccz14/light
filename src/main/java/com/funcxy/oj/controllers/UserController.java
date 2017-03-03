@@ -5,6 +5,7 @@ import com.funcxy.oj.models.Passport;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.services.UserService;
+import com.funcxy.oj.utils.InvalidException;
 import com.mongodb.util.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/signup", method = POST)
-    public User signup(@RequestBody Passport passport, HttpSession httpSession) {
+    public User signup(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         System.out.println(passport.username+"signup");
         return userService.signUp(passport);
     }
