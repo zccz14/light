@@ -34,6 +34,11 @@ public class ProblemController {
         return problemRepository.save(problem);
     }
 
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
+    public Problem getOneSpecificProblem(@PathVariable ObjectId id){
+        return problemRepository.findById(id);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
     public List<Problem> getProblem(Problem problem){
         List<Problem> problemList = new ArrayList<>();
@@ -61,10 +66,10 @@ public class ProblemController {
         return problemRepository.save(problem);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE)
-    public Problem deleteProblem(Problem problem){
-        Problem tempProblem = problemRepository.findById(problem.getId());
-        problemRepository.delete(problem);
+    @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+    public Problem deleteProblem(@PathVariable ObjectId id){
+        Problem tempProblem = problemRepository.findById(id);
+        problemRepository.delete(tempProblem);
         return tempProblem;
     }
 }
