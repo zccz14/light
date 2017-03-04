@@ -33,7 +33,7 @@ public class User {
     private String email;
     @NotEmpty(message = "密码为空")
     private String password;
-    private Profile profile;
+    private Profile profile = new Profile();
     @JsonIgnore
     private List<ObjectId> problemOwned;
     @JsonIgnore
@@ -79,14 +79,6 @@ public class User {
 
     public boolean passwordVerify(String password) {
         return this.password.equals(UserUtil.encrypt("SHA1", password));
-    }
-
-    public String getBio() {
-        return profile.getBio();
-    }
-
-    public void setBio(String Bio) {
-        profile.setBio(Bio);
     }
 
     public List<ObjectId> getProblemOwned() {
@@ -175,6 +167,19 @@ public class User {
 
     public void setPersonalUrl(String personalUrl) {
         profile.setPersonalUrl(personalUrl);
+    }
+    public void setNickname(String nickname){
+        profile.setNickname(nickname);
+    }
+    public String getNickname(){
+        return profile.getNickname();
+    }
+    public String getBio() {
+        return profile.getBio();
+    }
+
+    public void setBio(String Bio) {
+        profile.setBio(Bio);
     }
     public void setProfile(Profile profile){
         this.profile = profile;
