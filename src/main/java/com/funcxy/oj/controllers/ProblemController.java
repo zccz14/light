@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +26,10 @@ public class ProblemController {
     MongoTemplate mongoTemplate;
 
     @RequestMapping(method = RequestMethod.POST)
-    public Problem saveProblem(@Valid Problem problem) {
-        return problemRepository.save(problem);
+    public Problem saveProblem(@Valid Problem problem, HttpSession session) {
+        ObjectId userId = (ObjectId) session.getAttribute("userId");
+        if(!ObjectId.isValid(userId.toHexString()))
+            return problemRepository.save(problem);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
