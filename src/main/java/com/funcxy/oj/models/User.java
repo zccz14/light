@@ -15,8 +15,6 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import java.util.Date;
 import java.util.List;
 
-import static com.funcxy.oj.utils.ComUtil.properties;
-
 /**
  * User DOM
  * @author ddhee
@@ -32,22 +30,9 @@ public class User {
     @Indexed(unique = true)
     @Email
     private String email;
-    @JsonIgnore
     @NotEmpty
     private String password;
-    @JsonIgnore
-    private int gender;
-    @JsonIgnore
-    private Date birthday;
-    @JsonIgnore
-    @Indexed
-    private String location;
-    @JsonIgnore
-    private String personalUrl;
-    @JsonIgnore
-    private String avatar;
-    @JsonIgnore
-    private String profile;
+    private Profile profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
     @JsonIgnore
@@ -87,30 +72,20 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setPassword() {
-        String algorithm = properties.getProperty("encryptAlgorithm");
-        this.password = UserUtil.encrypt(algorithm, password);
+        this.password = UserUtil.encrypt("SHA1", password);
     }
 
     public boolean passwordVerify(String password) {
-        String algorithm = properties.getProperty("encryptAlgorithm");
-        return this.password.equals(UserUtil.encrypt(algorithm, password));
+        return this.password.equals(UserUtil.encrypt("SHA1", password));
     }
 
-    public String getProfile() {
-        return profile;
+    public String getBio() {
+        return profile.getBio();
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setBio(String Bio) {
+        profile.setBio(Bio);
     }
 
     public List<ObjectId> getProblemOwned() {
@@ -162,42 +137,48 @@ public class User {
     }
 
     public String getAvatar() {
-        return avatar;
+        return profile.getAvatar();
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        profile.setAvatar(avatar);
     }
 
     public int getGender() {
-        return gender;
+        return profile.getGender();
     }
 
     public void setGender(int gender) {
-        this.gender = gender;
+        profile.setGender(gender);
     }
 
     public Date getBirthday() {
-        return birthday;
+        return profile.getBirthday();
     }
 
     public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+        profile.setBirthday(birthday);
     }
 
     public String getLocation() {
-        return location;
+        return profile.getLocation();
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        profile.setLocation(location);
     }
 
     public String getPersonalUrl() {
-        return personalUrl;
+        return profile.getPersonalUrl();
     }
 
     public void setPersonalUrl(String personalUrl) {
-        this.personalUrl = personalUrl;
+        profile.setPersonalUrl(personalUrl);
+    }
+    public void setProfile(Profile profile){
+        this.profile = profile;
+    }
+    public Profile getProfile(){
+        return this.profile;
     }
 }
