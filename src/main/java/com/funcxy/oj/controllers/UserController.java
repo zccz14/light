@@ -68,6 +68,7 @@ public class UserController {
             System.out.println("passport not valid");
             throw new InvalidException("input not valid");
         }
+
     }
 
     @RequestMapping(value = "/profile", method = GET)//获取详细资料

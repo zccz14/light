@@ -12,6 +12,6 @@ public class Passport {
     @NotEmpty
     public String password;
     @NotEmpty(message = "email地址为空")
-    @Email(message="email地址无效！")
+    @Email(message = "email地址无效！")
     public String email;
 }

@@ -5,8 +5,11 @@ package com.funcxy.oj.utils;
  */
 public class InvalidException extends Exception {
     String message = "model invalid";
-    public InvalidException(){}
-    public InvalidException(String message){
-        this.message=message;
+
+    public InvalidException() {
+    }
+
+    public InvalidException(String message) {
+        this.message = message;
     }
 }
