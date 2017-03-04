@@ -1,7 +1,11 @@
 package com.funcxy.oj.models;
 
+import org.hibernate.validator.constraints.URL;
 import org.springframework.data.mongodb.core.index.Indexed;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.Past;
 import java.util.Date;
 
 /**
@@ -9,11 +13,15 @@ import java.util.Date;
  */
 public class Profile {
     private String avatar;
+    @URL
     private String personalUrl;
     @Indexed
     private String nickname;
     private String bio;
+    @Max(3)
+    @Min(0)
     private int gender;
+    @Past
     private Date birthday;
     @Indexed
     private String location;
@@ -36,7 +44,7 @@ public class Profile {
         return this.nickname;
     }
     public void setBio(String bio){
-        this.nickname = nickname;
+        this.bio = bio;
     }
     public String getBio(){
         return this.bio;
