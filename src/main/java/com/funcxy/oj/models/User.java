@@ -25,12 +25,13 @@ public class User {
     @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId userId;
     @Indexed(unique = true)
-    @NotBlank
+    @NotBlank(message = "用户名为空")
     private String username;
     @Indexed(unique = true)
-    @Email
+    @NotEmpty(message = "Email地址为空")
+    @Email(message = "Email地址无效")
     private String email;
-    @NotEmpty
+    @NotEmpty(message = "密码为空")
     private String password;
     private Profile profile;
     @JsonIgnore
