@@ -22,7 +22,7 @@ public class Problem {
     private ObjectId id;
 
     @Indexed
-//    @NotNull
+    @NotNull
     @DBRef(lazy = true)
     private User creator;
 

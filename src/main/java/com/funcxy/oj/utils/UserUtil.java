@@ -1,7 +1,6 @@
 package com.funcxy.oj.utils;
 
 import com.sun.org.apache.xerces.internal.impl.dv.util.HexBin;
-import org.bson.types.ObjectId;
 
 import javax.servlet.http.HttpSession;
 import java.security.MessageDigest;
@@ -20,8 +19,7 @@ public class UserUtil {
             throw new RuntimeException("No Such Algorithm: " + algorithm);
         }
     }
-    public static boolean access(HttpSession httpSession){
-        ObjectId userId = (ObjectId) httpSession.getAttribute("userId");
-        return ObjectId.isValid(userId.toHexString());
+    public static boolean isSignedIn(HttpSession httpSession){
+        return httpSession.getAttribute("userId") != null;
     }
 }

@@ -16,6 +16,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.funcxy.oj.utils.UserUtil.isSignedIn;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  */
@@ -30,13 +32,17 @@ public class ProblemController {
     MongoTemplate mongoTemplate;
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity<Problem> saveProblem(@Valid Problem problem, HttpSession session) {
+    public ResponseEntity<Object> saveProblem(@Valid Problem problem, HttpSession session) {
+        if(!isSignedIn(session))
+            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
         return new ResponseEntity<>(problemRepository.save(problem), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity<Problem> getOneSpecificProblem(@PathVariable ObjectId id, HttpSession session) {
-        return new ResponseEntity<Problem>(problemRepository.findById(id), HttpStatus.OK);
+    public ResponseEntity<Object> getOneSpecificProblem(@PathVariable ObjectId id, HttpSession session) {
+        if(!isSignedIn(session))
+            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(problemRepository.findById(id), HttpStatus.OK);
     }
 
 //    @RequestMapping(method = RequestMethod.GET)
@@ -58,7 +64,9 @@ public class ProblemController {
 //    }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity<List<Object>> getProblem(Problem problem, HttpSession session) {
+    public ResponseEntity<Object> getProblem(Problem problem, HttpSession session) {
+        if(!isSignedIn(session))
+            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
         List<Problem> problemIdList = new ArrayList<>();
         if (problem.getType() != null) {
             problemIdList.addAll(problemRepository.findByTheArg("type", problem.getType()));
@@ -91,7 +99,7 @@ public class ProblemController {
 
 
         return
-                new ResponseEntity<List<Object>>
+                new ResponseEntity<>
                         (problemIdList
                                 .stream()
                                 .map(pro ->
@@ -100,19 +108,23 @@ public class ProblemController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity<Problem> updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity<Object> updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id, HttpSession session) {
+        if(!isSignedIn(session))
+            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
         Problem tempProblem = problemRepository.findById(id);
         if (problem.getReferenceAnswer() != null) {
             problem.setReferenceAnswer(tempProblem.getReferenceAnswer());
         }
         problem.setId(id);
-        return new ResponseEntity<Problem>(problemRepository.save(problem), HttpStatus.OK);
+        return new ResponseEntity<Object>(problemRepository.save(problem), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity<Problem> deleteProblem(@PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity<Object> deleteProblem(@PathVariable ObjectId id, HttpSession session) {
+        if(!isSignedIn(session))
+            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
         Problem tempProblem = problemRepository.findById(id);
         problemRepository.delete(tempProblem);
-        return new ResponseEntity<Problem>(tempProblem, HttpStatus.OK);
+        return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 }
