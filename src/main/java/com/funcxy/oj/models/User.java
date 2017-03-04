@@ -23,7 +23,7 @@ import java.util.List;
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId userId;
+    private ObjectId id;
     @Indexed(unique = true)
     @NotBlank(message = "用户名为空")
     private String username;
@@ -47,12 +47,12 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-    public ObjectId getUserId() {
-        return userId;
+    public ObjectId getId() {
+        return this.id;
     }
 
-    public void setUserId(ObjectId userId) {
-        this.userId = userId;
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -129,62 +129,14 @@ public class User {
         this.problemListLiked = problemListLiked;
     }
 
-    public String getAvatar() {
-        return profile.getAvatar();
-    }
-
-    public void setAvatar(String avatar) {
-        profile.setAvatar(avatar);
-    }
-
-    public int getGender() {
-        return profile.getGender();
-    }
-
-    public void setGender(int gender) {
-        profile.setGender(gender);
-    }
-
-    public Date getBirthday() {
-        return profile.getBirthday();
-    }
-
-    public void setBirthday(Date birthday) {
-        profile.setBirthday(birthday);
-    }
-
-    public String getLocation() {
-        return profile.getLocation();
-    }
-
-    public void setLocation(String location) {
-        profile.setLocation(location);
-    }
-
-    public String getPersonalUrl() {
-        return profile.getPersonalUrl();
-    }
-
-    public void setPersonalUrl(String personalUrl) {
-        profile.setPersonalUrl(personalUrl);
-    }
-    public void setNickname(String nickname){
-        profile.setNickname(nickname);
-    }
-    public String getNickname(){
-        return profile.getNickname();
-    }
-    public String getBio() {
-        return profile.getBio();
-    }
-
-    public void setBio(String Bio) {
-        profile.setBio(Bio);
-    }
     public void setProfile(Profile profile){
         this.profile = profile;
     }
     public Profile getProfile(){
         return this.profile;
+    }
+    @JsonIgnore
+    public String getLocation(){
+        return this.profile.getLocation();
     }
 }

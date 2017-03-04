@@ -12,7 +12,7 @@ import java.util.stream.Stream;
  * @author ddhee
  */
 public interface UserRepository extends MongoRepository<User, String> {
-    User findByUserId(ObjectId userId);
+    User findById(ObjectId id);
     List<User> findByUsernameLike (String username);
     User findOneByEmail(String email);
     User findOneByUsername(String username);

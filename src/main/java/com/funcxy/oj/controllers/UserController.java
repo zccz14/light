@@ -9,13 +9,9 @@ import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
@@ -34,7 +30,7 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "/sign-in", method = POST)//登录
+    @RequestMapping(value = "/signin", method = POST)//登录
     public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         if(passport.username==null){
 //            throw new InvalidException("username or email must be setted");
@@ -47,14 +43,14 @@ public class UserController {
                 User userFound = userRepository.findOneByEmail(passport.username);
                 System.out.println(userFound);
                 if (userFound.passwordVerify(passport.password)){
-                    httpSession.setAttribute("userId",userFound.getUserId().toString());
+                    httpSession.setAttribute("userId",userFound.getId().toString());
                     return new ResponseEntity<>(userFound, HttpStatus.OK);
                 }
             }else  if(regExpUsername.matches(passport.username)){
                 User userFound = userRepository.findOneByUsername(passport.username);
                 System.out.println("found by username"+userFound);
                 if (userFound.passwordVerify(passport.password)){
-                    httpSession.setAttribute("userId",userFound.getUserId().toString());
+                    httpSession.setAttribute("userId",userFound.getId().toString());
                     return new ResponseEntity<>(userFound,HttpStatus.OK);
                 }
                 System.out.println("password wrong"+passport.password);
@@ -68,7 +64,7 @@ public class UserController {
         return new ResponseEntity<>(new InvalidException("user not found"), HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/sign-up", method = POST)//注册
+    @RequestMapping(value = "/signup", method = POST)//注册
     public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
@@ -95,18 +91,25 @@ public class UserController {
 
     @RequestMapping(value = "/username/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
-        HttpHeaders responseHeaders = new HttpHeaders();
-//        String id = new String(httpSession.getAttribute("userId").toString());
-//        if (id==null||id==""){
-//            return new ResponseEntity<>(new InvalidException("haven't signed in yet"), HttpStatus.FORBIDDEN);
-//        }else
           if (userRepository.findOneByUsername(username)==null)
               return new ResponseEntity<>(new InvalidException("user doesn't exist"), HttpStatus.NOT_FOUND);
-          else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(), responseHeaders, HttpStatus.FOUND);
+          else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
-    @RequestMapping(value = "/profile",method = PUT)
+    @RequestMapping(value = "/profile",method = PUT)//修改用户资料
     public User putProfile(@RequestBody @Valid Profile profile,HttpSession httpSession){
         return null;
+    }
+    @RequestMapping(value = "/find/username",method = GET)//精确查找用户名
+    public ResponseEntity hasUsername(@RequestParam String username){
+        User userFound = userRepository.findOneByUsername(username);
+        if (userFound == null)return new ResponseEntity(new String("not found"),HttpStatus.OK);
+        return new ResponseEntity(new String("find"),HttpStatus.CONFLICT);
+    }
+    @RequestMapping(value = "/find/email",method = GET)//精确查找邮箱
+    public ResponseEntity hasEamil(@RequestParam String email){
+        User userFound = userRepository.findOneByEmail(email);
+        if(userFound == null)return new ResponseEntity(new String("not found"),HttpStatus.OK);
+        return new ResponseEntity(new String("find"),HttpStatus.CONFLICT);
     }
 }
