@@ -20,10 +20,4 @@ public class Validation {
         RegularExpression validEmail = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
         return validUsername.matches(passport.username) && validPassword.matches(passport.password) && validEmail.matches(passport.email);
     }
-
-    public static void main(String[] args) {
-        Passport passport = new Passport();
-        passport.username = "1247";
-        System.out.println(isValid(passport));
-    }
 }
