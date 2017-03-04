@@ -7,9 +7,12 @@ import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.InvalidException;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,15 +34,16 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "/login", method = POST)//登录
-    public ResponseEntity<Object> login(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
+    @RequestMapping(value = "/sign-in", method = POST)//登录
+    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         if(passport.username==null){
-            throw new InvalidException("username or email must be setted");
+//            throw new InvalidException("username or email must be setted");
+            return new ResponseEntity<>(new InvalidException("username or email must be setted"),HttpStatus.BAD_REQUEST);
         }else{
             System.out.println(passport.username+"login");
-            RegularExpression regExpEamil = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
+            RegularExpression regExpEmail = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
             RegularExpression regExpUsername = new RegularExpression("^[a-zA-Z0-9_]+");
-            if (regExpEamil.matches(passport.username)){
+            if (regExpEmail.matches(passport.username)){
                 User userFound = userRepository.findOneByEmail(passport.username);
                 System.out.println(userFound);
                 if (userFound.passwordVerify(passport.password)){
@@ -54,47 +58,51 @@ public class UserController {
                     return new ResponseEntity<>(userFound,HttpStatus.OK);
                 }
                 System.out.println("password wrong"+passport.password);
+                return new ResponseEntity<>(new InvalidException("wrong password"), HttpStatus.FORBIDDEN);
             }else {
 //                throw new InvalidException("input illegal");
-                return new ResponseEntity<>(new InvalidException("input illegal"),HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new InvalidException("input illegal"), HttpStatus.BAD_REQUEST);
             }
         }
 
-        return new ResponseEntity<>(new InvalidException("user password not correct or user not found"),HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new InvalidException("user not found"), HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/signup", method = POST)//注册
-    public ResponseEntity<Object> signup(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
+    @RequestMapping(value = "/sign-up", method = POST)//注册
+    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
             System.out.println(passport.username+" sign up");
             User userFoundByUsername = userRepository.findOneByUsername(passport.email);
             if (userFoundByUsername!=null){
-                throw new InvalidException("already sign up");
+                return new ResponseEntity<>(new InvalidException("username existed"), HttpStatus.BAD_REQUEST);
             }
             User userFoundByEmail = userRepository.findOneByEmail(passport.email);
             if (userFoundByEmail!=null) {
-                throw new InvalidException("already sign up");
+                return new ResponseEntity<>(new InvalidException("email existed"), HttpStatus.BAD_REQUEST);
             }
             User user = new User();
             user.setUsername(passport.username);
             user.setEmail(passport.email);
             user.setPassword(passport.password);
-            return new ResponseEntity<>(userRepository.insert(user),HttpStatus.CREATED);
+            return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
-            System.out.println("passport not valid");
-            return new ResponseEntity<Object>(new InvalidException("input not valid"),HttpStatus.BAD_REQUEST);
+            System.out.println("invalid passport");
+            return new ResponseEntity<>(new InvalidException("invalid input"), HttpStatus.BAD_REQUEST);
         }
 
     }
 
-    @RequestMapping(value = "/profile", method = GET)//获取详细资料
-    public User profile(HttpSession httpSession) throws InvalidException{
-        String id = new String(httpSession.getAttribute("userId").toString());
-        if (id==null||id==""){
-            System.out.println("userid not setted");
-            throw new InvalidException("userid not setted");
-        }else return userRepository.findOne(id);
+    @RequestMapping(value = "/username/profile", method = GET)//获取详细资料
+    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
+        HttpHeaders responseHeaders = new HttpHeaders();
+//        String id = new String(httpSession.getAttribute("userId").toString());
+//        if (id==null||id==""){
+//            return new ResponseEntity<>(new InvalidException("haven't signed in yet"), HttpStatus.FORBIDDEN);
+//        }else
+          if (userRepository.findOneByUsername(username)==null)
+              return new ResponseEntity<>(new InvalidException("user doesn't exist"), HttpStatus.NOT_FOUND);
+          else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(), responseHeaders, HttpStatus.FOUND);
     }
 
     @RequestMapping(value = "/profile",method = PUT)
