@@ -32,13 +32,6 @@ public class User {
     private String email;
     @NotEmpty
     private String password;
-//    private int gender;
-//    private Date birthday;
-//    @Indexed
-//    private String location;
-//    private String personalUrl;
-//    private String avatar;
-//    private String profile;
     private Profile profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
@@ -79,15 +72,7 @@ public class User {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public void setPassword() {
         this.password = UserUtil.encrypt("SHA1", password);
     }
 
