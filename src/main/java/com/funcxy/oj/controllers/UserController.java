@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,8 +34,8 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "/login", method = POST)//登录
-    public ResponseEntity<Object> login(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
+    @RequestMapping(value = "/sign-in", method = POST)//登录
+    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         if(passport.username==null){
 //            throw new InvalidException("username or email must be setted");
             return new ResponseEntity<>(new InvalidException("username or email must be setted"),HttpStatus.BAD_REQUEST);
@@ -67,8 +68,8 @@ public class UserController {
         return new ResponseEntity<>(new InvalidException("user not found"), HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/signup", method = POST)//注册
-    public ResponseEntity<Object> signup(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
+    @RequestMapping(value = "/sign-up", method = POST)//注册
+    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
             System.out.println(passport.username+" sign up");
@@ -92,14 +93,16 @@ public class UserController {
 
     }
 
-    @RequestMapping(value = "/profile", method = GET)//获取详细资料
-    public ResponseEntity<Object> profile(HttpSession httpSession) throws InvalidException{
+    @RequestMapping(value = "/username/profile", method = GET)//获取详细资料
+    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
         HttpHeaders responseHeaders = new HttpHeaders();
-        String id = new String(httpSession.getAttribute("userId").toString());
-        if (id==null||id==""){
-            System.out.println("userid not setted");
-            return new ResponseEntity<>(new InvalidException("haven't signed in yet"), HttpStatus.FORBIDDEN);
-        }else return new ResponseEntity<>(userRepository.findOne(id), responseHeaders, HttpStatus.FOUND);
+//        String id = new String(httpSession.getAttribute("userId").toString());
+//        if (id==null||id==""){
+//            return new ResponseEntity<>(new InvalidException("haven't signed in yet"), HttpStatus.FORBIDDEN);
+//        }else
+          if (userRepository.findOneByUsername(username)==null)
+              return new ResponseEntity<>(new InvalidException("user doesn't exist"), HttpStatus.NOT_FOUND);
+          else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(), responseHeaders, HttpStatus.FOUND);
     }
 
     @RequestMapping(value = "/profile",method = PUT)
