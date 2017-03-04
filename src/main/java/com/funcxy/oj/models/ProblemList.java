@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotNull;
 import java.util.Date;
 import java.util.List;
 
@@ -18,19 +19,23 @@ public class ProblemList {
     private ObjectId id;
 
     @Indexed
+    @NotNull
     @DBRef(lazy = true)
     private User creator;
 
     private ObjectId[] problemIds;
 
-    private boolean isAccessible;
+    @NotNull
+    private boolean isAccessible = false;
 
     private List<ObjectId> userList;
 
     @Indexed
+    @NotNull
     private String title;
 
     @Indexed
+    @NotNull
     private String type;
 
     private Date readBeginTime;
@@ -45,15 +50,20 @@ public class ProblemList {
 
     private List<ObjectId> submissionList;
 
-    private boolean isAnonymous;
+    @NotNull
+    private boolean isAnonymous = false;
 
-    private boolean submitterVisibleToJudge;
+    @NotNull
+    private boolean submitterVisibleToJudge = false;
 
-    private boolean resultVisibleToOthers;
+    @NotNull
+    private boolean resultVisibleToOthers = true;
 
-    private boolean resultVisibleToSubmitterSelf;
+    @NotNull
+    private boolean resultVisibleToSubmitterSelf = true;
 
-    private boolean canBeCopied;
+    @NotNull
+    private boolean canBeCopied = true;
 
 
 
