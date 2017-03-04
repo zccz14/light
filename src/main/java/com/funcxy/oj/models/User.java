@@ -32,13 +32,14 @@ public class User {
     private String email;
     @NotEmpty
     private String password;
-    private int gender;
-    private Date birthday;
-    @Indexed
-    private String location;
-    private String personalUrl;
-    private String avatar;
-    private String profile;
+//    private int gender;
+//    private Date birthday;
+//    @Indexed
+//    private String location;
+//    private String personalUrl;
+//    private String avatar;
+//    private String profile;
+    private Profile profile;
     @JsonIgnore
     private List<ObjectId> problemOwned;
     @JsonIgnore
@@ -94,12 +95,12 @@ public class User {
         return this.password.equals(UserUtil.encrypt("SHA1", password));
     }
 
-    public String getProfile() {
-        return profile;
+    public String getBio() {
+        return profile.getBio();
     }
 
-    public void setProfile(String profile) {
-        this.profile = profile;
+    public void setBio(String Bio) {
+        profile.setBio(Bio);
     }
 
     public List<ObjectId> getProblemOwned() {
@@ -151,42 +152,48 @@ public class User {
     }
 
     public String getAvatar() {
-        return avatar;
+        return profile.getAvatar();
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        profile.setAvatar(avatar);
     }
 
     public int getGender() {
-        return gender;
+        return profile.getGender();
     }
 
     public void setGender(int gender) {
-        this.gender = gender;
+        profile.setGender(gender);
     }
 
     public Date getBirthday() {
-        return birthday;
+        return profile.getBirthday();
     }
 
     public void setBirthday(Date birthday) {
-        this.birthday = birthday;
+        profile.setBirthday(birthday);
     }
 
     public String getLocation() {
-        return location;
+        return profile.getLocation();
     }
 
     public void setLocation(String location) {
-        this.location = location;
+        profile.setLocation(location);
     }
 
     public String getPersonalUrl() {
-        return personalUrl;
+        return profile.getPersonalUrl();
     }
 
     public void setPersonalUrl(String personalUrl) {
-        this.personalUrl = personalUrl;
+        profile.setPersonalUrl(personalUrl);
+    }
+    public void setProfile(Profile profile){
+        this.profile = profile;
+    }
+    public Profile getProfile(){
+        return this.profile;
     }
 }
