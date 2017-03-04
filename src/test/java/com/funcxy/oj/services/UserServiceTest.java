@@ -17,8 +17,6 @@ public class UserServiceTest {
 //    static String passwordValid = "abc6789067890";
 //    static String passwordEmpty = "";
 //    static String passwordInvalid = "243";
-//    @Autowired
-//    UserService userService;
 //
 //    @Before
 //    public void validUser() throws Exception{
