@@ -13,7 +13,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.POST;
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
-    @RequestMapping(value = "/creat",method = POST)
+    @RequestMapping(value = "/create",method = POST)
     public ResponseEntity<Object> createGroup(){
 
         return null;
