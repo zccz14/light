@@ -5,6 +5,7 @@ import com.funcxy.oj.models.Profile;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.InvalidException;
+import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
@@ -30,11 +31,11 @@ public class UserController {
     @Autowired
     UserRepository userRepository;
 
-    @RequestMapping(value = "/signin", method = POST)//登录
+    @RequestMapping(value = "/sign-in", method = POST)//登录
     public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         if(passport.username==null){
-//            throw new InvalidException("username or email must be setted");
-            return new ResponseEntity<>(new InvalidException("username or email must be setted"),HttpStatus.BAD_REQUEST);
+//            throw new InvalidException("username or email must be set");
+            return new ResponseEntity<>(new InvalidException("username or email must be set"),HttpStatus.BAD_REQUEST);
         }else{
             System.out.println(passport.username+"login");
             RegularExpression regExpEmail = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
@@ -64,7 +65,7 @@ public class UserController {
         return new ResponseEntity<>(new InvalidException("user not found"), HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/signup", method = POST)//注册
+    @RequestMapping(value = "/sign-up", method = POST)//注册
     public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
@@ -75,12 +76,26 @@ public class UserController {
             }
             User userFoundByEmail = userRepository.findOneByEmail(passport.email);
             if (userFoundByEmail!=null) {
-                return new ResponseEntity<>(new InvalidException("email existed"), HttpStatus.BAD_REQUEST);
+                //查看邮箱是否已验证
+                System.out.println("foundbyemail"+userFoundByEmail.getEmail());
+                if(userFoundByEmail.hasVerifiedEmail()){
+                    userFoundByEmail.setUsername(passport.username);
+                    userFoundByEmail.setPassword(passport.password);
+                    userFoundByEmail.notVerified();
+                    //发邮件
+                    UserUtil.sendEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentify());
+                    return new ResponseEntity<Object>(userFoundByEmail,HttpStatus.OK);
+                }else{
+                    return new ResponseEntity<>(new InvalidException("email existed"), HttpStatus.BAD_REQUEST);
+                }
             }
             User user = new User();
             user.setUsername(passport.username);
             user.setEmail(passport.email);
             user.setPassword(passport.password);
+            user.notVerified();
+            //发邮件
+            UserUtil.sendEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentify());
             return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
             System.out.println("invalid passport");
@@ -107,9 +122,26 @@ public class UserController {
         return new ResponseEntity(new String("find"),HttpStatus.CONFLICT);
     }
     @RequestMapping(value = "/find/email",method = GET)//精确查找邮箱
-    public ResponseEntity hasEamil(@RequestParam String email){
+    public ResponseEntity hasEmail(@RequestParam String email){
         User userFound = userRepository.findOneByEmail(email);
         if(userFound == null)return new ResponseEntity(new String("not found"),HttpStatus.OK);
         return new ResponseEntity(new String("find"),HttpStatus.CONFLICT);
     }
+    @RequestMapping(value = "/{username}/{verify}",method = GET)//验证邮箱
+    public ResponseEntity verifyEmail(@PathVariable String username,@PathVariable String verify){
+        User user = userRepository.findOneByUsername(username);
+        if(user.hasVerifiedEmail()){
+            return new ResponseEntity(new String("already verified"),HttpStatus.NO_CONTENT);
+        }else {
+            if (user.toVerifyEmail(verify)){
+                user.verifyingEmail();
+                userRepository.save(user);
+                return new ResponseEntity(new String("success"),HttpStatus.ACCEPTED);
+            }else {
+                return new ResponseEntity(new String("failed"),HttpStatus.BAD_REQUEST);
+            }
+        }
+    }
+
+
 }

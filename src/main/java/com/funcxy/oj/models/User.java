@@ -46,8 +46,8 @@ public class User {
     private List<ObjectId> problemLiked;
     @JsonIgnore
     private List<ObjectId> problemListLiked;
-    @JsonIgnore
-    private String identify;
+
+    private String identify = "";
     public ObjectId getId() {
         return this.id;
     }
@@ -142,11 +142,26 @@ public class User {
     public String getLocation(){
         return this.profile.getLocation();
     }
+    @JsonIgnore
     public String getIdentify(){
         return this.identify;
     }
-
     public void setIdentify(String identify){
         this.identify = identify;
+    }
+
+    public boolean hasVerifiedEmail(){//是否已验证邮件
+        return this.identify.equals(new String("verified"));
+    }
+
+    public void  verifyingEmail(){//设为已验证状态
+        this.identify = new String("verified");
+    }
+
+    public void notVerified(){//设定随机字符串为验证字符串
+        this.identify = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
+    }
+    public boolean toVerifyEmail(String verify){
+        return this.identify.equals(verify);
     }
 }
