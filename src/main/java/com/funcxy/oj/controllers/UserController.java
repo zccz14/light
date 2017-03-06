@@ -113,6 +113,11 @@ public class UserController {
 
     @RequestMapping(value = "/profile",method = PUT)//修改用户资料
     public User putProfile(@RequestBody @Valid Profile profile,HttpSession httpSession){
+        if(UserUtil.isSignedIn(httpSession)){
+            User userFound = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+            userFound.setProfile(profile);
+            userRepository.save(userFound);
+        }
         return null;
     }
     @RequestMapping(value = "/find/username",method = GET)//精确查找用户名
@@ -142,6 +147,4 @@ public class UserController {
             }
         }
     }
-
-
 }
