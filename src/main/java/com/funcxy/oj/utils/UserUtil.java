@@ -66,8 +66,9 @@ public class UserUtil {
 //            msg.setHeader("Content-Transfer-Encoding", "utf-8");
             sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
             msg.setSubject("=?UTF-8?B?"+enc.encode(i18nProps.getProperty("verifyMailHead.subject").getBytes())+"?=");
-//            String content = new String(i18nProps.getProperty("verifyMailContent.prefix")+projectProps.getProperty("siteHost")+"users/"+randomString+i18nProps.getProperty("verifyMailContent.suffix"));
-            String content = new String(projectProps.getProperty("siteHost")+"users/"+randomString);
+            String content = new String(i18nProps.getProperty("verifyMailContent.prefix")+projectProps.getProperty("siteHost")+"users/"+randomString+i18nProps.getProperty("verifyMailContent.suffix"));
+            System.out.println(content);
+//            String content = new String(projectProps.getProperty("siteHost")+"users/"+randomString);
             content = new String(content.getBytes("utf-8"),"iso8859-1");
             msg.setContent(content,"text/html;charset=iso8859-1");
             msg.setFrom(new InternetAddress(projectProps.getProperty("mailAccount")));
