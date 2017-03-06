@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 /**
- * Created by aak12 on 2017/3/4.
+ * Created by aak1247 on 2017/3/4.
  */
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
-    @RequestMapping(value = "/creat",method = POST)
+    @RequestMapping(value = "/create",method = POST)
     public ResponseEntity<Object> createGroup(){
+
         return null;
     }
 }

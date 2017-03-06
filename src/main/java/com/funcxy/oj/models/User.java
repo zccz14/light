@@ -23,14 +23,15 @@ import java.util.List;
 public class User {
     @Id
     @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId userId;
+    private ObjectId id;
     @Indexed(unique = true)
-    @NotBlank
+    @NotBlank(message = "用户名为空")
     private String username;
     @Indexed(unique = true)
-    @Email
+    @NotEmpty(message = "Email地址为空")
+    @Email(message = "Email地址无效")
     private String email;
-    @NotEmpty
+    @NotEmpty(message = "密码为空")
     private String password;
     private Profile profile = new Profile();
     @JsonIgnore
@@ -46,12 +47,13 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListLiked;
 
-    public ObjectId getUserId() {
-        return userId;
+    private String identify = "";
+    public ObjectId getId() {
+        return this.id;
     }
 
-    public void setUserId(ObjectId userId) {
-        this.userId = userId;
+    public void setId(ObjectId id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -128,62 +130,38 @@ public class User {
         this.problemListLiked = problemListLiked;
     }
 
-    public String getAvatar() {
-        return profile.getAvatar();
-    }
-
-    public void setAvatar(String avatar) {
-        profile.setAvatar(avatar);
-    }
-
-    public int getGender() {
-        return profile.getGender();
-    }
-
-    public void setGender(int gender) {
-        profile.setGender(gender);
-    }
-
-    public Date getBirthday() {
-        return profile.getBirthday();
-    }
-
-    public void setBirthday(Date birthday) {
-        profile.setBirthday(birthday);
-    }
-
-    public String getLocation() {
-        return profile.getLocation();
-    }
-
-    public void setLocation(String location) {
-        profile.setLocation(location);
-    }
-
-    public String getPersonalUrl() {
-        return profile.getPersonalUrl();
-    }
-
-    public void setPersonalUrl(String personalUrl) {
-        profile.setPersonalUrl(personalUrl);
-    }
-    public void setNickname(String nickname){
-        profile.setNickname(nickname);
-    }
-    public String getNickname(){
-        return profile.getNickname();
-    }
-    public String getBio() {
-        return profile.getBio();
-    }
-
-    public void setBio(String Bio) {
-        profile.setBio(Bio);
-    }
     public void setProfile(Profile profile){
         this.profile = profile;
     }
+
     public Profile getProfile(){
         return this.profile;
+    }
+
+    @JsonIgnore
+    public String getLocation(){
+        return this.profile.getLocation();
+    }
+    @JsonIgnore
+    public String getIdentify(){
+        return this.identify;
+    }
+    public void setIdentify(String identify){
+        this.identify = identify;
+    }
+
+    public boolean hasVerifiedEmail(){//是否已验证邮件
+        return this.identify.equals(new String("verified"));
+    }
+
+    public void  verifyingEmail(){//设为已验证状态
+        this.identify = new String("verified");
+    }
+
+    public void notVerified(){//设定随机字符串为验证字符串
+        this.identify = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
+    }
+    public boolean toVerifyEmail(String verify){
+        return this.identify.equals(verify);
     }
 }
