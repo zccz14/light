@@ -88,4 +88,12 @@ public class Group {
     public void setType(GroupType type) {
         this.type = type;
     }
+    public void addMember(ObjectId memberId){
+        this.joiningMemberId.remove(joiningMemberId.indexOf(memberId));
+        this.memberId.add(memberId);
+    }
+
+    public void askJoin(ObjectId joinId){
+        this.joiningMemberId.add(joinId);
+    }
 }

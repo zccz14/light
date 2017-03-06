@@ -21,6 +21,11 @@ public class Profile {
     @Max(3)
     @Min(0)
     private int gender;
+    /*
+    0 not set
+    1 male
+    1 female
+     */
     @Past
     private Date birthday;
     @Indexed

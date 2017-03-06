@@ -46,7 +46,8 @@ public class User {
     private List<ObjectId> problemLiked;
     @JsonIgnore
     private List<ObjectId> problemListLiked;
-
+    @JsonIgnore
+    private String identify;
     public ObjectId getId() {
         return this.id;
     }
@@ -132,11 +133,20 @@ public class User {
     public void setProfile(Profile profile){
         this.profile = profile;
     }
+
     public Profile getProfile(){
         return this.profile;
     }
+
     @JsonIgnore
     public String getLocation(){
         return this.profile.getLocation();
+    }
+    public String getIdentify(){
+        return this.identify;
+    }
+
+    public void setIdentify(String identify){
+        this.identify = identify;
     }
 }
