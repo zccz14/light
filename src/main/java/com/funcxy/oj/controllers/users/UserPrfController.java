@@ -4,12 +4,18 @@ import com.funcxy.oj.controllers.UserController;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
+import com.funcxy.oj.models.CleanedProblem;
+import com.funcxy.oj.models.CleanedProblemList;
 import com.funcxy.oj.models.User;
+import com.funcxy.oj.repositories.ProblemListRepository;
+import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.utils.DataPageable;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,6 +39,15 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 public class UserPrfController {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ProblemRepository problemRepository;
+    @Autowired
+    ProblemListRepository problemListRepository;
+    private DataPageable pageable;
+    {
+        pageable = new DataPageable();
+        pageable.setSort(new Sort(Sort.Direction.ASC,"title"));
+    }
     //收藏问题
     @RequestMapping(value = "/{username}/liked-problems/{problemId}", method = RequestMethod.POST)
     public ResponseEntity<Object> likeProblem(@PathVariable String username, @PathVariable ObjectId problemId, HttpSession httpSession) {
@@ -102,5 +117,60 @@ public class UserPrfController {
         }
         user.deleteProblemListLiked(problemListId);
         return new ResponseEntity<>(HttpStatus.OK);
+    }
+    //获取收藏的题单
+    @RequestMapping(value = "/{username}/liked-problem-lists",method = RequestMethod.GET)
+    public ResponseEntity getLikedProblemLists(@PathVariable String username,HttpSession httpSession){
+        if (UserUtil.isSignedIn(httpSession)){
+            User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
+            if (user == null) return  new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+            List<ObjectId> likedProblemList = user.getProblemListLiked();
+            return new ResponseEntity<>(new PageImpl<CleanedProblemList>(
+                    likedProblemList
+                            .stream()
+                            .map(
+                                    pro->new CleanedProblemList(
+                                            problemListRepository.findById(pro).getId(),
+                                            problemListRepository.findById(pro).getTitle(),
+                                            problemListRepository.findById(pro).getType()
+                                    )
+                            )
+                            .collect(Collectors.toList())
+                    ,pageable
+                    ,likedProblemList.size()
+            )
+                    ,HttpStatus.FOUND
+            );
+        }else {
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+    }
+
+    //获取收藏的题目
+    @RequestMapping(value = "/{username}/liked-problems",method = RequestMethod.GET)
+    public ResponseEntity getLikedProblems(@PathVariable String username,HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        User user = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+        if (user==null){
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        }
+        List<ObjectId> likedProblem = user.getProblemLiked();
+
+        return new ResponseEntity<>(
+                new PageImpl<CleanedProblem>(
+                        likedProblem.stream()
+                                .map(
+                                        pro->new CleanedProblem(
+                                                problemRepository.findById(pro).getId(),
+                                                problemRepository.findById(pro).getTitle()
+                                        )
+                                ).collect(Collectors.toList()),
+                        pageable,
+                        likedProblem.size()
+                ),
+                HttpStatus.OK
+        );
     }
 }
