@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.repositories.ProblemRepository;
 import org.bson.types.ObjectId;
@@ -19,6 +20,9 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
 /**
  * Created by wtupc96 on 2017/2/28.
+ *
+ * @author Peter
+ * @version 1.0
  */
 
 @RestController
@@ -33,7 +37,7 @@ public class ProblemController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity saveProblem(@Valid Problem problem, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(problemRepository.save(problem), HttpStatus.OK);
     }
@@ -41,16 +45,16 @@ public class ProblemController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity getOneSpecificProblem(@PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(problemRepository.findById(id), HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblem(Problem problem, HttpSession session) {
-//        if (!isSignedIn(session)) {
-//            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
-//        }
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
         List<Problem> problemIdList = null;
         if (problem.getType() != null) {
 //            problemIdList = problemRepository.findByTheArg("type", problem.getType());
@@ -101,7 +105,7 @@ public class ProblemController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        Problem tempProblem = problemRepository.findById(id);
 //        if (problem.getReferenceAnswer() == null) {
@@ -114,7 +118,7 @@ public class ProblemController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblem(@PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Problem tempProblem = problemRepository.findById(id);
         problemRepository.delete(tempProblem);
