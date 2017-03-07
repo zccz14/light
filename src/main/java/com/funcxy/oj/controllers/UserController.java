@@ -147,4 +147,19 @@ public class UserController {
             }
         }
     }
+    @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
+    public ResponseEntity searchUser(@RequestParam String email,String username,String nickname,String bio){
+
+        return new ResponseEntity(HttpStatus.OK);
+    }
+    //收藏问题
+    //收藏题单
+    //取消收藏问题
+    //取消收藏题单
+    //获取收藏的题单
+    //获取收藏的题目
+    //获取历史提交
+    //获取未判决的提交
+    //获取拥有的题目
+    //获取拥有的题单
 }
