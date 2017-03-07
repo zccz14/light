@@ -1,6 +1,7 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.models.CleanedProblem;
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
@@ -106,16 +107,6 @@ public class ProblemController {
 
         if (problemIdList == null) {
             return new ResponseEntity(problemRepository.findAll(pageable), HttpStatus.OK);
-        }
-
-        class CleanedProblem implements Serializable {
-            public ObjectId id;
-            public String title;
-
-            public CleanedProblem(ObjectId id, String title) {
-                this.id = id;
-                this.title = title;
-            }
         }
 
         return
