@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
+import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -143,6 +144,15 @@ public class User {
         return this.profile.getLocation();
     }
     @JsonIgnore
+    public String getBio(){
+        return this.profile.getBio();
+    }
+    @JsonIgnore
+    public String getNickname(){
+        return this.profile.getNickname();
+    }
+
+    @JsonIgnore
     public String getIdentify(){
         return this.identify;
     }
@@ -164,4 +174,8 @@ public class User {
     public boolean toVerifyEmail(String verify){
         return this.identify.equals(verify);
     }
+    public boolean equals(User user) {
+        return this.id.equals(user.getId());
+    }
+
 }
