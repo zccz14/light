@@ -13,6 +13,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -36,17 +37,17 @@ public class User {
     private String password;
     private Profile profile = new Profile();
     @JsonIgnore
-    private List<ObjectId> problemOwned;
+    private List<ObjectId> problemOwned = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemListOwned;
+    private List<ObjectId> problemListOwned = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> submissionHistory;
+    private List<ObjectId> submissionHistory = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> submissionUndecided;
+    private List<ObjectId> submissionUndecided = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemLiked;
+    private List<ObjectId> problemLiked = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemListLiked;
+    private List<ObjectId> problemListLiked = new ArrayList<>(0);
 
     private String identify = "";
     public ObjectId getId() {
@@ -144,6 +145,14 @@ public class User {
 
     public void setProblemListLiked(List<ObjectId> problemListLiked) {
         this.problemListLiked = problemListLiked;
+    }
+
+    public void addProblemListLiked(ObjectId problemListId){
+        this.problemListLiked.add(problemListId);
+    }
+
+    public void deleteProblemListLiked(ObjectId problemListId){
+        this.problemListLiked.remove(problemListId);
     }
 
     public void setProfile(Profile profile){

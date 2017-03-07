@@ -2,17 +2,23 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.Passport;
+import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.Profile;
 import com.funcxy.oj.models.User;
+import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.utils.DataPageable;
 import com.funcxy.oj.utils.InvalidException;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
+import com.sun.org.apache.regexp.internal.RE;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
+import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,7 +26,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -35,11 +44,28 @@ import static org.springframework.web.bind.annotation.RequestMethod.PUT;
 public class UserController {
     @Autowired
     UserRepository userRepository;
+    @Autowired
+    ProblemListRepository problemListRepository;
+    private DataPageable pageable;
+    {
+        pageable = new DataPageable();
+        pageable.setSort(new Sort(Sort.Direction.ASC,"title"));
+    }
 
+    class CleanedProblemList implements Serializable {
+        public ObjectId id;
+        public String title;
+        public String type;
+
+        public CleanedProblemList(ObjectId id, String title,String type) {
+            this.id = id;
+            this.title = title;
+            this.type = type;
+        }
+    }
     @RequestMapping(value = "/sign-in", method = POST)//登录
     public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
         if(passport.username==null){
-//            throw new InvalidException("username or email must be set");
             return new ResponseEntity<>(new InvalidException("username or email must be set"),HttpStatus.BAD_REQUEST);
         }else{
             System.out.println(passport.username+"login");
@@ -47,6 +73,7 @@ public class UserController {
             RegularExpression regExpUsername = new RegularExpression("^[a-zA-Z0-9_]+");
             if (regExpEmail.matches(passport.username)){
                 User userFound = userRepository.findOneByEmail(passport.username);
+                if (userFound == null)return new ResponseEntity(new NotFoundError(),HttpStatus.NOT_FOUND);
                 System.out.println(userFound);
                 if (userFound.passwordVerify(passport.password)){
                     httpSession.setAttribute("userId",userFound.getId().toString());
@@ -54,6 +81,7 @@ public class UserController {
                 }
             }else  if(regExpUsername.matches(passport.username)){
                 User userFound = userRepository.findOneByUsername(passport.username);
+                if(userFound == null) return new ResponseEntity<Object>(new NotFoundError(),HttpStatus.NOT_FOUND);
                 System.out.println("found by username"+userFound);
                 if (userFound.passwordVerify(passport.password)){
                     httpSession.setAttribute("userId",userFound.getId().toString());
@@ -67,7 +95,7 @@ public class UserController {
             }
         }
 
-        return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/sign-up", method = POST)//注册
@@ -109,21 +137,22 @@ public class UserController {
 
     }
 
-    @RequestMapping(value = "/username/profile", method = GET)//获取详细资料
+    @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
           if (userRepository.findOneByUsername(username)==null)
               return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
-    @RequestMapping(value = "/profile",method = PUT)//修改用户资料
-    public User putProfile(@RequestBody @Valid Profile profile,HttpSession httpSession){
+    @RequestMapping(value = "/{username}/profile",method = PUT)//修改用户资料
+    public ResponseEntity putProfile(@RequestBody @Valid Profile profile,@PathVariable String username, HttpSession httpSession){
         if(UserUtil.isSignedIn(httpSession)){
             User userFound = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
             userFound.setProfile(profile);
             userRepository.save(userFound);
+            return new ResponseEntity(profile,HttpStatus.OK);
         }
-        return null;
+        return new ResponseEntity(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
     @RequestMapping(value = "/find/username",method = GET)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username){
@@ -154,12 +183,12 @@ public class UserController {
     }
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
     public ResponseEntity searchUser(@RequestParam String email, String username, String nickname, String bio, String location, org.springframework.data.domain.Pageable pageable){
-        List<User> users = null;
+        List<User> users = new ArrayList<>(0);
         if (email != null){
             users.addAll(userRepository.findByEmail(email));
         }
         if (username != null){
-            if (users != null){//非空时取交集
+            if (users.size() != 0){//非空时取交集
                 List<User> usersFoundByUsername = userRepository.findByUsernameLike(username);
                 users.retainAll(usersFoundByUsername);
             }else{//空时直接添加
@@ -167,7 +196,7 @@ public class UserController {
             }
         }
         if (nickname != null){
-            if (users!=null){
+            if (users.size()!=0){
                 List<User> usersFoundByNickname = userRepository.findByNicknameLike(nickname);
                 users.retainAll(usersFoundByNickname);
             }else{
@@ -175,7 +204,7 @@ public class UserController {
             }
         }
         if (location != null){
-            if (users!=null){
+            if (users.size()!=0){
                 List<User> usersFoundByLocation = userRepository.findByLocation(location);
                 users.retainAll(usersFoundByLocation);
             }else {
@@ -183,22 +212,62 @@ public class UserController {
             }
         }
         if (bio != null){
-            if (users != null){
+            if (users.size() != 0){
                 List<User> usersFoundByBio = userRepository.findByBioLike(bio);
                 users.retainAll(usersFoundByBio);
             }else {
                 users.addAll(userRepository.findByBioLike(bio));
             }
         }
-//        users = users.stream().distinct().collect(Collectors.toList());
-        Page<User> userPage = new PageImpl<User>(users,pageable,users.size());
-        return new ResponseEntity(users,HttpStatus.OK);
+        return new ResponseEntity(new PageImpl<User>(users,pageable,users.size())
+                ,HttpStatus.OK);
     }
     //TODO:收藏问题
-    //TODO:收藏题单
+    //收藏题单
+    @RequestMapping(value = "/{username}/liked-problem-lists/{id}",method = RequestMethod.POST)
+    public ResponseEntity<Object> likeProblemLists(@PathVariable String username,@PathVariable ObjectId problemListId,HttpSession httpSession){
+        if (UserUtil.isSignedIn(httpSession)){
+            User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
+            if (user == null) return new ResponseEntity<Object>(new NotFoundError(),HttpStatus.NOT_FOUND);
+            if (userRepository.findById((ObjectId) httpSession.getAttribute("userId")).getProblemListLiked().indexOf(problemListId)!=-1)return new ResponseEntity<Object>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+            userRepository.findById((ObjectId) httpSession.getAttribute("userId")).addProblemListLiked(problemListId);
+            return new ResponseEntity<Object>(new User(),HttpStatus.OK);
+        }else {
+            return new ResponseEntity<Object>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+    }
+
     //TODO:取消收藏问题
-    //TODO:取消收藏题单
+    //取消收藏题单
+    @RequestMapping(value = "/{username}/liked-problem-lists/{id}",method = RequestMethod.DELETE)
+    public ResponseEntity<Object> dislikeProblemLists(@PathVariable String username,@PathVariable ObjectId problemListId,HttpSession httpSession){
+        if (UserUtil.isSignedIn(httpSession)){
+            User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
+            if (user == null) return new ResponseEntity<Object>(new NotFoundError(),HttpStatus.NOT_FOUND);
+            if (userRepository.findById((ObjectId) httpSession.getAttribute("userId")).getProblemListLiked().indexOf(problemListId)==-1)return new ResponseEntity<Object>(new NotFoundError(),HttpStatus.NOT_FOUND);
+            userRepository.findById((ObjectId) httpSession.getAttribute("userId")).deleteProblemListLiked(problemListId);
+            return new ResponseEntity<Object>(new User(),HttpStatus.OK);
+        }else {
+            return new ResponseEntity<Object>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+    }
     //TODO:获取收藏的题单
+    @RequestMapping(value = "/{username}/liked-problem-lists",method = RequestMethod.GET)
+    public ResponseEntity getLikedProblemLists(@PathVariable String username,HttpSession httpSession){
+        if (UserUtil.isSignedIn(httpSession)){
+            User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
+            if (user == null) return  new ResponseEntity(new NotFoundError(),HttpStatus.NOT_FOUND);
+            List<ObjectId> likedProblemList = user.getProblemListLiked();
+            return new ResponseEntity(new PageImpl<CleanedProblemList>(
+                    likedProblemList.stream().map(
+                            pro->new CleanedProblemList(problemListRepository.findById(pro).getId(),problemListRepository.findById(pro).getTitle(),problemListRepository.findById(pro).getType())
+                    ).collect(Collectors.toList()),pageable,likedProblemList.size()
+            )
+                    ,HttpStatus.FOUND);
+        }else {
+            return new ResponseEntity(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+    }
     //TODO:获取收藏的题目
     //获取历史提交
     //获取未判决的提交
