@@ -9,9 +9,7 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpSession;
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
@@ -59,18 +57,14 @@ public class UserUtil {
         try {
             projectProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\project.properties")));
             String language = projectProps.getProperty("lang");
-            i18nProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\i18n\\"+language+".properties")));
+            i18nProps.load(new BufferedReader(new InputStreamReader(new FileInputStream(url+"\\src\\main\\resources\\i18n\\"+language+".properties"),projectProps.getProperty("encoding"))));
             mailProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\mail.properties")));
             Session session = Session.getInstance(mailProps);
             Message msg = new MimeMessage(session);
-//            msg.setHeader("Content-Transfer-Encoding", "utf-8");
-            sun.misc.BASE64Encoder enc = new sun.misc.BASE64Encoder();
-            msg.setSubject("=?UTF-8?B?"+enc.encode(i18nProps.getProperty("verifyMailHead.subject").getBytes())+"?=");
+            msg.setHeader("Content-Transfer-Encoding", "utf-8");
+            msg.setSubject(i18nProps.getProperty("verifyMailHead.subject"));
             String content = new String(i18nProps.getProperty("verifyMailContent.prefix")+projectProps.getProperty("siteHost")+"users/"+randomString+i18nProps.getProperty("verifyMailContent.suffix"));
-            System.out.println(content);
-//            String content = new String(projectProps.getProperty("siteHost")+"users/"+randomString);
-            content = new String(content.getBytes("utf-8"),"iso8859-1");
-            msg.setContent(content,"text/html;charset=iso8859-1");
+            msg.setContent(content,"text/html;charset=utf-8");
             msg.setFrom(new InternetAddress(projectProps.getProperty("mailAccount")));
             msg.setRecipient(Message.RecipientType.TO,new InternetAddress(email));
             msg.setSentDate(new Date());
@@ -82,9 +76,5 @@ public class UserUtil {
             System.out.println("not found");
             return;
         }
-    }
-
-    public static void main(String args[]){
-        sendEmail("aak1247@126.com","this");
     }
 }
