@@ -12,6 +12,12 @@ import java.util.List;
 
 /**
  * Created by chenyu on 2017/3/1.
+ *
+ * Modified by wtupc96 on 2017/3/4
+ *
+ * @author Peter
+ * @author chenyu
+ * @version 1.0
  */
 @Document(collection = "problemLists")
 public class ProblemList {

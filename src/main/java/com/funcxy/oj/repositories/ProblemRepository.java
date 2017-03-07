@@ -10,12 +10,21 @@ import java.util.List;
 
 /**
  * Created by wtupc96 on 2017/2/28.
+ *
+ * @author Peter
+ * @version 1.0
  */
 public interface ProblemRepository extends MongoRepository<Problem, ObjectId> {
     public Problem findById(ObjectId id);
-    public List<Problem> findByCreator(User creator);
-    public List<Problem> findByTitle(String title);
-    public List<Problem> findByType(String type);
+
+    @Query(fields = "{'title':1}")
+    public List<Problem> findByCreatorLike(User creator);
+
+    @Query(fields = "{'title':1}")
+    public List<Problem> findByTitleLike(String title);
+
+    @Query(fields = "{'title':1}")
+    public List<Problem> findByTypeLike(String type);
 
     @Query(value = "{?0:?1}", fields = "{'title':1}")
     public List<Problem> findByTheArg(String arg, Object argValue);

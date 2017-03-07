@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import org.bson.types.ObjectId;
@@ -18,6 +19,9 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
 /**
  * Created by wtupc96 on 2017/3/4.
+ *
+ * @author Peter
+ * @version 1.0
  */
 
 @RestController
@@ -32,7 +36,7 @@ public class ProblemListController {
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblemLists(HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         List<ProblemList> problemLists = problemListRepository.findAll();
 
@@ -56,7 +60,7 @@ public class ProblemListController {
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity getOneSpecificProblemList(@PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity(problemListRepository.findById(id), HttpStatus.OK);
     }
@@ -64,7 +68,7 @@ public class ProblemListController {
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity createProblemList(@Valid ProblemList problemList, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity(problemListRepository.save(problemList), HttpStatus.OK);
     }
@@ -72,7 +76,7 @@ public class ProblemListController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList, @PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        if(problemList.getType() != null);
 //        if(problemList.getTitle() != null);
@@ -90,7 +94,7 @@ public class ProblemListController {
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblemList(@PathVariable ObjectId id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(HttpStatus.FORBIDDEN);
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         ProblemList tempProblemList = problemListRepository.findById(id);
         problemListRepository.delete(tempProblemList);
