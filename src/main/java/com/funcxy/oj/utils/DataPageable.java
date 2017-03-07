@@ -14,7 +14,7 @@ import java.io.Serializable;
 public class DataPageable implements Serializable, Pageable {
 
     private int pageNumber = 1;
-    private int pageSize = 2;
+    private int pageSize = 10;
 
     private Sort sort;
 

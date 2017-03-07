@@ -139,6 +139,14 @@ public class User {
         this.problemLiked = problemLiked;
     }
 
+    public void addProblemLiked(ObjectId problemId) {
+        this.problemLiked.add(problemId);
+    }
+
+    public void deleteProblemLiked(ObjectId problemId) {
+        this.problemLiked.remove(this.problemLiked.indexOf(problemId));
+    }
+
     public List<ObjectId> getProblemListLiked() {
         return problemListLiked;
     }
@@ -147,12 +155,12 @@ public class User {
         this.problemListLiked = problemListLiked;
     }
 
-    public void addProblemListLiked(ObjectId problemListId){
-        this.problemListLiked.add(problemListId);
+    public void addProblemListLiked(ObjectId problemId) {
+        this.problemListLiked.add(problemId);
     }
 
-    public void deleteProblemListLiked(ObjectId problemListId){
-        this.problemListLiked.remove(problemListId);
+    public void deleteProblemListLiked(ObjectId problemId) {
+        this.problemListLiked.remove(this.problemListLiked.indexOf(problemId));
     }
 
     public void setProfile(Profile profile){

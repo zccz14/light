@@ -3,6 +3,7 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.repositories.ProblemRepository;
+import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,6 +35,10 @@ public class ProblemController {
     private static final Sort sort = new Sort(Sort.Direction.ASC, "title");
     @Autowired
     ProblemRepository problemRepository;
+
+    @Autowired
+    UserRepository userRepository;
+
     @Autowired
     MongoTemplate mongoTemplate;
     private DataPageable pageable;
@@ -48,7 +53,14 @@ public class ProblemController {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(problemRepository.save(problem), HttpStatus.OK);
+
+        Problem tempProblem = problemRepository.save(problem);
+
+        userRepository
+                .findById((ObjectId) session.getAttribute("userId"))
+                .addProblemOwned(tempProblem.getId());
+
+        return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -60,11 +72,14 @@ public class ProblemController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity getProblem(Problem problem, @RequestParam int pageNumber, HttpSession session) {
+    public ResponseEntity getProblem(Problem problem, @RequestParam int pageNumber, @RequestParam int pageSize, HttpSession session) {
 //        if (!isSignedIn(session)) {
 //            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
 //        }
+
         pageable.setPageNumber(pageNumber);
+        pageable.setPageSize(pageSize);
+
         List<Problem> problemIdList = null;
         if (problem.getType() != null) {
 //            problemIdList = problemRepository.findByTheArg("type", problem.getType());
@@ -132,6 +147,11 @@ public class ProblemController {
         }
         Problem tempProblem = problemRepository.findById(id);
         problemRepository.delete(tempProblem);
+
+        userRepository
+                .findById((ObjectId) session.getAttribute("userId"))
+                .deleteProblemOwned(tempProblem.getId());
+
         return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 }
