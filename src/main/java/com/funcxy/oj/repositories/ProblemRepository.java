@@ -3,6 +3,7 @@ package com.funcxy.oj.repositories;
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.models.User;
 import org.bson.types.ObjectId;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -15,17 +16,17 @@ import java.util.List;
  * @version 1.0
  */
 public interface ProblemRepository extends MongoRepository<Problem, ObjectId> {
-    public Problem findById(ObjectId id);
+    Problem findById(ObjectId id);
 
     @Query(fields = "{'title':1}")
-    public List<Problem> findByCreatorLike(User creator);
+    List<Problem> findByCreatorLike(User creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
-    public List<Problem> findByTitleLike(String title);
+    List<Problem> findByTitleLike(String title, Pageable pageable);
 
     @Query(fields = "{'title':1}")
-    public List<Problem> findByTypeLike(String type);
+    List<Problem> findByTypeLike(String type, Pageable pageable);
 
     @Query(value = "{?0:?1}", fields = "{'title':1}")
-    public List<Problem> findByTheArg(String arg, Object argValue);
+    List<Problem> findByTheArg(String arg, Object argValue, Pageable pageable);
 }
