@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
 import static org.springframework.web.bind.annotation.RequestMethod.PUT;
@@ -148,16 +151,52 @@ public class UserController {
         }
     }
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
-    public ResponseEntity searchUser(@RequestParam String email,String username,String nickname,String bio){
-
-        return new ResponseEntity(HttpStatus.OK);
+    public ResponseEntity searchUser(@RequestParam String email,String username,String nickname,String bio,String location){
+        List<User> users = null;
+        if (email != null){
+            users.addAll(userRepository.findByEmail(email));
+        }
+        if (username != null){
+            if (users != null){//非空时取交集
+                List<User> usersFoundByUsername = userRepository.findByUsernameLike(username);
+                users.retainAll(usersFoundByUsername);
+            }else{//空时直接添加
+                users.addAll(userRepository.findByUsernameLike(username));
+            }
+        }
+        if (nickname != null){
+            if (users!=null){
+                List<User> usersFoundByNickname = userRepository.findByNicknameLike(nickname);
+                users.retainAll(usersFoundByNickname);
+            }else{
+                users.addAll(userRepository.findByNicknameLike(nickname));
+            }
+        }
+        if (location != null){
+            if (users!=null){
+                List<User> usersFoundByLocation = userRepository.findByLocation(location);
+                users.retainAll(usersFoundByLocation);
+            }else {
+                users.addAll(userRepository.findByLocation(location));
+            }
+        }
+        if (bio != null){
+            if (users != null){
+                List<User> usersFoundByBio = userRepository.findByBioLike(bio);
+                users.retainAll(usersFoundByBio);
+            }else {
+                users.addAll(userRepository.findByBioLike(bio));
+            }
+        }
+//        users = users.stream().distinct().collect(Collectors.toList());
+        return new ResponseEntity(users,HttpStatus.OK);
     }
-    //收藏问题
-    //收藏题单
-    //取消收藏问题
-    //取消收藏题单
-    //获取收藏的题单
-    //获取收藏的题目
+    //TODO:收藏问题
+    //TODO:收藏题单
+    //TODO:取消收藏问题
+    //TODO:取消收藏题单
+    //TODO:获取收藏的题单
+    //TODO:获取收藏的题目
     //获取历史提交
     //获取未判决的提交
     //获取拥有的题目
