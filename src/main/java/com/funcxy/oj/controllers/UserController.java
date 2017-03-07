@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.Passport;
 import com.funcxy.oj.models.Profile;
 import com.funcxy.oj.models.User;
@@ -10,6 +11,8 @@ import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,7 +21,6 @@ import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -58,14 +60,14 @@ public class UserController {
                     return new ResponseEntity<>(userFound,HttpStatus.OK);
                 }
                 System.out.println("password wrong"+passport.password);
-                return new ResponseEntity<>(new InvalidException("wrong password"), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }else {
 //                throw new InvalidException("input illegal");
-                return new ResponseEntity<>(new InvalidException("input illegal"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new FieldsRequiredError(), HttpStatus.BAD_REQUEST);
             }
         }
 
-        return new ResponseEntity<>(new InvalidException("user not found"), HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
     }
 
     @RequestMapping(value = "/sign-up", method = POST)//注册
@@ -75,7 +77,7 @@ public class UserController {
             System.out.println(passport.username+" sign up");
             User userFoundByUsername = userRepository.findOneByUsername(passport.email);
             if (userFoundByUsername!=null){
-                return new ResponseEntity<>(new InvalidException("username existed"), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
             }
             User userFoundByEmail = userRepository.findOneByEmail(passport.email);
             if (userFoundByEmail!=null) {
@@ -89,7 +91,7 @@ public class UserController {
                     UserUtil.sendEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentify());
                     return new ResponseEntity<Object>(userFoundByEmail,HttpStatus.OK);
                 }else{
-                    return new ResponseEntity<>(new InvalidException("email existed"), HttpStatus.BAD_REQUEST);
+                    return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
                 }
             }
             User user = new User();
@@ -102,7 +104,7 @@ public class UserController {
             return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
             System.out.println("invalid passport");
-            return new ResponseEntity<>(new InvalidException("invalid input"), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
 
     }
@@ -110,7 +112,7 @@ public class UserController {
     @RequestMapping(value = "/username/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
           if (userRepository.findOneByUsername(username)==null)
-              return new ResponseEntity<>(new InvalidException("user doesn't exist"), HttpStatus.NOT_FOUND);
+              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
@@ -139,19 +141,19 @@ public class UserController {
     public ResponseEntity verifyEmail(@PathVariable String username,@PathVariable String verify){
         User user = userRepository.findOneByUsername(username);
         if(user.hasVerifiedEmail()){
-            return new ResponseEntity(new String("already verified"),HttpStatus.NO_CONTENT);
+            return new ResponseEntity(new FieldsInvalidError(),HttpStatus.NO_CONTENT);//已经验证过
         }else {
             if (user.toVerifyEmail(verify)){
                 user.verifyingEmail();
                 userRepository.save(user);
                 return new ResponseEntity(new String("success"),HttpStatus.ACCEPTED);
             }else {
-                return new ResponseEntity(new String("failed"),HttpStatus.BAD_REQUEST);
+                return new ResponseEntity(new BadRequestError(),HttpStatus.BAD_REQUEST);
             }
         }
     }
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
-    public ResponseEntity searchUser(@RequestParam String email,String username,String nickname,String bio,String location){
+    public ResponseEntity searchUser(@RequestParam String email, String username, String nickname, String bio, String location, org.springframework.data.domain.Pageable pageable){
         List<User> users = null;
         if (email != null){
             users.addAll(userRepository.findByEmail(email));
@@ -189,6 +191,7 @@ public class UserController {
             }
         }
 //        users = users.stream().distinct().collect(Collectors.toList());
+        Page<User> userPage = new PageImpl<User>(users,pageable,users.size());
         return new ResponseEntity(users,HttpStatus.OK);
     }
     //TODO:收藏问题
