@@ -95,6 +95,21 @@ public class User {
         return problemListOwned;
     }
 
+    public void addProblemOwned(ObjectId problemId) {
+        this.problemOwned.add(problemId);
+    }
+
+    public void deleteProblemOwned(ObjectId problemId) {
+        this.problemOwned.remove(this.problemOwned.indexOf(problemId));
+    }
+
+    public void addProblemListOwned(ObjectId problemListId) {
+        this.problemListOwned.add(problemListId);
+    }
+
+    public void deleteProblemListOwned(ObjectId problemListId) {
+        this.problemListOwned.remove(this.problemListOwned.indexOf(problemListId));
+    }
     public void setProblemListOwned(List<ObjectId> problemListOwned) {
         this.problemListOwned = problemListOwned;
     }
