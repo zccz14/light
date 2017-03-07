@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.repositories.ProblemListRepository;
@@ -66,7 +67,14 @@ public class ProblemListController {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity(problemListRepository.findById(id), HttpStatus.OK);
+
+        ProblemList tempProblemList = problemListRepository.findById(id);
+
+        if (tempProblemList == null) {
+            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
