@@ -48,25 +48,30 @@ public class ProblemController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblem(Problem problem, HttpSession session) {
-        if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
-        }
+//        if (!isSignedIn(session)) {
+//            return new ResponseEntity<>(new Error(), HttpStatus.FORBIDDEN);
+//        }
         List<Problem> problemIdList = null;
         if (problem.getType() != null) {
-            problemIdList = problemRepository.findByTheArg("type", problem.getType());
+//            problemIdList = problemRepository.findByTheArg("type", problem.getType());
+            problemIdList = problemRepository.findByTypeLike(problem.getType());
         }
         if (problem.getTitle() != null) {
             if (problemIdList == null) {
-                problemIdList = problemRepository.findByTheArg("title", problem.getTitle());
+//                problemIdList = problemRepository.findByTheArg("title", problem.getTitle());
+                problemIdList = problemRepository.findByTitleLike(problem.getTitle());
             } else {
-                problemIdList.retainAll(problemRepository.findByTheArg("title", problem.getTitle()));
+//                problemIdList.retainAll(problemRepository.findByTheArg("title", problem.getTitle()));
+                problemIdList.retainAll(problemRepository.findByTitleLike(problem.getTitle()));
             }
         }
         if (problem.getCreator() != null) {
             if (problemIdList == null) {
-                problemIdList = problemRepository.findByTheArg("creator", problem.getCreator());
+//                problemIdList = problemRepository.findByTheArg("creator", problem.getCreator());
+                problemIdList = problemRepository.findByCreatorLike(problem.getCreator());
             } else {
-                problemIdList.retainAll(problemRepository.findByTheArg("creator", problem.getCreator()));
+//                problemIdList.retainAll(problemRepository.findByTheArg("creator", problem.getCreator()));
+                problemIdList.retainAll(problemRepository.findByCreatorLike(problem.getCreator()));
             }
         }
 
