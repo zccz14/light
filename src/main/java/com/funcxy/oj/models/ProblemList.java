@@ -6,6 +6,7 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -24,15 +25,14 @@ public class ProblemList {
     private ObjectId id;
 
     @Indexed
-    @NotNull
     private ObjectId creator;
 
-    private List<ObjectId> problemIds;
+    private List<ObjectId> problemIds = new ArrayList<>(0);
 
     @NotNull
     private boolean isAccessible = false;
 
-    private List<ObjectId> userList;
+    private List<ObjectId> userList = new ArrayList<>(0);
 
     @Indexed
     @NotNull
@@ -50,9 +50,9 @@ public class ProblemList {
 
     private Date readEndTime;
 
-    private List<JudgeProblem> judgerList;
+    private List<JudgeProblem> judgerList = new ArrayList<>(0);
 
-    private List<ObjectId> submissionList;
+    private List<ObjectId> submissionList = new ArrayList<>(0);
 
     @NotNull
     private boolean isAnonymous = false;
