@@ -106,7 +106,7 @@ public class UserController {
                     userFoundByEmail.notVerified();
                     userRepository.save(userFoundByEmail);
                     //发邮件
-                    UserUtil.sendEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentifyString());
+                    UserUtil.sendVerifyEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentifyString());
                     return new ResponseEntity<Object>(userFoundByEmail,HttpStatus.OK);
                 }else{
                     return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
@@ -118,7 +118,7 @@ public class UserController {
             user.setPassword(passport.password);
             user.notVerified();
             //发邮件
-            UserUtil.sendEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentifyString());
+            UserUtil.sendVerifyEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentifyString());
             return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
             System.out.println("invalid passport");
@@ -216,5 +216,26 @@ public class UserController {
         return new ResponseEntity<>(new PageImpl<User>(users,pageable,users.size())
                 ,HttpStatus.OK);
     }
-
+    @RequestMapping(value ="/{username}/password",method = RequestMethod.POST)
+    public ResponseEntity findPassword(@RequestBody Passport passport,@PathVariable String username){//找回密码
+        User user = userRepository.findOneByUsername(passport.username);
+        if (user.getEmail().equals(passport.email)){
+            user.findPassword();
+            userRepository.save(user);
+            return new ResponseEntity<>("success",HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
+        }
+    }
+    @RequestMapping(value = "/{username}/profile/password",method = PUT)
+    public ResponseEntity updatePassword(@RequestBody String password,@ PathVariable String username,HttpSession httpSession){//修改密码
+        if(UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.OK);
+        }
+        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        user.setPassword(password);
+        userRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
