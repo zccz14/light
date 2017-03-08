@@ -80,9 +80,9 @@ public class ProblemController {
 
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblem(Problem problem, @RequestParam int pageNumber, @RequestParam int pageSize, HttpSession session) {
-//        if (!isSignedIn(session)) {
-//            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-//        }
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
 
         pageable.setPageNumber(pageNumber);
         pageable.setPageSize(pageSize);
@@ -95,10 +95,10 @@ public class ProblemController {
         if (problem.getTitle() != null) {
             if (problemIdList == null) {
 //                problemIdList = problemRepository.findByTheArg("title", problem.getTitle());
-                problemIdList = problemRepository.findByTitleLike(problem.getTitle(), pageable);
+               problemIdList = problemRepository.findByTitleLike(problem.getTitle(), pageable);
             } else {
 //                problemIdList.retainAll(problemRepository.findByTheArg("title", problem.getTitle()));
-                problemIdList.retainAll(problemRepository.findByTitleLike(problem.getTitle(), pageable));
+//                problemIdList.retainAll(problemRepository.findByTitleLike(problem.getTitle(), pageable));
             }
         }
         if (problem.getCreator() != null) {
