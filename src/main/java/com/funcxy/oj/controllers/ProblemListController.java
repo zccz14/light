@@ -49,27 +49,37 @@ public class ProblemListController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity getProblemLists(@RequestParam int pageNumber, @RequestParam int pageSize, @RequestParam User creator, @RequestParam String title, HttpSession session) {
+    public ResponseEntity getProblemLists(@RequestParam int pageNumber,
+                                          @RequestParam int pageSize,
+                                          @RequestParam ObjectId creator,
+                                          @RequestParam String title,
+                                          HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
-
-        if (creator != null && title != null) {
-            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
-        } else if (creator != null) {
-            return new ResponseEntity(problemListRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
-        } else if (title != null) {
-            return new ResponseEntity(problemListRepository.findByTitleLike(title, pageable), HttpStatus.OK);
-        } else {
-            return new ResponseEntity(problemListRepository.findAll(pageable), HttpStatus.OK);
-        }
+        // 后端题单检索功能，请勿删除。
+//        if (creator != null && title != null) {
+//            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
+//        } else if (creator != null) {
+//            return new ResponseEntity(problemListRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
+//        } else if (title != null) {
+//            return new ResponseEntity(problemListRepository.findByTitleLike(title, pageable), HttpStatus.OK);
+//        } else {
+//            return new ResponseEntity(problemListRepository.findAll(pageable), HttpStatus.OK);
+//        }
+        return new ResponseEntity(problemListRepository
+                .getAllProblemListsCreated(
+                        new ObjectId(session
+                                .getAttribute("userId")
+                                .toString()), pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity getOneSpecificProblemList(@PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity getOneSpecificProblemList(@PathVariable ObjectId id,
+                                                    HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -91,16 +101,23 @@ public class ProblemListController {
 
         ProblemList tempProblemList = problemListRepository.save(problemList);
 
-        userRepository
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .addProblemListOwned(tempProblemList.getId());
+        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        user.addProblemListOwned(tempProblemList.getId());
+        userRepository.save(user);
 
         return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList, @PathVariable ObjectId id, HttpSession session) {
-        if (!isSignedIn(session)) {
+    public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList,
+                                            @PathVariable ObjectId id
+            , HttpSession session) {
+        if (!(isSignedIn(session) ||
+                new ObjectId(session
+                        .getAttribute("userId")
+                        .toString())
+                        .equals(problemList
+                                .getCreator()))) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         problemList.setId(id);
@@ -109,15 +126,21 @@ public class ProblemListController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblemList(@PathVariable ObjectId id, HttpSession session) {
-        if (!isSignedIn(session)) {
+        if (!(isSignedIn(session) &&
+                new ObjectId(session
+                        .getAttribute("userId")
+                        .toString())
+                        .equals(problemListRepository
+                                .findById(id)
+                                .getCreator()))) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         ProblemList tempProblemList = problemListRepository.findById(id);
         problemListRepository.delete(tempProblemList);
 
-        userRepository
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .deleteProblemListOwned(tempProblemList.getId());
+        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        user.deleteProblemListOwned(tempProblemList.getId());
+        userRepository.save(user);
 
         return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }

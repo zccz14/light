@@ -3,7 +3,6 @@ package com.funcxy.oj.models;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -26,10 +25,9 @@ public class ProblemList {
 
     @Indexed
     @NotNull
-    @DBRef(lazy = true)
-    private User creator;
+    private ObjectId creator;
 
-    private ObjectId[] problemIds;
+    private List<ObjectId> problemIds;
 
     @NotNull
     private boolean isAccessible = false;
@@ -81,11 +79,11 @@ public class ProblemList {
         this.id = id;
     }
 
-    public User getCreator() {
+    public ObjectId getCreator() {
         return creator;
     }
 
-    public void setCreator(User creator) {
+    public void setCreator(ObjectId creator) {
         this.creator = creator;
     }
 
@@ -182,6 +180,10 @@ public class ProblemList {
         return resultVisibleToSubmitterSelf;
     }
 
+    public void setResultVisibleToSubmitterSelf(boolean resultVisibleToSubmitterSelf) {
+        this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
+    }
+
     public boolean isAccessible() {
         return isAccessible;
     }
@@ -206,15 +208,11 @@ public class ProblemList {
         this.canBeCopied = canBeCopied;
     }
 
-    public void setResultVisibleToSubmitterSelf(boolean resultVisibleToSubmitterSelf) {
-        this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
-    }
-
-    public ObjectId[] getProblemIds() {
+    public List<ObjectId> getProblemIds() {
         return problemIds;
     }
 
-    public void setProblemIds(ObjectId[] problemIds) {
+    public void setProblemIds(List<ObjectId> problemIds) {
         this.problemIds = problemIds;
     }
 }
