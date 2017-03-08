@@ -36,4 +36,14 @@ public class GroupController {
 
         return null;
     }
+    //TODO: 解散群组
+    //TODO: 查看群组资料
+    //TODO: 修改群组资料
+    //TODO: 搜索群组
+    //TODO: 转让群组
+    //TODO: 同意加入
+    //TODO: 拒绝加入
+    //TODO: 邀请成员
+    //TODO: 申请加入
+    //TODO: 获取群组成员列表
 }
