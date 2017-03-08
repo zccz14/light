@@ -21,6 +21,9 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Obje
     Page<ProblemList> getAllProblemListsCreated(ObjectId creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
+    Page<ProblemList> findByUserListLike(ObjectId userId, Pageable pageable);
+
+    @Query(fields = "{'title':1}")
     Page<ProblemList> findByCreatorLike(User user, Pageable pageable);
 
     @Query(fields = "{'title':1}")

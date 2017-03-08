@@ -49,7 +49,7 @@ public class ProblemController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity saveProblem(@RequestBody Problem problem, HttpSession session) {
+    public ResponseEntity saveProblem(@RequestBody @Valid Problem problem, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
