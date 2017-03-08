@@ -106,6 +106,14 @@ public class ProblemController {
         } else {
             return new ResponseEntity(problemRepository.findAll(pageable), HttpStatus.OK);
         }
+
+        return
+                new ResponseEntity<>
+                        (new PageImpl<CleanedProblem>(problemIdList.stream()
+                                .map(pro
+                                        -> new CleanedProblem(pro.getId(), pro.getTitle()))
+                                .collect(Collectors.toList()), pageable, problemIdList.size())
+                                , HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
