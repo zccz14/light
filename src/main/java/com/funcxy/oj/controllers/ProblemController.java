@@ -2,6 +2,8 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.errors.NotFoundError;
+import com.funcxy.oj.models.CleanedProblem;
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -9,6 +11,7 @@ import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -17,6 +20,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
+import java.util.stream.Collectors;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
@@ -54,11 +59,10 @@ public class ProblemController {
         }
 
         Problem tempProblem = problemRepository.save(problem);
+        User user = userRepository.findById(new ObjectId( session.getAttribute("userId").toString()));
 
-        userRepository
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .addProblemOwned(tempProblem.getId());
-
+        user.addProblemOwned(tempProblem.getId());
+        userRepository.save(user);
         return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 
@@ -71,7 +75,7 @@ public class ProblemController {
         Problem tempProblem = problemRepository.findById(id);
 
         if (tempProblem == null) {
-            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
         return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
@@ -90,30 +94,22 @@ public class ProblemController {
         User creator = problem.getCreator();
 
         if (type != null && title != null && creator != null) {
-            return new ResponseEntity(problemRepository.findByTypeLikeAndTitleLikeAndCreatorLike(type, title, creator, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByTypeLikeAndTitleLikeAndCreatorLike(type, title, creator, pageable), HttpStatus.OK);
         } else if (type != null && title != null) {
-            return new ResponseEntity(problemRepository.findByTypeLikeAndTitleLike(type, title, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByTypeLikeAndTitleLike(type, title, pageable), HttpStatus.OK);
         } else if (type != null && creator != null) {
-            return new ResponseEntity(problemRepository.findByTypeLikeAndCreatorLike(type, creator, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByTypeLikeAndCreatorLike(type, creator, pageable), HttpStatus.OK);
         } else if (title != null && creator != null) {
-            return new ResponseEntity(problemRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
         } else if (type != null) {
-            return new ResponseEntity(problemRepository.findByTypeLike(type, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByTypeLike(type, pageable), HttpStatus.OK);
         } else if (title != null) {
-            return new ResponseEntity(problemRepository.findByTitleLike(title, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByTitleLike(title, pageable), HttpStatus.OK);
         } else if (creator != null) {
-            return new ResponseEntity(problemRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
         } else {
-            return new ResponseEntity(problemRepository.findAll(pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemRepository.findAll(pageable), HttpStatus.OK);
         }
-
-        return
-                new ResponseEntity<>
-                        (new PageImpl<CleanedProblem>(problemIdList.stream()
-                                .map(pro
-                                        -> new CleanedProblem(pro.getId(), pro.getTitle()))
-                                .collect(Collectors.toList()), pageable, problemIdList.size())
-                                , HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -131,12 +127,12 @@ public class ProblemController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Problem tempProblem = problemRepository.findById(id);
+        if (tempProblem == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         problemRepository.delete(tempProblem);
 
-        userRepository
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .deleteProblemOwned(tempProblem.getId());
-
+        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        user.deleteProblemOwned(tempProblem.getId());
+        userRepository.save(user);
         return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 }

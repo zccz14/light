@@ -2,7 +2,9 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.models.CleanedProblemList;
 import com.funcxy.oj.models.ProblemList;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import org.bson.types.ObjectId;
@@ -44,21 +46,10 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         List<ProblemList> problemLists = problemListRepository.findAll();
-
-        class innerTempClass {
-            public ObjectId id;
-            public String title;
-
-            public innerTempClass(ObjectId id, String title) {
-                this.id = id;
-                this.title = title;
-            }
-        }
-
         return
                 new ResponseEntity<>(problemLists
                         .stream()
-                        .map(problemList -> new innerTempClass(problemList.getId(), problemList.getTitle()))
+                        .map(problemList -> new CleanedProblemList(problemList.getId(), problemList.getTitle(),problemList.getType()))
                         .collect(Collectors.toList()), HttpStatus.OK);
     }
 
@@ -84,12 +75,9 @@ public class ProblemListController {
         }
 
         ProblemList tempProblemList = problemListRepository.save(problemList);
-
-        userRepository
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .findById(new ObjectId( session.getAttribute("userId").toString()))
-                .addProblemListOwned(tempProblemList.getId());
-
+        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        user.addProblemListOwned(tempProblemList.getId());
+        userRepository.save(user);
         return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
     }
 
@@ -119,11 +107,9 @@ public class ProblemListController {
         ProblemList tempProblemList = problemListRepository.findById(id);
         problemListRepository.delete(tempProblemList);
 
-        userRepository
-                .findById(new ObjectId( session.getAttribute("userId").toString()))
-                .findById(new ObjectId(session.getAttribute("userId").toString()))
-                .deleteProblemListOwned(tempProblemList.getId());
-
+        User user = userRepository.findById(new ObjectId( session.getAttribute("userId").toString()));
+        user.deleteProblemListOwned(tempProblemList.getId());
+        userRepository.save(user);
         return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
     }
 }
