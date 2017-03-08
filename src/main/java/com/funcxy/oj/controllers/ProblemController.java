@@ -3,12 +3,12 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.Problem;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -17,9 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
@@ -34,6 +31,7 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 @RequestMapping("/problems")
 public class ProblemController {
     private static final Sort sort = new Sort(Sort.Direction.ASC, "title");
+
     @Autowired
     ProblemRepository problemRepository;
 
@@ -50,7 +48,7 @@ public class ProblemController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity saveProblem(@Valid Problem problem, HttpSession session) {
+    public ResponseEntity saveProblem(@Valid @RequestBody Problem problem, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -87,51 +85,27 @@ public class ProblemController {
         pageable.setPageNumber(pageNumber);
         pageable.setPageSize(pageSize);
 
-        List<Problem> problemIdList = null;
-        if (problem.getType() != null) {
-//            problemIdList = problemRepository.findByTheArg("type", problem.getType());
-            problemIdList = problemRepository.findByTypeLike(problem.getType(), pageable);
-        }
-        if (problem.getTitle() != null) {
-            if (problemIdList == null) {
-//                problemIdList = problemRepository.findByTheArg("title", problem.getTitle());
-               problemIdList = problemRepository.findByTitleLike(problem.getTitle(), pageable);
-            } else {
-//                problemIdList.retainAll(problemRepository.findByTheArg("title", problem.getTitle()));
-//                problemIdList.retainAll(problemRepository.findByTitleLike(problem.getTitle(), pageable));
-            }
-        }
-        if (problem.getCreator() != null) {
-            if (problemIdList == null) {
-//                problemIdList = problemRepository.findByTheArg("creator", problem.getCreator());
-                problemIdList = problemRepository.findByCreatorLike(problem.getCreator(), pageable);
-            } else {
-//                problemIdList.retainAll(problemRepository.findByTheArg("creator", problem.getCreator()));
-                problemIdList.retainAll(problemRepository.findByCreatorLike(problem.getCreator(), pageable));
-            }
-        }
+        String type = problem.getType();
+        String title = problem.getTitle();
+        User creator = problem.getCreator();
 
-        if (problemIdList == null) {
+        if (type != null && title != null && creator != null) {
+            return new ResponseEntity(problemRepository.findByTypeLikeAndTitleLikeAndCreatorLike(type, title, creator, pageable), HttpStatus.OK);
+        } else if (type != null && title != null) {
+            return new ResponseEntity(problemRepository.findByTypeLikeAndTitleLike(type, title, pageable), HttpStatus.OK);
+        } else if (type != null && creator != null) {
+            return new ResponseEntity(problemRepository.findByTypeLikeAndCreatorLike(type, creator, pageable), HttpStatus.OK);
+        } else if (title != null && creator != null) {
+            return new ResponseEntity(problemRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
+        } else if (type != null) {
+            return new ResponseEntity(problemRepository.findByTypeLike(type, pageable), HttpStatus.OK);
+        } else if (title != null) {
+            return new ResponseEntity(problemRepository.findByTitleLike(title, pageable), HttpStatus.OK);
+        } else if (creator != null) {
+            return new ResponseEntity(problemRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
+        } else {
             return new ResponseEntity(problemRepository.findAll(pageable), HttpStatus.OK);
         }
-
-        class CleanedProblem implements Serializable {
-            public ObjectId id;
-            public String title;
-
-            public CleanedProblem(ObjectId id, String title) {
-                this.id = id;
-                this.title = title;
-            }
-        }
-
-        return
-                new ResponseEntity<>
-                        (new PageImpl<CleanedProblem>(problemIdList.stream()
-                                .map(pro
-                                        -> new CleanedProblem(pro.getId(), pro.getTitle()))
-                                .collect(Collectors.toList()), pageable, problemIdList.size())
-                                , HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -139,10 +113,6 @@ public class ProblemController {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-//        Problem tempProblem = problemRepository.findById(id);
-//        if (problem.getReferenceAnswer() == null) {
-//            problem.setReferenceAnswer(tempProblem.getReferenceAnswer());
-//        }
         problem.setId(id);
         return new ResponseEntity<Object>(problemRepository.save(problem), HttpStatus.OK);
     }
