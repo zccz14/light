@@ -49,21 +49,17 @@ public class UserUtil {
         }
         return str;
     }
-    public static void sendEmail(String email,String randomString){
+    public static void sendEmail(String email,String header,String content){
         Properties projectProps = new Properties();
         Properties mailProps = new Properties();
-        Properties i18nProps = new Properties();
         String url = new File("").getAbsolutePath();
         try {
             projectProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\project.properties")));
-            String language = projectProps.getProperty("lang");
-            i18nProps.load(new BufferedReader(new InputStreamReader(new FileInputStream(url+"\\src\\main\\resources\\i18n\\"+language+".properties"),projectProps.getProperty("encoding"))));
             mailProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\mail.properties")));
             Session session = Session.getInstance(mailProps);
             Message msg = new MimeMessage(session);
             msg.setHeader("Content-Transfer-Encoding", "utf-8");
-            msg.setSubject(i18nProps.getProperty("verifyMailHead.subject"));
-            String content = new String(i18nProps.getProperty("verifyMailContent.prefix")+projectProps.getProperty("siteHost")+"users/"+randomString+i18nProps.getProperty("verifyMailContent.suffix"));
+            msg.setSubject(header);
             msg.setContent(content,"text/html;charset=utf-8");
             msg.setFrom(new InternetAddress(projectProps.getProperty("mailAccount")));
             msg.setRecipient(Message.RecipientType.TO,new InternetAddress(email));
@@ -73,8 +69,39 @@ public class UserUtil {
             transport.sendMessage(msg,msg.getAllRecipients());
             transport.close();
         }catch (Exception e){
+            System.out.println("faild");
+        }
+    }
+    public static void sendVerifyEmail(String email,String randomString){
+        Properties projectProps = new Properties();
+        Properties i18nProps = new Properties();
+        String url = new File("").getAbsolutePath();
+        try {
+            projectProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\project.properties")));
+            String language = projectProps.getProperty("lang");
+            i18nProps.load(new BufferedReader(new InputStreamReader(new FileInputStream(url+"\\src\\main\\resources\\i18n\\"+language+".properties"),projectProps.getProperty("encoding"))));
+            String subject = i18nProps.getProperty("verifyMailHead.subject");
+            String content = i18nProps.getProperty("verifyMailContent.prefix")+projectProps.getProperty("siteHost")+"users/"+randomString+i18nProps.getProperty("verifyMailContent.suffix");
+            sendEmail(email,subject,content);
+        }catch (Exception e){
             System.out.println("not found");
             return;
+        }
+
+    }
+    public static void sendFindPasswordEmail(String email,String password){
+        Properties i18nProps = new Properties();
+        Properties projectProps = new Properties();
+        String url = new File("").getAbsolutePath();
+        try {
+            projectProps.load(new BufferedInputStream(new FileInputStream(url+"\\src\\main\\resources\\project.properties")));
+            String language = projectProps.getProperty("lang");
+            i18nProps.load(new BufferedReader(new InputStreamReader(new FileInputStream(url+"\\src\\main\\resources\\i18n\\"+language+".properties"),projectProps.getProperty("encoding"))));
+            String subject = i18nProps.getProperty("findPasswordMailHead.subject");
+            String content = i18nProps.getProperty("findPasswordMailContent.prefix")+password+i18nProps.getProperty("findPasswordMailContent.suffix");
+            sendEmail(email,subject,content);
+        }catch (Exception e){
+            System.out.println("error");
         }
     }
 }
