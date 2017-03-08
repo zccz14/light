@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.Date;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
@@ -48,10 +49,10 @@ public class ProblemListController {
         pageable.setSort(sort);
     }
 
-    @RequestMapping(value = "/problemListOwned", method = RequestMethod.GET)
+    @RequestMapping(value = "/problemListsOwned", method = RequestMethod.GET)
     public ResponseEntity getProblemListsOwned(@RequestParam int pageNumber,
-                                          @RequestParam int pageSize,
-                                          HttpSession session) {
+                                               @RequestParam int pageSize,
+                                               HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -75,7 +76,7 @@ public class ProblemListController {
                                 .toString()), pageable), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/problemLists", method = RequestMethod.GET)
+    @RequestMapping(value = "/problemListsIn", method = RequestMethod.GET)
     public ResponseEntity getProblemLists(@RequestParam int pageNumber,
                                           @RequestParam int pageSize,
                                           HttpSession session) {
@@ -104,7 +105,13 @@ public class ProblemListController {
             return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(tempProblemList, HttpStatus.OK);
+        Date now = new Date(System.currentTimeMillis());
+
+        if (tempProblemList.getReadEndTime().before(now) &&
+                tempProblemList.getReadEndTime().after(now)) {
+            return new ResponseEntity(tempProblemList, HttpStatus.OK);
+        } else
+            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -113,7 +120,11 @@ public class ProblemListController {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
+        if (!problemList.isAccessible()) {
+            problemList.setUserList(null);
+        }
         problemList.setCreator(new ObjectId(session.getAttribute("userId").toString()));
+        problemList.setCreatedTime(new Date());
         ProblemList tempProblemList = problemListRepository.save(problemList);
 
         User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
@@ -127,15 +138,17 @@ public class ProblemListController {
     public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList,
                                             @PathVariable ObjectId id,
                                             HttpSession session) {
-        if (!(isSignedIn(session) ||
-                new ObjectId(session
-                        .getAttribute("userId")
-                        .toString())
-                        .equals(problemList
-                                .getCreator()))) {
+        if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
+
+        if (!problemList.isAccessible()) {
+            problemList.setUserList(null);
+        }
         problemList.setId(id);
+        problemList.setCreator(
+                new ObjectId(session
+                        .getAttribute("userId").toString()));
         return new ResponseEntity(problemListRepository.save(problemList), HttpStatus.OK);
     }
 

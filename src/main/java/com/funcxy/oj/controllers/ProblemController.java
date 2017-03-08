@@ -87,7 +87,7 @@ public class ProblemController {
         pageable.setPageNumber(pageNumber);
         pageable.setPageSize(pageSize);
 
-        //后端检索问题功能，请勿删除。
+        //后端检索问题功能，版权所有，请勿删除。
 //        String type = problem.getType();
 //        String title = problem.getTitle();
 //        User creator = problem.getCreator();
