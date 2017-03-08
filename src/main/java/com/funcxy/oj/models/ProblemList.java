@@ -6,13 +6,14 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
 /**
  * Created by chenyu on 2017/3/1.
- *
- * Modified by wtupc96 on 2017/3/4
+ * <p>
+ * Modified by wtupc96 on 2017/3/4.
  *
  * @author Peter
  * @author chenyu
@@ -24,15 +25,14 @@ public class ProblemList {
     private ObjectId id;
 
     @Indexed
-    @NotNull
     private ObjectId creator;
 
-    private List<ObjectId> problemIds;
+    private List<ObjectId> problemIds = new ArrayList<>(0);
 
     @NotNull
     private boolean isAccessible = false;
 
-    private List<ObjectId> userList;
+    private List<ObjectId> userList = new ArrayList<>(0);
 
     @Indexed
     @NotNull
@@ -42,34 +42,31 @@ public class ProblemList {
     @NotNull
     private String type;
 
+    private Date createdTime;
     private Date readBeginTime;
-
     private Date answerBeginTime;
-
     private Date answerEndTime;
-
     private Date readEndTime;
-
-    private List<JudgeProblem> judgerList;
-
-    private List<ObjectId> submissionList;
-
+    private List<JudgeProblem> judgerList = new ArrayList<>(0);
+    private List<ObjectId> submissionList = new ArrayList<>(0);
     @NotNull
     private boolean isAnonymous = false;
-
     @NotNull
     private boolean submitterVisibleToJudge = false;
-
     @NotNull
     private boolean resultVisibleToOthers = true;
-
     @NotNull
     private boolean resultVisibleToSubmitterSelf = true;
-
     @NotNull
     private boolean canBeCopied = true;
 
+    public Date getCreatedTime() {
+        return createdTime;
+    }
 
+    public void setCreatedTime(Date createdTime) {
+        this.createdTime = createdTime;
+    }
 
     public ObjectId getId() {
         return id;

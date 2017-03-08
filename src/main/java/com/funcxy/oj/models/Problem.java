@@ -24,7 +24,6 @@ public class Problem {
     private ObjectId id;
 
     @Indexed
-    @NotNull
     private ObjectId creator;
 
     @Indexed

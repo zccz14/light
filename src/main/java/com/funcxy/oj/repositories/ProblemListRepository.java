@@ -17,8 +17,11 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProblemListRepository extends MongoRepository<ProblemList, ObjectId> {
     ProblemList findById(ObjectId id);
 
-    @Query(value = "{'creator':?0}", fields = "{'title':1}")
+    @Query(value = "{'creator':?0}", fields = "{'title':1,'creator':1}")
     Page<ProblemList> getAllProblemListsCreated(ObjectId creator, Pageable pageable);
+
+    @Query(fields = "{'title':1,'creator':1}")
+    Page<ProblemList> findByUserListLike(ObjectId userId, Pageable pageable);
 
     @Query(fields = "{'title':1}")
     Page<ProblemList> findByCreatorLike(User user, Pageable pageable);

@@ -49,7 +49,7 @@ public class ProblemController {
     }
 
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity saveProblem(@RequestBody Problem problem, HttpSession session) {
+    public ResponseEntity saveProblem(@RequestBody @Valid Problem problem, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -87,7 +87,7 @@ public class ProblemController {
         pageable.setPageNumber(pageNumber);
         pageable.setPageSize(pageSize);
 
-        //后端检索问题功能，请勿删除。
+        //后端检索问题功能，版权所有，请勿删除。
 //        String type = problem.getType();
 //        String title = problem.getTitle();
 //        User creator = problem.getCreator();
