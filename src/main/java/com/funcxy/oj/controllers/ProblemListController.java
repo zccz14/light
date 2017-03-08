@@ -86,7 +86,7 @@ public class ProblemListController {
         ProblemList tempProblemList = problemListRepository.save(problemList);
 
         userRepository
-                .findById((ObjectId) session.getAttribute("userId"))
+                .findById(new ObjectId(session.getAttribute("userId").toString()))
                 .addProblemListOwned(tempProblemList.getId());
 
         return new ResponseEntity(tempProblemList, HttpStatus.OK);
@@ -119,7 +119,7 @@ public class ProblemListController {
         problemListRepository.delete(tempProblemList);
 
         userRepository
-                .findById((ObjectId) session.getAttribute("userId"))
+                .findById(new ObjectId(session.getAttribute("userId").toString()))
                 .deleteProblemListOwned(tempProblemList.getId());
 
         return new ResponseEntity(tempProblemList, HttpStatus.OK);
