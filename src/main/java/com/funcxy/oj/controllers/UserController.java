@@ -100,12 +100,13 @@ public class UserController {
             if (userFoundByEmail!=null) {
                 //查看邮箱是否已验证
                 System.out.println("foundbyemail"+userFoundByEmail.getEmail());
-                if(userFoundByEmail.hasVerifiedEmail()){
+                if(!userFoundByEmail.hasVerifiedEmail()){
                     userFoundByEmail.setUsername(passport.username);
                     userFoundByEmail.setPassword(passport.password);
                     userFoundByEmail.notVerified();
+                    userRepository.save(userFoundByEmail);
                     //发邮件
-                    UserUtil.sendEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentify());
+                    UserUtil.sendEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentifyString());
                     return new ResponseEntity<Object>(userFoundByEmail,HttpStatus.OK);
                 }else{
                     return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
@@ -117,7 +118,7 @@ public class UserController {
             user.setPassword(passport.password);
             user.notVerified();
             //发邮件
-            UserUtil.sendEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentify());
+            UserUtil.sendEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentifyString());
             return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
             System.out.println("invalid passport");
@@ -147,8 +148,8 @@ public class UserController {
     @RequestMapping(value = "/find/username",method = GET)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username){
         User userFound = userRepository.findOneByUsername(username);
-        if (userFound == null)return new ResponseEntity<>(new String("not found"),HttpStatus.OK);
-        return new ResponseEntity<>(new String("find"),HttpStatus.CONFLICT);
+        if (userFound == null)return new ResponseEntity<>("not found",HttpStatus.OK);
+        return new ResponseEntity<>("find",HttpStatus.CONFLICT);
     }
 
     @RequestMapping(value = "/find/email",method = GET)//精确查找邮箱

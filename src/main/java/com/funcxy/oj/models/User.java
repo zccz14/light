@@ -48,8 +48,11 @@ public class User {
     private List<ObjectId> problemLiked = new ArrayList<>(0);
     @JsonIgnore
     private List<ObjectId> problemListLiked = new ArrayList<>(0);
+    @JsonIgnore
+    private String identifyString = "";
 
-    private String identify = "";
+    private boolean hasVerified = false;
+
     public ObjectId getId() {
         return this.id;
     }
@@ -162,6 +165,18 @@ public class User {
     public void deleteProblemListLiked(ObjectId problemId) {
         this.problemListLiked.remove(this.problemListLiked.indexOf(problemId));
     }
+    
+    public void addSubmissionHistory(ObjectId submissionId){
+        this.submissionHistory.add(submissionId);
+    }
+
+    public void addSubmissionUndicided(ObjectId submissionId){
+        this.submissionUndecided.add(submissionId);
+    }
+
+    public void deleteSubmissionUndicided(ObjectId submissionId){
+        this.submissionUndecided.remove(submissionUndecided.indexOf(submissionId));
+    }
 
     public void setProfile(Profile profile){
         this.profile = profile;
@@ -185,27 +200,35 @@ public class User {
     }
 
     @JsonIgnore
-    public String getIdentify(){
-        return this.identify;
-    }
-    public void setIdentify(String identify){
-        this.identify = identify;
+    public String getIdentifyString(){
+        return this.identifyString;
     }
 
+//    public void setIdentifyString(String identify){
+//        this.identifyString = identify;
+//    }
+
     public boolean hasVerifiedEmail(){//是否已验证邮件
-        return this.identify.equals(new String("verified"));
+        return this.hasVerified;
     }
 
     public void  verifyingEmail(){//设为已验证状态
-        this.identify = new String("verified");
+        this.identifyString = "verified";
+        this.hasVerified = true;
     }
 
     public void notVerified(){//设定随机字符串为验证字符串
-        this.identify = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
+        this.identifyString = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
     }
+
     public boolean toVerifyEmail(String verify){
-        return this.identify.equals(verify);
+        return this.identifyString.equals(verify);
     }
+
+    public boolean getHasVerified(){
+        return this.hasVerified;
+    }
+
     public boolean equals(User user) {
         return this.id.equals(user.getId());
     }
