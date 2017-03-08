@@ -3,10 +3,13 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.ProblemList;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.utils.DataPageable;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,8 +17,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
@@ -29,6 +30,8 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 @RestController
 @RequestMapping("/problemLists")
 public class ProblemListController {
+    private static final Sort sort = new Sort(Sort.Direction.ASC, "title");
+
     @Autowired
     private ProblemListRepository problemListRepository;
 
@@ -38,28 +41,31 @@ public class ProblemListController {
     @Autowired
     private UserRepository userRepository;
 
+    private DataPageable pageable;
+
+    {
+        pageable = new DataPageable();
+        pageable.setSort(sort);
+    }
+
     @RequestMapping(method = RequestMethod.GET)
-    public ResponseEntity getProblemLists(HttpSession session) {
+    public ResponseEntity getProblemLists(@RequestParam int pageNumber, @RequestParam int pageSize, @RequestParam User creator, @RequestParam String title, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        List<ProblemList> problemLists = problemListRepository.findAll();
 
-        class innerTempClass {
-            public ObjectId id;
-            public String title;
+        pageable.setPageSize(pageSize);
+        pageable.setPageNumber(pageNumber);
 
-            public innerTempClass(ObjectId id, String title) {
-                this.id = id;
-                this.title = title;
-            }
+        if (creator != null && title != null) {
+            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
+        } else if (creator != null) {
+            return new ResponseEntity(problemListRepository.findByCreatorLike(creator, pageable), HttpStatus.OK);
+        } else if (title != null) {
+            return new ResponseEntity(problemListRepository.findByTitleLike(title, pageable), HttpStatus.OK);
+        } else {
+            return new ResponseEntity(problemListRepository.findAll(pageable), HttpStatus.OK);
         }
-
-        return
-                new ResponseEntity(problemLists
-                        .stream()
-                        .map(problemList -> new innerTempClass(problemList.getId(), problemList.getTitle()))
-                        .collect(Collectors.toList()), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -97,15 +103,6 @@ public class ProblemListController {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-//        if(problemList.getType() != null);
-//        if(problemList.getTitle() != null);
-//        if(problemList.getAnswerBeginTime() != null);
-//        if(problemList.getAnswerEndTime() != null);
-//        if(problemList.getReadBeginTime() != null);
-//        if(problemList.getReadEndTime() != null);
-//        if(problemList.getJudgerList() != null);
-//        if(problemList.getProblemIds() != null);
-//        if(problemList.getUserList() != null);
         problemList.setId(id);
         return new ResponseEntity(problemListRepository.save(problemList), HttpStatus.OK);
     }
