@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -14,7 +13,6 @@ import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -99,6 +97,10 @@ public class User {
         return problemListOwned;
     }
 
+    public void setProblemListOwned(List<ObjectId> problemListOwned) {
+        this.problemListOwned = problemListOwned;
+    }
+
     public void addProblemOwned(ObjectId problemId) {
         this.problemOwned.add(problemId);
     }
@@ -113,9 +115,6 @@ public class User {
 
     public void deleteProblemListOwned(ObjectId problemListId) {
         this.problemListOwned.remove(this.problemListOwned.indexOf(problemListId));
-    }
-    public void setProblemListOwned(List<ObjectId> problemListOwned) {
-        this.problemListOwned = problemListOwned;
     }
 
     public List<ObjectId> getSubmissionHistory() {
@@ -165,25 +164,25 @@ public class User {
     public void deleteProblemListLiked(ObjectId problemId) {
         this.problemListLiked.remove(this.problemListLiked.indexOf(problemId));
     }
-    
-    public void addSubmissionHistory(ObjectId submissionId){
+
+    public void addSubmissionHistory(ObjectId submissionId) {
         this.submissionHistory.add(submissionId);
     }
 
-    public void addSubmissionUndicided(ObjectId submissionId){
+    public void addSubmissionUndicided(ObjectId submissionId) {
         this.submissionUndecided.add(submissionId);
     }
 
-    public void deleteSubmissionUndicided(ObjectId submissionId){
+    public void deleteSubmissionUndicided(ObjectId submissionId) {
         this.submissionUndecided.remove(submissionUndecided.indexOf(submissionId));
-    }
-
-    public void setProfile(Profile profile){
-        this.profile = profile;
     }
 
     public Profile getProfile(){
         return this.profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     @JsonIgnore
@@ -200,7 +199,7 @@ public class User {
     }
 
     @JsonIgnore
-    public String getIdentifyString(){
+    public String getIdentifyString() {
         return this.identifyString;
     }
 
@@ -225,7 +224,7 @@ public class User {
         return this.identifyString.equals(verify);
     }
 
-    public boolean getHasVerified(){
+    public boolean getHasVerified() {
         return this.hasVerified;
     }
 

@@ -3,10 +3,10 @@ package com.funcxy.oj.models;
 import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -25,16 +25,14 @@ public class ProblemList {
     private ObjectId id;
 
     @Indexed
-    @NotNull
-    @DBRef(lazy = true)
-    private User creator;
+    private ObjectId creator;
 
-    private ObjectId[] problemIds;
+    private List<ObjectId> problemIds = new ArrayList<>(0);
 
     @NotNull
     private boolean isAccessible = false;
 
-    private List<ObjectId> userList;
+    private List<ObjectId> userList = new ArrayList<>(0);
 
     @Indexed
     @NotNull
@@ -52,9 +50,9 @@ public class ProblemList {
 
     private Date readEndTime;
 
-    private List<JudgeProblem> judgerList;
+    private List<JudgeProblem> judgerList = new ArrayList<>(0);
 
-    private List<ObjectId> submissionList;
+    private List<ObjectId> submissionList = new ArrayList<>(0);
 
     @NotNull
     private boolean isAnonymous = false;
@@ -81,11 +79,11 @@ public class ProblemList {
         this.id = id;
     }
 
-    public User getCreator() {
+    public ObjectId getCreator() {
         return creator;
     }
 
-    public void setCreator(User creator) {
+    public void setCreator(ObjectId creator) {
         this.creator = creator;
     }
 
@@ -182,6 +180,10 @@ public class ProblemList {
         return resultVisibleToSubmitterSelf;
     }
 
+    public void setResultVisibleToSubmitterSelf(boolean resultVisibleToSubmitterSelf) {
+        this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
+    }
+
     public boolean isAccessible() {
         return isAccessible;
     }
@@ -206,15 +208,11 @@ public class ProblemList {
         this.canBeCopied = canBeCopied;
     }
 
-    public void setResultVisibleToSubmitterSelf(boolean resultVisibleToSubmitterSelf) {
-        this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
-    }
-
-    public ObjectId[] getProblemIds() {
+    public List<ObjectId> getProblemIds() {
         return problemIds;
     }
 
-    public void setProblemIds(ObjectId[] problemIds) {
+    public void setProblemIds(List<ObjectId> problemIds) {
         this.problemIds = problemIds;
     }
 }
