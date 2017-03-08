@@ -233,4 +233,9 @@ public class User {
         return this.id.equals(user.getId());
     }
 
+    public void findPassword(){
+        String password = UserUtil.getRandomCharAndNumr(10);
+        UserUtil.sendFindPasswordEmail(this.email,password);
+        this.setPassword(password);
+    }
 }

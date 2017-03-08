@@ -88,6 +88,7 @@ public class Group {
     public void setType(GroupType type) {
         this.type = type;
     }
+
     public void addMember(ObjectId memberId){
         this.joiningMemberId.remove(joiningMemberId.indexOf(memberId));
         this.memberId.add(memberId);
@@ -96,4 +97,13 @@ public class Group {
     public void askJoin(ObjectId joinId){
         this.joiningMemberId.add(joinId);
     }
+
+    public void addProblemListOwned(ObjectId problemListId){
+        this.ownedProblemList.add(problemListId);
+    }
+
+    public void deleteProblemListOwned(ObjectId problemListId){
+        this.ownedProblemList.remove(this.ownedProblemList.indexOf(problemListId));
+    }
+
 }
