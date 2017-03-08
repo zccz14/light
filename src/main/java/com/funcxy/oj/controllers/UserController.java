@@ -137,7 +137,7 @@ public class UserController {
     @RequestMapping(value = "/{username}/profile",method = PUT)//修改用户资料
     public ResponseEntity putProfile(@RequestBody @Valid Profile profile,@PathVariable String username, HttpSession httpSession){
         if(UserUtil.isSignedIn(httpSession)){
-            User userFound = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+            User userFound = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
             userFound.setProfile(profile);
             userRepository.save(userFound);
             return new ResponseEntity<>(profile,HttpStatus.OK);
