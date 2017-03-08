@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * Created by aak12 on 2017/3/4.
+ * @author aak1247 on 2017/3/4.
  */
 @Document(collection = "groups")
 public class Group {
@@ -24,7 +24,7 @@ public class Group {
     @Indexed
     @NotNull
     private ObjectId ownerId;
-    @Indexed
+    @Indexed(unique = true)
     @NotBlank(message = "组名为空")
     private String name;
 

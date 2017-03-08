@@ -6,15 +6,11 @@ import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
-import com.funcxy.oj.utils.InvalidException;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
-import com.sun.org.apache.regexp.internal.RE;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
-import org.omg.CORBA.PUBLIC_MEMBER;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
@@ -24,10 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -53,9 +47,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
-    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
+    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession){
         if(passport.username==null){
-            return new ResponseEntity<>(new InvalidException("username or email must be set"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new FieldsRequiredError(),HttpStatus.BAD_REQUEST);
         }else{
             System.out.println(passport.username+"login");
             RegularExpression regExpEmail = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
@@ -79,7 +73,6 @@ public class UserController {
                 System.out.println("password wrong"+passport.password);
                 return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }else {
-//                throw new InvalidException("input illegal");
                 return new ResponseEntity<>(new FieldsRequiredError(), HttpStatus.BAD_REQUEST);
             }
         }
@@ -88,7 +81,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-up", method = POST)//注册
-    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
+    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession){
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
             System.out.println(passport.username+" sign up");
@@ -128,7 +121,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
-    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
+    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
           if (userRepository.findOneByUsername(username)==null)
               return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);

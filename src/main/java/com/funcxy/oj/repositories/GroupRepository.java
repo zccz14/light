@@ -11,7 +11,8 @@ import java.util.stream.Stream;
  */
 public interface GroupRepository extends MongoRepository<Group,ObjectId>{
     Group findById(ObjectId id);
+    Group findOneByName(String name);
     Stream<Group> findByOwnerId(ObjectId ownerId);
-    Stream<Group> findByName(ObjectId name);
-    Stream<Group> findByNameLike(ObjectId name);
+    Stream<Group> findByName(String name);
+    Stream<Group> findByNameLike(String name);
 }

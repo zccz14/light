@@ -37,6 +37,8 @@ public class User {
     private String password;
     private Profile profile = new Profile();
     @JsonIgnore
+    private List<ObjectId> groupIn = new ArrayList<>(0);
+    @JsonIgnore
     private List<ObjectId> problemOwned = new ArrayList<>(0);
     @JsonIgnore
     private List<ObjectId> problemListOwned = new ArrayList<>(0);
@@ -204,10 +206,6 @@ public class User {
         return this.identifyString;
     }
 
-//    public void setIdentifyString(String identify){
-//        this.identifyString = identify;
-//    }
-
     public boolean hasVerifiedEmail(){//是否已验证邮件
         return this.hasVerified;
     }
@@ -238,4 +236,21 @@ public class User {
         UserUtil.sendFindPasswordEmail(this.email,password);
         this.setPassword(password);
     }
+
+    public void setGroupIn(List<ObjectId> groupIn){
+        this.groupIn = groupIn;
+    }
+
+    public List<ObjectId> getGroupIn(){
+        return this.groupIn;
+    }
+
+    public void addGroupIn(ObjectId group){
+        this.groupIn.add(group);
+    }
+
+    public void deleteGroupIn(ObjectId group){
+        this.groupIn.remove(this.groupIn.indexOf(group));
+    }
+
 }
