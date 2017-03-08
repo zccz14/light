@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.CleanedProblem;
 import com.funcxy.oj.models.Problem;
@@ -69,7 +70,13 @@ public class ProblemController {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity<>(problemRepository.findById(id), HttpStatus.OK);
+
+        Problem tempProblem = problemRepository.findById(id);
+
+        if (tempProblem == null) {
+            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(tempProblem, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.GET)

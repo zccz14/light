@@ -1,8 +1,10 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.repositories.ProblemListRepository;
+import com.funcxy.oj.repositories.UserRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -33,6 +35,9 @@ public class ProblemListController {
     @Autowired
     private MongoTemplate mongoTemplate;
 
+    @Autowired
+    private UserRepository userRepository;
+
     @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblemLists(HttpSession session) {
         if (!isSignedIn(session)) {
@@ -62,7 +67,14 @@ public class ProblemListController {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity(problemListRepository.findById(id), HttpStatus.OK);
+
+        ProblemList tempProblemList = problemListRepository.findById(id);
+
+        if (tempProblemList == null) {
+            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }
 
     @RequestMapping(method = RequestMethod.POST)
@@ -70,7 +82,14 @@ public class ProblemListController {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        return new ResponseEntity(problemListRepository.save(problemList), HttpStatus.OK);
+
+        ProblemList tempProblemList = problemListRepository.save(problemList);
+
+        userRepository
+                .findById((ObjectId) session.getAttribute("userId"))
+                .addProblemListOwned(tempProblemList.getId());
+
+        return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -98,6 +117,11 @@ public class ProblemListController {
         }
         ProblemList tempProblemList = problemListRepository.findById(id);
         problemListRepository.delete(tempProblemList);
+
+        userRepository
+                .findById((ObjectId) session.getAttribute("userId"))
+                .deleteProblemListOwned(tempProblemList.getId());
+
         return new ResponseEntity(tempProblemList, HttpStatus.OK);
     }
 }

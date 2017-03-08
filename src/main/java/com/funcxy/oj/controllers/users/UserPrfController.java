@@ -1,6 +1,5 @@
 package com.funcxy.oj.controllers.users;
 
-import com.funcxy.oj.controllers.UserController;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
