@@ -36,8 +36,7 @@ public class Submission {
     public void setId(ObjectId id) {
         this.id = id;
     }
-
-
+    
     public String getStatus() {
         return status;
     }
@@ -45,8 +44,6 @@ public class Submission {
     public void setStatus(String status) {
         this.status = status;
     }
-
-
 
     public String getSentence() {
         return sentence;
