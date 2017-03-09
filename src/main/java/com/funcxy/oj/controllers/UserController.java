@@ -1,7 +1,9 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.*;
-import com.funcxy.oj.models.*;
+import com.funcxy.oj.models.Passport;
+import com.funcxy.oj.models.Profile;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
@@ -11,21 +13,18 @@ import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.*;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Pattern;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * User Controller
@@ -41,9 +40,10 @@ public class UserController {
     @Autowired
     private ProblemRepository problemRepository;
     private DataPageable pageable;
+
     {
         pageable = new DataPageable();
-        pageable.setSort(new Sort(Sort.Direction.ASC,"title"));
+        pageable.setSort(new Sort(Sort.Direction.ASC, "title"));
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
@@ -56,7 +56,7 @@ public class UserController {
             RegularExpression regExpUsername = new RegularExpression("^[a-zA-Z0-9_]+");
             if (regExpEmail.matches(passport.username)){
                 User userFound = userRepository.findOneByEmail(passport.username);
-                if (userFound == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                if (userFound == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
                 System.out.println(userFound);
                 if (userFound.passwordVerify(passport.password)){
                     httpSession.setAttribute("userId",userFound.getId().toString());
@@ -64,7 +64,7 @@ public class UserController {
                 }
             }else  if(regExpUsername.matches(passport.username)){
                 User userFound = userRepository.findOneByUsername(passport.username);
-                if(userFound == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                if (userFound == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
                 System.out.println("found by username"+userFound);
                 if (userFound.passwordVerify(passport.password)){
                     httpSession.setAttribute("userId",userFound.getId().toString());
@@ -93,7 +93,7 @@ public class UserController {
             if (userFoundByEmail!=null) {
                 //查看邮箱是否已验证
                 System.out.println("foundbyemail"+userFoundByEmail.getEmail());
-                if(!userFoundByEmail.hasVerifiedEmail()){
+                if (!userFoundByEmail.hasVerifiedEmail()) {
                     userFoundByEmail.setUsername(passport.username);
                     userFoundByEmail.setPassword(passport.password);
                     userFoundByEmail.notVerified();
@@ -123,47 +123,47 @@ public class UserController {
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
           if (userRepository.findOneByUsername(username)==null)
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
-    @RequestMapping(value = "/{username}/profile",method = PUT)//修改用户资料
-    public ResponseEntity putProfile(@RequestBody @Valid Profile profile,@PathVariable String username, HttpSession httpSession){
+    @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
+    public ResponseEntity putProfile(@RequestBody @Valid Profile profile, @PathVariable String username, HttpSession httpSession) {
         if(UserUtil.isSignedIn(httpSession)){
             User userFound = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
             userFound.setProfile(profile);
             userRepository.save(userFound);
-            return new ResponseEntity<>(profile,HttpStatus.OK);
+            return new ResponseEntity<>(profile, HttpStatus.OK);
         }
-        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
 
     @RequestMapping(value = "/find/username",method = GET)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username){
         User userFound = userRepository.findOneByUsername(username);
-        if (userFound == null)return new ResponseEntity<>("not found",HttpStatus.OK);
-        return new ResponseEntity<>("find",HttpStatus.CONFLICT);
+        if (userFound == null) return new ResponseEntity<>("not found", HttpStatus.OK);
+        return new ResponseEntity<>("find", HttpStatus.CONFLICT);
     }
 
     @RequestMapping(value = "/find/email",method = GET)//精确查找邮箱
     public ResponseEntity hasEmail(@RequestParam String email){
         User userFound = userRepository.findOneByEmail(email);
-        if(userFound == null)return new ResponseEntity<>("not found",HttpStatus.OK);
-        return new ResponseEntity<>("find",HttpStatus.CONFLICT);
+        if (userFound == null) return new ResponseEntity<>("not found", HttpStatus.OK);
+        return new ResponseEntity<>("find", HttpStatus.CONFLICT);
     }
 
     @RequestMapping(value = "/{username}/{verify}",method = GET)//验证邮箱
     public ResponseEntity verifyEmail(@PathVariable String username,@PathVariable String verify){
         User user = userRepository.findOneByUsername(username);
         if(user.hasVerifiedEmail()){
-            return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.NO_CONTENT);//已经验证过
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.NO_CONTENT);//已经验证过
         }else {
             if (user.toVerifyEmail(verify)){
                 user.verifyingEmail();
                 userRepository.save(user);
-                return new ResponseEntity<>("success",HttpStatus.ACCEPTED);
+                return new ResponseEntity<>("success", HttpStatus.ACCEPTED);
             }else {
-                return new ResponseEntity<>(new BadRequestError(),HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
             }
         }
     }

@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpSession;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,22 +42,23 @@ public class UserPrfController {
     @Autowired
     ProblemListRepository problemListRepository;
     private DataPageable pageable;
+
     {
         pageable = new DataPageable();
-        pageable.setSort(new Sort(Sort.Direction.ASC,"title"));
+        pageable.setSort(new Sort(Sort.Direction.ASC, "title"));
     }
     //收藏问题
     @RequestMapping(value = "/{username}/liked-problems/{problemId}", method = RequestMethod.POST)
     public ResponseEntity<Object> likeProblem(@PathVariable String username, @PathVariable ObjectId problemId, HttpSession httpSession) {
         if (!isSignedIn(httpSession))
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
-        User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
-        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        User user = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (userRepository.findById(
                 (ObjectId) httpSession.getAttribute("userId"))
                 .getProblemLiked()
-                .indexOf(problemId)!=-1){
-            return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+                .indexOf(problemId) != -1) {
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
         user.addProblemLiked(problemId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -68,33 +68,33 @@ public class UserPrfController {
     @RequestMapping(value = "/{username}/liked-problem-lists/{problemListId}", method = RequestMethod.POST)
     public ResponseEntity<Object> likeProblemList(@PathVariable String username, @PathVariable ObjectId problemListId, HttpSession httpSession) {
         if (!isSignedIn(httpSession))
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
 
-        User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
-        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        User user = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (userRepository.findById(
                 (ObjectId) httpSession.getAttribute("userId"))
                 .getProblemListLiked()
-                .indexOf(problemListId)!=-1){
-            return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+                .indexOf(problemListId) != -1) {
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
         user.addProblemListLiked(problemListId);
-        return new ResponseEntity<>(new User(),HttpStatus.OK);
+        return new ResponseEntity<>(new User(), HttpStatus.OK);
     }
 
     //取消收藏问题
     @RequestMapping(value = "/{username}/liked-problems/{problemId}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> unlikeProblem(@PathVariable String username, @PathVariable ObjectId problemId, HttpSession httpSession) {
         if (!isSignedIn(httpSession))
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         User user = userRepository.
-                findById((ObjectId)httpSession.getAttribute("userId"));
-        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                findById((ObjectId) httpSession.getAttribute("userId"));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (userRepository
                 .findById((ObjectId) httpSession.getAttribute("userId"))
                 .getProblemLiked()
-                .indexOf(problemId)==-1){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                .indexOf(problemId) == -1) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         user.deleteProblemLiked(problemId);
         return new ResponseEntity<>(HttpStatus.OK);
@@ -104,56 +104,56 @@ public class UserPrfController {
     @RequestMapping(value = "/{username}/liked-problem-lists/{problemListId}", method = RequestMethod.DELETE)
     public ResponseEntity<Object> unlikeProblemLists(@PathVariable String username, @PathVariable ObjectId problemListId, HttpSession httpSession) {
         if (!isSignedIn(httpSession))
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         User user = userRepository.
-                findById((ObjectId)httpSession.getAttribute("userId"));
-        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                findById((ObjectId) httpSession.getAttribute("userId"));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (userRepository
                 .findById((ObjectId) httpSession.getAttribute("userId"))
                 .getProblemListLiked()
-                .indexOf(problemListId)==-1){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+                .indexOf(problemListId) == -1) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         user.deleteProblemListLiked(problemListId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
     //获取收藏的题单
-    @RequestMapping(value = "/{username}/liked-problem-lists",method = RequestMethod.GET)
-    public ResponseEntity getLikedProblemLists(@PathVariable String username,HttpSession httpSession){
-        if (UserUtil.isSignedIn(httpSession)){
-            User user = userRepository.findById((ObjectId)httpSession.getAttribute("userId"));
-            if (user == null) return  new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+    @RequestMapping(value = "/{username}/liked-problem-lists", method = RequestMethod.GET)
+    public ResponseEntity getLikedProblemLists(@PathVariable String username, HttpSession httpSession) {
+        if (UserUtil.isSignedIn(httpSession)) {
+            User user = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
+            if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
             List<ObjectId> likedProblemList = user.getProblemListLiked();
             return new ResponseEntity<>(new PageImpl<CleanedProblemList>(
                     likedProblemList
                             .stream()
                             .map(
-                                    pro->new CleanedProblemList(
+                                    pro -> new CleanedProblemList(
                                             problemListRepository.findById(pro).getId(),
                                             problemListRepository.findById(pro).getTitle(),
                                             problemListRepository.findById(pro).getType()
                                     )
                             )
                             .collect(Collectors.toList())
-                    ,pageable
-                    ,likedProblemList.size()
+                    , pageable
+                    , likedProblemList.size()
             )
-                    ,HttpStatus.FOUND
+                    , HttpStatus.FOUND
             );
-        }else {
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        } else {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
     }
 
     //获取收藏的题目
-    @RequestMapping(value = "/{username}/liked-problems",method = RequestMethod.GET)
-    public ResponseEntity getLikedProblems(@PathVariable String username,HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+    @RequestMapping(value = "/{username}/liked-problems", method = RequestMethod.GET)
+    public ResponseEntity getLikedProblems(@PathVariable String username, HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById((ObjectId) httpSession.getAttribute("userId"));
-        if (user==null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (user == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         List<ObjectId> likedProblem = user.getProblemLiked();
 
@@ -161,7 +161,7 @@ public class UserPrfController {
                 new PageImpl<CleanedProblem>(
                         likedProblem.stream()
                                 .map(
-                                        pro->new CleanedProblem(
+                                        pro -> new CleanedProblem(
                                                 problemRepository.findById(pro).getId(),
                                                 problemRepository.findById(pro).getTitle()
                                         )

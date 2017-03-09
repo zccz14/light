@@ -10,6 +10,7 @@ import java.io.Serializable;
 public class CleanedProblem implements Serializable {
     public ObjectId id;
     public String title;
+
     public CleanedProblem(ObjectId id, String title) {
         this.id = id;
         this.title = title;

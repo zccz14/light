@@ -17,8 +17,11 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProblemRepository extends MongoRepository<Problem, ObjectId> {
     Problem findById(ObjectId id);
 
+    @Query(value = "{'creator':?0}", fields = "{'title':1}")
+    Page<Problem> getAllProblems(ObjectId creator, Pageable pageable);
+
     @Query(fields = "{'title':1}")
-    Page<Problem> findByCreatorLike(User creator, Pageable pageable);
+    Page<Problem> findByCreatorLike(ObjectId creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
     Page<Problem> findByTitleLike(String title, Pageable pageable);

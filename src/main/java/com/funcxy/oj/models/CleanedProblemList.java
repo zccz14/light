@@ -12,7 +12,7 @@ public class CleanedProblemList implements Serializable {
     public String title;
     public String type;
 
-    public CleanedProblemList(ObjectId id, String title,String type) {
+    public CleanedProblemList(ObjectId id, String title, String type) {
         this.id = id;
         this.title = title;
         this.type = type;
