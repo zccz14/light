@@ -167,7 +167,19 @@ public class UserController {
             }
         }
     }
-
+    /**
+     *searchUser
+     * @param email 邮箱，支持正则
+     * @param username 用户名，支持正则
+     * @param nickname 昵称，支持正则
+     * @param bio 个人简介，支持正则
+     * @param location 所在地，支持正则
+     * 正则表达式中元字符不能单独出现
+     * @param pageable 由page size 和 sort三个字段构成，如：
+     *                 page=0
+     *                 size=10
+     *                 sort=username.asc
+     */
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
     public ResponseEntity searchUser(@RequestParam(defaultValue = "/*") String email,
                                      @RequestParam(defaultValue = "/*") String username,
@@ -190,6 +202,7 @@ public class UserController {
             return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
         }
     }
+
     @RequestMapping(value = "/{username}/profile/password",method = PUT)
     public ResponseEntity updatePassword(@RequestBody String password,@ PathVariable String username,HttpSession httpSession){//修改密码
         if(!UserUtil.isSignedIn(httpSession)){
