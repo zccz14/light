@@ -85,6 +85,7 @@ public class ProblemListController {
         }
         pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
+
         return new ResponseEntity(problemListRepository
                 .findByUserListLike(
                         new ObjectId(session
@@ -105,17 +106,27 @@ public class ProblemListController {
             return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
 
-        Date now = new Date(System.currentTimeMillis());
+        if (tempProblemList.isAccessible() ||
+                tempProblemList
+                        .getUserList()
+                        .contains(new ObjectId(
+                                session.getAttribute("userId")
+                                        .toString()))) {
+            Date now = new Date(System.currentTimeMillis());
+            if (tempProblemList.getReadEndTime().before(now) &&
+                    tempProblemList.getReadEndTime().after(now)) {
+                return new ResponseEntity(tempProblemList, HttpStatus.OK);
+            } else
+                return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
 
-        if (tempProblemList.getReadEndTime().before(now) &&
-                tempProblemList.getReadEndTime().after(now)) {
-            return new ResponseEntity(tempProblemList, HttpStatus.OK);
-        } else
-            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
 
+
     @RequestMapping(method = RequestMethod.POST)
-    public ResponseEntity createProblemList(@Valid @RequestBody ProblemList problemList, HttpSession session) {
+    public ResponseEntity createProblemList(@Valid @RequestBody ProblemList problemList,
+                                            HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -123,11 +134,14 @@ public class ProblemListController {
         if (!problemList.isAccessible()) {
             problemList.setUserList(null);
         }
-        problemList.setCreator(new ObjectId(session.getAttribute("userId").toString()));
+
+        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+
+        problemList.setCreator(tempObjectId);
         problemList.setCreatedTime(new Date());
         ProblemList tempProblemList = problemListRepository.save(problemList);
 
-        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        User user = userRepository.findById(tempObjectId);
         user.addProblemListOwned(tempProblemList.getId());
         userRepository.save(user);
 
@@ -138,35 +152,41 @@ public class ProblemListController {
     public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList,
                                             @PathVariable ObjectId id,
                                             HttpSession session) {
-        if (!isSignedIn(session)) {
+        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+
+        if (!(isSignedIn(session)
+                && tempObjectId
+                .equals(problemListRepository.findById(id).getCreator()))) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
         if (!problemList.isAccessible()) {
             problemList.setUserList(null);
         }
+
         problemList.setId(id);
-        problemList.setCreator(
-                new ObjectId(session
-                        .getAttribute("userId").toString()));
+        problemList.setCreator(tempObjectId);
+
         return new ResponseEntity(problemListRepository.save(problemList), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProblemList(@PathVariable ObjectId id, HttpSession session) {
-        if (!(isSignedIn(session) &&
-                new ObjectId(session
-                        .getAttribute("userId")
-                        .toString())
-                        .equals(problemListRepository
-                                .findById(id)
-                                .getCreator()))) {
+    public ResponseEntity deleteProblemList(@PathVariable ObjectId id,
+                                            HttpSession session) {
+        ProblemList tempProblemList = problemListRepository.findById(id);
+
+        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+
+        if (!(isSignedIn(session)
+                && tempObjectId
+                .equals(tempProblemList
+                        .getCreator()))) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        ProblemList tempProblemList = problemListRepository.findById(id);
+
         problemListRepository.delete(tempProblemList);
 
-        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        User user = userRepository.findById(tempObjectId);
         user.deleteProblemListOwned(tempProblemList.getId());
         userRepository.save(user);
 
