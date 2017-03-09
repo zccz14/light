@@ -7,12 +7,12 @@ import javax.servlet.SessionTrackingMode;
 import java.util.stream.Stream;
 
 /**
- * Created by aak12 on 2017/3/4.
+ * @author  aak1247.
  */
 public interface GroupRepository extends MongoRepository<Group,ObjectId>{
     Group findById(ObjectId id);
-    Group findOneByName(String name);
+    Group findOneByGroupName(String name);
     Stream<Group> findByOwnerId(ObjectId ownerId);
-    Stream<Group> findByName(String name);
-    Stream<Group> findByNameLike(String name);
+    Stream<Group> findByGroupName(String name);
+    Stream<Group> findByGroupNameLike(String name);
 }

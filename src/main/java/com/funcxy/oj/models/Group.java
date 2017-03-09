@@ -26,7 +26,7 @@ public class Group {
     private ObjectId ownerId;
     @Indexed(unique = true)
     @NotBlank(message = "组名为空")
-    private String name;
+    private String groupName;
 
     private List<ObjectId> memberId;
     private List<ObjectId> joiningMemberId;
@@ -49,12 +49,12 @@ public class Group {
         this.ownerId = ownerId;
     }
 
-    public String getName() {
-        return name;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGroupName(String name) {
+        this.groupName = name;
     }
 
     public List<ObjectId> getMemberId() {

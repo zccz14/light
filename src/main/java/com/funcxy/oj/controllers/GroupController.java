@@ -41,7 +41,7 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
-        if (groupRepository.findOneByName(group.getName())!=null)return new ResponseEntity<Object>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+        if (groupRepository.findOneByGroupName(group.getGroupName())!=null)return new ResponseEntity<Object>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
         user.addGroupIn(group.getId());
         groupRepository.save(group);
         userRepository.save(user);
@@ -72,7 +72,7 @@ public class GroupController {
         if (!user.passwordVerify(dismissVerification.password)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        if (!group.getName().equals(dismissVerification.name)) return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
+        if (!group.getGroupName().equals(dismissVerification.name)) return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
         user.deleteGroupIn(group.getId());
         groupRepository.delete(group);
         userRepository.save(user);
@@ -85,7 +85,7 @@ public class GroupController {
         if (!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        Group group = groupRepository.findOneByName(groupName);
+        Group group = groupRepository.findOneByGroupName(groupName);
         if (group == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         return new ResponseEntity<>(group,HttpStatus.OK);
     }

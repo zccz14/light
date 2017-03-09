@@ -20,7 +20,7 @@ import java.util.Random;
 import static com.sun.org.apache.xerces.internal.impl.dv.util.HexBin.encode;
 
 /**
- * Created by aak1247 on 2017/3/1.
+ * @author aak1247 on 2017/3/1.
  */
 public class UserUtil {
     public static String encrypt(String algorithm, String clearText) {
