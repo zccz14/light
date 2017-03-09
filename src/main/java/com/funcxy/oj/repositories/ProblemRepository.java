@@ -21,7 +21,7 @@ public interface ProblemRepository extends MongoRepository<Problem, ObjectId> {
     Page<Problem> getAllProblems(ObjectId creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
-    Page<Problem> findByCreatorLike(User creator, Pageable pageable);
+    Page<Problem> findByCreatorLike(ObjectId creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
     Page<Problem> findByTitleLike(String title, Pageable pageable);
