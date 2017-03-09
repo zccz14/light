@@ -8,7 +8,6 @@ import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
-import com.funcxy.oj.utils.InvalidException;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
@@ -48,9 +47,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
-    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) throws InvalidException{
+    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession){
         if(passport.username==null){
-            return new ResponseEntity<>(new InvalidException("username or email must be set"),HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new FieldsRequiredError(),HttpStatus.BAD_REQUEST);
         }else{
             System.out.println(passport.username+"login");
             RegularExpression regExpEmail = new RegularExpression("^\\S+@[a-zA-Z0-9]+\\.[a-zA-Z]+");
@@ -74,7 +73,6 @@ public class UserController {
                 System.out.println("password wrong"+passport.password);
                 return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }else {
-//                throw new InvalidException("input illegal");
                 return new ResponseEntity<>(new FieldsRequiredError(), HttpStatus.BAD_REQUEST);
             }
         }
@@ -83,7 +81,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-up", method = POST)//注册
-    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) throws InvalidException{
+    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession){
         System.out.println(passport.username+passport.email+passport.password);
         if(Validation.isValid(passport)){
             System.out.println(passport.username+" sign up");
@@ -101,7 +99,7 @@ public class UserController {
                     userFoundByEmail.notVerified();
                     userRepository.save(userFoundByEmail);
                     //发邮件
-                    UserUtil.sendEmail(userFoundByEmail.getEmail(), userFoundByEmail.getUsername() + "/" + userFoundByEmail.getIdentifyString());
+                    UserUtil.sendVerifyEmail(userFoundByEmail.getEmail(),userFoundByEmail.getUsername()+"/"+userFoundByEmail.getIdentifyString());
                     return new ResponseEntity<Object>(userFoundByEmail,HttpStatus.OK);
                 }else{
                     return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
@@ -113,7 +111,7 @@ public class UserController {
             user.setPassword(passport.password);
             user.notVerified();
             //发邮件
-            UserUtil.sendEmail(user.getEmail(), user.getUsername() + "/" + user.getIdentifyString());
+            UserUtil.sendVerifyEmail(user.getEmail(),user.getUsername()+"/"+user.getIdentifyString());
             return new ResponseEntity<>(userRepository.insert(user), HttpStatus.CREATED);
         }else {
             System.out.println("invalid passport");
@@ -123,9 +121,9 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
-    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) throws InvalidException{
+    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
           if (userRepository.findOneByUsername(username)==null)
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
@@ -169,47 +167,51 @@ public class UserController {
             }
         }
     }
-
+    /**
+     *searchUser
+     * @param email 邮箱，支持正则
+     * @param username 用户名，支持正则
+     * @param nickname 昵称，支持正则
+     * @param bio 个人简介，支持正则
+     * @param location 所在地，支持正则
+     * 正则表达式中元字符不能单独出现
+     * @param pageable 由page size 和 sort三个字段构成，如：
+     *                 page=0
+     *                 size=10
+     *                 sort=username.asc
+     */
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
-    public ResponseEntity searchUser(@RequestParam String email, String username, String nickname, String bio, String location, org.springframework.data.domain.Pageable pageable) {
-        List<User> users = new ArrayList<>(0);
-        if (email != null){
-            users.addAll(userRepository.findByEmail(email));
-        }
-        if (username != null){
-            if (users.size() != 0) {//非空时取交集
-                List<User> usersFoundByUsername = userRepository.findByUsernameLike(username);
-                users.retainAll(usersFoundByUsername);
-            }else{//空时直接添加
-                users.addAll(userRepository.findByUsernameLike(username));
-            }
-        }
-        if (nickname != null){
-            if (users.size() != 0) {
-                List<User> usersFoundByNickname = userRepository.findByNicknameLike(nickname);
-                users.retainAll(usersFoundByNickname);
-            }else{
-                users.addAll(userRepository.findByNicknameLike(nickname));
-            }
-        }
-        if (location != null){
-            if (users.size() != 0) {
-                List<User> usersFoundByLocation = userRepository.findByLocation(location);
-                users.retainAll(usersFoundByLocation);
-            }else {
-                users.addAll(userRepository.findByLocation(location));
-            }
-        }
-        if (bio != null){
-            if (users.size() != 0) {
-                List<User> usersFoundByBio = userRepository.findByBioLike(bio);
-                users.retainAll(usersFoundByBio);
-            }else {
-                users.addAll(userRepository.findByBioLike(bio));
-            }
-        }
-        return new ResponseEntity<>(new PageImpl<User>(users, pageable, users.size())
-                , HttpStatus.OK);
+    public ResponseEntity searchUser(@RequestParam(defaultValue = "/*") String email,
+                                     @RequestParam(defaultValue = "/*") String username,
+                                     @RequestParam(defaultValue = "/*") String nickname,
+                                     @RequestParam(defaultValue = "/*") String bio,
+                                     @RequestParam(defaultValue = "/*") String location,
+                                     org.springframework.data.domain.Pageable pageable){
+        Page<User> users = userRepository.roughFind(username,email,nickname,bio,location,pageable);
+        return new ResponseEntity<>(users,HttpStatus.OK);
     }
 
+    @RequestMapping(value ="/{username}/password",method = RequestMethod.POST)
+    public ResponseEntity findPassword(@RequestBody Passport passport,@PathVariable String username){//找回密码
+        User user = userRepository.findOneByUsername(passport.username);
+        if (user.getEmail().equals(passport.email)){
+            user.findPassword();
+            userRepository.save(user);
+            return new ResponseEntity<>("success",HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @RequestMapping(value = "/{username}/profile/password",method = PUT)
+    public ResponseEntity updatePassword(@RequestBody String password,@ PathVariable String username,HttpSession httpSession){//修改密码
+        if(!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        user.setPassword(password);
+        userRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
