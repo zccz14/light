@@ -11,8 +11,7 @@ import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -22,6 +21,7 @@ import javax.validation.Valid;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.springframework.web.bind.annotation.RequestMethod.GET;
 import static org.springframework.web.bind.annotation.RequestMethod.POST;
@@ -169,46 +169,16 @@ public class UserController {
     }
 
     @RequestMapping(value = "/search",method = GET)//模糊查找多个用户
-    public ResponseEntity searchUser(@RequestParam String email, String username, String nickname, String bio, String location, org.springframework.data.domain.Pageable pageable){
-        List<User> users = new ArrayList<>(0);
-        if (email != null){
-            users.addAll(userRepository.findByEmail(email));
-        }
-        if (username != null){
-            if (users.size() != 0){//非空时取交集
-                List<User> usersFoundByUsername = userRepository.findByUsernameLike(username);
-                users.retainAll(usersFoundByUsername);
-            }else{//空时直接添加
-                users.addAll(userRepository.findByUsernameLike(username));
-            }
-        }
-        if (nickname != null){
-            if (users.size()!=0){
-                List<User> usersFoundByNickname = userRepository.findByNicknameLike(nickname);
-                users.retainAll(usersFoundByNickname);
-            }else{
-                users.addAll(userRepository.findByNicknameLike(nickname));
-            }
-        }
-        if (location != null){
-            if (users.size()!=0){
-                List<User> usersFoundByLocation = userRepository.findByLocation(location);
-                users.retainAll(usersFoundByLocation);
-            }else {
-                users.addAll(userRepository.findByLocation(location));
-            }
-        }
-        if (bio != null){
-            if (users.size() != 0){
-                List<User> usersFoundByBio = userRepository.findByBioLike(bio);
-                users.retainAll(usersFoundByBio);
-            }else {
-                users.addAll(userRepository.findByBioLike(bio));
-            }
-        }
-        return new ResponseEntity<>(new PageImpl<User>(users,pageable,users.size())
-                ,HttpStatus.OK);
+    public ResponseEntity searchUser(@RequestParam(defaultValue = "/*") String email,
+                                     @RequestParam(defaultValue = "/*") String username,
+                                     @RequestParam(defaultValue = "/*") String nickname,
+                                     @RequestParam(defaultValue = "/*") String bio,
+                                     @RequestParam(defaultValue = "/*") String location,
+                                     org.springframework.data.domain.Pageable pageable){
+        Page<User> users = userRepository.roughFind(username,email,nickname,bio,location,pageable);
+        return new ResponseEntity<>(users,HttpStatus.OK);
     }
+
     @RequestMapping(value ="/{username}/password",method = RequestMethod.POST)
     public ResponseEntity findPassword(@RequestBody Passport passport,@PathVariable String username){//找回密码
         User user = userRepository.findOneByUsername(passport.username);
@@ -222,8 +192,8 @@ public class UserController {
     }
     @RequestMapping(value = "/{username}/profile/password",method = PUT)
     public ResponseEntity updatePassword(@RequestBody String password,@ PathVariable String username,HttpSession httpSession){//修改密码
-        if(UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.OK);
+        if(!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
         if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
