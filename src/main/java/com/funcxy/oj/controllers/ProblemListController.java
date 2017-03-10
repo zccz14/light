@@ -2,6 +2,7 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.BadRequestError;
 import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.errors.UnsupportedMediaType;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
@@ -173,8 +174,17 @@ public class ProblemListController {
     }
 
     @RequestMapping(value = "/upload", method = RequestMethod.POST)
-    public ResponseEntity createCoverTest(@RequestBody MultipartFile cover) {
-        return new ResponseEntity<>(upload(cover, ProblemList.PATH), HttpStatus.OK);
+    public ResponseEntity createCoverTest(@RequestBody MultipartFile cover,
+                                          HttpSession session) {
+        if (isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        if (cover.getOriginalFilename().matches("^\\S*.(jpg$)|(png$)|(bmp$)")) {
+            return new ResponseEntity<>(upload(cover, ProblemList.PATH), HttpStatus.OK);
+        }
+
+        return new ResponseEntity<>(new UnsupportedMediaType(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
