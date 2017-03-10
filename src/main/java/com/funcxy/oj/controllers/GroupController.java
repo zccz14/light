@@ -13,8 +13,10 @@ import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
+import org.omg.CosNaming.NamingContextPackage.NotFound;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +25,9 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
-import static org.springframework.web.bind.annotation.RequestMethod.GET;
-import static org.springframework.web.bind.annotation.RequestMethod.POST;
-import static org.springframework.web.bind.annotation.RequestMethod.PUT;
+import java.util.stream.Collectors;
+
+import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * @author  aak1247 on 2017/3/4.
@@ -127,15 +129,15 @@ public class GroupController {
     }
 
     //转让群组
-    class InnerClassOwner{
-        public ObjectId ownerId;
-        public InnerClassOwner(ObjectId objectId){
-            this.ownerId = objectId;
+    class InnerClassUser{
+        public ObjectId userId;
+        public InnerClassUser(ObjectId objectId){
+            this.userId = objectId;
         }
     }
     @RequestMapping(value = "/{groupName}/alienate",method = PUT)
     public ResponseEntity alienate(@PathVariable String groupName,
-                                   @RequestBody InnerClassOwner owner,
+                                   @RequestBody InnerClassUser owner,
                                    HttpSession httpSession){
         if (!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
@@ -193,7 +195,7 @@ public class GroupController {
         userFound.addMessage(new Message("Invitation","you are invited to "+group.getGroupName(),2));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    //TODO: 同意/拒绝加入(群组管理员视角)
+    //同意/拒绝加入(群组管理员视角) 仅针对请求加入的情况
     class InnerClassReport{
         String result;
         /**
@@ -216,13 +218,66 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
         if (report.result.equals("admit")){
-
+            user.addGroupIn(group.getId());
+            if (user.getGroupIn().contains(group.getId())){
+                return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+            }else {
+                user.addGroupIn(group.getId());
+                group.addMember(user.getId());
+                userRepository.save(user);
+                groupRepository.save(group);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         }else if(report.result.equals("refuse")){
-
+            group.refuse(user.getId());
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
     }
 
-    //TODO: 劝退成员
-    //TODO: 获取群组成员列表
+    //劝退成员
+    @RequestMapping(value = "/{groupName}/manage",method = DELETE)
+    public ResponseEntity deleteMember(@PathVariable String groupName,
+                                       @RequestBody InnerClassUser user,
+                                       HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        User userFound = userRepository.findById(user.userId);
+        Group group = groupRepository.findOneByGroupName(groupName);
+        if (!group.getOwnerId().equals(new ObjectId(httpSession.getAttribute("userId").toString()))){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        if (group.getMemberId().remove(user.userId)){
+            return new ResponseEntity(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        }
+    }
+
+    //获取群组成员列表
+    @RequestMapping(value = "/{groupName}/members",method = GET)
+    public ResponseEntity retriveMember(@PathVariable String groupName,
+                                        Pageable pageable,
+                                        HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        Group group = groupRepository.findOneByGroupName(groupName);
+        if (group == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (group.getType().equals(GroupType.CLOSE)){
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.BAD_REQUEST);
+        }else {
+            return new ResponseEntity<>(
+                    new PageImpl<User>(group.getMemberId()
+                                            .stream()
+                                            .map(
+                                                mem->userRepository.findById(mem)
+                                            )
+                                            .collect(Collectors.toList()),
+                                        pageable,
+                                        group.getMemberId().size()),
+                    HttpStatus.OK);
+        }
+    }
 }

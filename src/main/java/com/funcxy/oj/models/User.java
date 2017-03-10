@@ -57,7 +57,7 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListForked = new ArrayList<>(0);
     @JsonIgnore
-    private List<Boolean> invitation = new ArrayList<>(0);
+    private List<ObjectId> invitation = new ArrayList<>(0);
 
     public ObjectId getId() {
         return this.id;
@@ -288,5 +288,13 @@ public class User {
 
     public void deleteProblemListForked(ObjectId objectId){
         this.problemListForked.remove(objectId);
+    }
+
+    public List<ObjectId> getInvitation(){
+        return this.invitation;
+    }
+
+    public void setInvitation(List<ObjectId> invitation){
+        this.invitation = invitation;
     }
 }
