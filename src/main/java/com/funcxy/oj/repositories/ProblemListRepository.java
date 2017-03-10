@@ -31,4 +31,6 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Obje
 
     @Query(fields = "{'title':1}")
     Page<ProblemList> findByCreatorLikeAndTitleLike(User creator, String title, Pageable pageable);
+
+    ProblemList findOneByTitle(String title);
 }
