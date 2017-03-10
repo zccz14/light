@@ -54,6 +54,8 @@ public class User {
     private List<String> problemListForked = new ArrayList<String>(0);
     @JsonIgnore
     private List<String> invitation = new ArrayList<String>(0);
+    @JsonIgnore
+    private List<Dispatcher> dispatchers = new ArrayList<>(0);
 
     public String getId() {
         return this.id;
@@ -293,4 +295,13 @@ public class User {
     public void setInvitation(List<String> invitation) {
         this.invitation = invitation;
     }
+
+    public List<Dispatcher> getDispatchers() {
+        return dispatchers;
+    }
+
+    public void setDispatchers(List<Dispatcher> dispatchers) {
+        this.dispatchers = dispatchers;
+    }
+
 }
