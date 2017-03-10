@@ -58,6 +58,8 @@ public class User {
     private List<ObjectId> problemListForked = new ArrayList<>(0);
     @JsonIgnore
     private List<ObjectId> invitation = new ArrayList<>(0);
+    @JsonIgnore
+    private List<Dispatcher> dispatchers = new ArrayList<>(0);
 
     public ObjectId getId() {
         return this.id;
@@ -297,4 +299,13 @@ public class User {
     public void setInvitation(List<ObjectId> invitation) {
         this.invitation = invitation;
     }
+
+    public void setDispatchers(List<Dispatcher> dispatchers){
+        this.dispatchers = dispatchers;
+    }
+
+    public List<Dispatcher> getDispatchers(){
+        return dispatchers;
+    }
+
 }
