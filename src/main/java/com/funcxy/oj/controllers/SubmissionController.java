@@ -9,7 +9,6 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.SubmissionRepository;
 import com.funcxy.oj.repositories.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
@@ -41,7 +40,7 @@ public class SubmissionController {
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity handInSubmission(@PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity handInSubmission(@PathVariable String id, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -50,7 +49,7 @@ public class SubmissionController {
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
-    public ResponseEntity createSubmission(@Valid Submission submission, @PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity createSubmission(@Valid Submission submission, @PathVariable String id, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -60,23 +59,23 @@ public class SubmissionController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity updateSentence(@RequestBody @Valid Submission submission, @PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity updateSentence(@RequestBody @Valid Submission submission, @PathVariable String id, HttpSession session) {
         // UserId
         User theUser = userRepository.findById(id);
-        ObjectId userId = theUser.getId();
+        String userId = theUser.getId();
         Submission theSubmission = submissionRepository.findById(id);
-        ObjectId problemListId = theSubmission.getProblemListId();
+        String problemListId = theSubmission.getProblemListId();
         ProblemList problemList = problemListRepository.findById(problemListId);
         List<JudgeProblem> list = problemList.getJudgerList();
-        ObjectId problemId = theSubmission.getProblemId();
-        List<ObjectId> judger = list.stream()
+        String problemId = theSubmission.getProblemId();
+        List<String> judger = list.stream()
                 .filter(v -> v.getProblemId().equals(problemId))
                 .map(v -> v.getJudgeId())
                 .collect(Collectors.toList());
         if (judger == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         } else {
-            ObjectId judgerId = judger.get(0);
+            String judgerId = judger.get(0);
             if (judgerId.equals(userId)) {
                 return new ResponseEntity(submissionRepository.save(submission), HttpStatus.OK);
             } else {

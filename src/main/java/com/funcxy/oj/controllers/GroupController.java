@@ -12,7 +12,6 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -43,7 +42,7 @@ public class GroupController {
         if (!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         if (groupRepository.findOneByGroupName(group.getGroupName())!=null)return new ResponseEntity<Object>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
         user.addGroupIn(group.getId());
         groupRepository.save(group);
@@ -57,7 +56,7 @@ public class GroupController {
         if (!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findById(dismissVerification.groupId);
         if (!user.getId().equals(group.getOwnerId()))return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         if (user == null||group == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
@@ -100,7 +99,7 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
         Group groupFound = groupRepository.findOneByGroupName(groupName);
-        if (!groupFound.getOwnerId().equals(userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString())))){
+        if (!groupFound.getOwnerId().equals(userRepository.findById(httpSession.getAttribute("userId").toString()))) {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
 //        if (group.getOwnerId()!=null)groupFound.setOwnerId(group.getOwnerId());
@@ -126,10 +125,10 @@ public class GroupController {
         }
         Group group = groupRepository.findOneByGroupName(groupName);
         if (group == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
-        if (!group.getOwnerId().equals(new ObjectId(httpSession.getAttribute("userId").toString()))){
+        if (!group.getOwnerId().equals(httpSession.getAttribute("userId").toString())) {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        group.setOwnerId(new ObjectId(httpSession.getAttribute("userId").toString()));
+        group.setOwnerId(httpSession.getAttribute("userId").toString());
         groupRepository.save(group);
         return new ResponseEntity<>(group,HttpStatus.OK);
     }
@@ -188,7 +187,7 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         if (!group.getOwnerId().equals(user.getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -220,7 +219,7 @@ public class GroupController {
         }
         User userFound = userRepository.findById(user.userId);
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (!group.getOwnerId().equals(new ObjectId(httpSession.getAttribute("userId").toString()))) {
+        if (!group.getOwnerId().equals(httpSession.getAttribute("userId").toString())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         if (group.getMemberId().remove(user.userId)) {
@@ -257,11 +256,11 @@ public class GroupController {
     }
 
     class DismissVerification {
-        ObjectId groupId;
+        String groupId;
         String name;
         String password;
 
-        DismissVerification(ObjectId groupId, String name, String password) {
+        DismissVerification(String groupId, String name, String password) {
             this.groupId = groupId;
             this.name = name;
             this.password = password;
@@ -270,9 +269,9 @@ public class GroupController {
 
     //转让群组
     class InnerClassUser {
-        public ObjectId userId;
+        public String userId;
 
-        public InnerClassUser(ObjectId objectId) {
+        public InnerClassUser(String objectId) {
             this.userId = objectId;
         }
     }

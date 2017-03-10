@@ -1,7 +1,6 @@
 package com.funcxy.oj.repositories;
 
 import com.funcxy.oj.models.Submission;
-import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
@@ -9,14 +8,14 @@ import java.util.List;
 /**
  * Created by lqp on 2017/3/1.
  */
-public interface SubmissionRepository extends MongoRepository<Submission, ObjectId> {
-    Submission findById(ObjectId id);
+public interface SubmissionRepository extends MongoRepository<Submission, String> {
+    Submission findById(String id);
 
-    List<Submission> findByUserId(ObjectId userId);
+    List<Submission> findByUserId(String userId);
 
-    List<Submission> findByProblemListId(ObjectId problemlistId);
+    List<Submission> findByProblemListId(String problemlistId);
 
-    List<Submission> findByProblemId(ObjectId problemId);
+    List<Submission> findByProblemId(String problemId);
 
     List<Submission> findByStatus(String status);
 

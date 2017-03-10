@@ -7,7 +7,6 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -73,9 +72,8 @@ public class ProblemListController {
 //        }
         return new ResponseEntity<>(problemListRepository
                 .getAllProblemListsCreated(
-                        new ObjectId(session
-                                .getAttribute("userId")
-                                .toString()), pageable), HttpStatus.OK);
+                        session.getAttribute("userId")
+                                .toString(), pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/in", method = RequestMethod.GET)
@@ -90,13 +88,12 @@ public class ProblemListController {
 
         return new ResponseEntity<>(problemListRepository
                 .findByUserListLike(
-                        new ObjectId(session
-                                .getAttribute("userId")
-                                .toString()), pageable), HttpStatus.OK);
+                        session.getAttribute("userId")
+                                .toString(), pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity getOneSpecificProblemList(@PathVariable ObjectId id,
+    public ResponseEntity getOneSpecificProblemList(@PathVariable String id,
                                                     HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
@@ -108,7 +105,7 @@ public class ProblemListController {
             return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
 
-        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        String tempObjectId = session.getAttribute("userId").toString();
 
         if (tempProblemList.getCreator().equals(tempObjectId)) {
             return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
@@ -159,7 +156,7 @@ public class ProblemListController {
             problemList.setUserList(null);
         }
 
-        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        String tempObjectId = session.getAttribute("userId").toString();
 
         problemList.setCreator(tempObjectId);
         problemList.setCreatedTime(new Date());
@@ -179,9 +176,9 @@ public class ProblemListController {
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList,
-                                            @PathVariable ObjectId id,
+                                            @PathVariable String id,
                                             HttpSession session) {
-        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        String tempObjectId = session.getAttribute("userId").toString();
         ProblemList tempProblemList = problemListRepository.findById(id);
 
         if (!(isSignedIn(session)
@@ -200,11 +197,11 @@ public class ProblemListController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProblemList(@PathVariable ObjectId id,
+    public ResponseEntity deleteProblemList(@PathVariable String id,
                                             HttpSession session) {
         ProblemList tempProblemList = problemListRepository.findById(id);
 
-        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        String tempObjectId = session.getAttribute("userId").toString();
 
         if (!(isSignedIn(session)
                 && tempObjectId

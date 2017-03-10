@@ -11,7 +11,6 @@ import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -123,7 +122,7 @@ public class UserController {
     @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
     public ResponseEntity putProfile(@RequestBody @Valid Profile profile, @PathVariable String username, HttpSession httpSession) {
         if(UserUtil.isSignedIn(httpSession)){
-            User userFound = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+            User userFound = userRepository.findById(httpSession.getAttribute("userId").toString());
             userFound.setProfile(profile);
             userRepository.save(userFound);
             return new ResponseEntity<>(profile, HttpStatus.OK);
@@ -201,7 +200,7 @@ public class UserController {
         if(!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         user.setPassword(password);
         userRepository.save(user);
@@ -215,7 +214,7 @@ public class UserController {
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         if (user.getProblemListForked().contains(problemList.getId())) {
             return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }

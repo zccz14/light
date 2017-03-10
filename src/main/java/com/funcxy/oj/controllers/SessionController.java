@@ -3,7 +3,6 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.UserRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +30,7 @@ public class SessionController {
         if (userId == null) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(userId));
+        User user = userRepository.findById(userId);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 }

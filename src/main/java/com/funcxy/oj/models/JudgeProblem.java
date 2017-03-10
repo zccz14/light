@@ -1,27 +1,25 @@
 package com.funcxy.oj.models;
 
-import org.bson.types.ObjectId;
-
 /**
  * Created by chenyu on 2017/3/1.
  */
 public class JudgeProblem {
-    private ObjectId problemId;
-    private ObjectId judgeId;
+    private String problemId;
+    private String judgeId;
 
-    public ObjectId getProblemId() {
+    public String getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(ObjectId problemId) {
+    public void setProblemId(String problemId) {
         this.problemId = problemId;
     }
 
-    public ObjectId getJudgeId() {
+    public String getJudgeId() {
         return judgeId;
     }
 
-    public void setJudgeId(ObjectId judgeId) {
+    public void setJudgeId(String judgeId) {
         this.judgeId = judgeId;
     }
 }

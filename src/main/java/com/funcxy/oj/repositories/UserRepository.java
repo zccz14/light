@@ -1,7 +1,6 @@
 package com.funcxy.oj.repositories;
 
 import com.funcxy.oj.models.User;
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,7 +13,7 @@ import java.util.List;
  * @author ddhee
  */
 public interface UserRepository extends MongoRepository<User, String> {
-    User findById(ObjectId id);
+    User findById(String id);
     List<User> findByUsernameLike (String username);
     User findOneByEmail(String email);
     User findOneByUsername(String username);

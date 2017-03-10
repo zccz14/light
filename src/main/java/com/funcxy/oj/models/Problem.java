@@ -1,8 +1,5 @@
 package com.funcxy.oj.models;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
@@ -20,11 +17,10 @@ import javax.validation.constraints.NotNull;
 @Document(collection = "problems")
 public class Problem {
     @Id
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId id;
+    private String id;
 
     @Indexed
-    private ObjectId creator;
+    private String creator;
 
     @Indexed
     @NotNull
@@ -42,19 +38,19 @@ public class Problem {
 
     private String referenceAnswer;
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public ObjectId getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(ObjectId creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 

@@ -2,7 +2,6 @@ package com.funcxy.oj.repositories;
 
 import com.funcxy.oj.models.Problem;
 import com.funcxy.oj.models.User;
-import org.bson.types.ObjectId;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
@@ -14,14 +13,14 @@ import org.springframework.data.mongodb.repository.Query;
  * @author Peter
  * @version 1.0
  */
-public interface ProblemRepository extends MongoRepository<Problem, ObjectId> {
-    Problem findById(ObjectId id);
+public interface ProblemRepository extends MongoRepository<Problem, String> {
+    Problem findById(String id);
 
     @Query(value = "{'creator':?0}", fields = "{'title':1}")
-    Page<Problem> getAllProblems(ObjectId creator, Pageable pageable);
+    Page<Problem> getAllProblems(String creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
-    Page<Problem> findByCreatorLike(ObjectId creator, Pageable pageable);
+    Page<Problem> findByCreatorLike(String creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
     Page<Problem> findByTitleLike(String title, Pageable pageable);

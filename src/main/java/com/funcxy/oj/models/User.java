@@ -1,10 +1,7 @@
 package com.funcxy.oj.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
-import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
@@ -22,8 +19,7 @@ import java.util.List;
 @Document(collection = "users")
 public class User {
     @Id
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId id;
+    private String id;
     @Indexed(unique = true)
     @NotBlank(message = "用户名为空")
     private String username;
@@ -35,19 +31,19 @@ public class User {
     private String password;
     private Profile profile = new Profile();
     @JsonIgnore
-    private List<ObjectId> groupIn = new ArrayList<>(0);
+    private List<String> groupIn = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> problemOwned = new ArrayList<>(0);
+    private List<String> problemOwned = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> problemListOwned = new ArrayList<>(0);
+    private List<String> problemListOwned = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> submissionHistory = new ArrayList<>(0);
+    private List<String> submissionHistory = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> submissionUndecided = new ArrayList<>(0);
+    private List<String> submissionUndecided = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> problemLiked = new ArrayList<>(0);
+    private List<String> problemLiked = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> problemListLiked = new ArrayList<>(0);
+    private List<String> problemListLiked = new ArrayList<String>(0);
     @JsonIgnore
     private String identifyString = "";
 
@@ -55,15 +51,15 @@ public class User {
 
     private List<Message> messages;
     @JsonIgnore
-    private List<ObjectId> problemListForked = new ArrayList<>(0);
+    private List<String> problemListForked = new ArrayList<String>(0);
     @JsonIgnore
-    private List<ObjectId> invitation = new ArrayList<>(0);
+    private List<String> invitation = new ArrayList<String>(0);
 
-    public ObjectId getId() {
+    public String getId() {
         return this.id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -93,95 +89,95 @@ public class User {
         return this.password.equals(UserUtil.encrypt("SHA1", password));
     }
 
-    public List<ObjectId> getProblemOwned() {
+    public List<String> getProblemOwned() {
         return problemOwned;
     }
 
-    public void setProblemOwned(List<ObjectId> problemOwned) {
+    public void setProblemOwned(List<String> problemOwned) {
         this.problemOwned = problemOwned;
     }
 
-    public List<ObjectId> getProblemListOwned() {
+    public List<String> getProblemListOwned() {
         return problemListOwned;
     }
 
-    public void setProblemListOwned(List<ObjectId> problemListOwned) {
+    public void setProblemListOwned(List<String> problemListOwned) {
         this.problemListOwned = problemListOwned;
     }
 
-    public void addProblemOwned(ObjectId problemId) {
+    public void addProblemOwned(String problemId) {
         this.problemOwned.add(problemId);
     }
 
-    public void deleteProblemOwned(ObjectId problemId) {
+    public void deleteProblemOwned(String problemId) {
         this.problemOwned.remove(this.problemOwned.indexOf(problemId));
     }
 
-    public void addProblemListOwned(ObjectId problemListId) {
+    public void addProblemListOwned(String problemListId) {
         this.problemListOwned.add(problemListId);
     }
 
-    public void deleteProblemListOwned(ObjectId problemListId) {
+    public void deleteProblemListOwned(String problemListId) {
         this.problemListOwned.remove(this.problemListOwned.indexOf(problemListId));
     }
 
-    public List<ObjectId> getSubmissionHistory() {
+    public List<String> getSubmissionHistory() {
         return submissionHistory;
     }
 
-    public void setSubmissionHistory(List<ObjectId> submissionHistory) {
+    public void setSubmissionHistory(List<String> submissionHistory) {
         this.submissionHistory = submissionHistory;
     }
 
-    public List<ObjectId> getSubmissionUndecided() {
+    public List<String> getSubmissionUndecided() {
         return submissionUndecided;
     }
 
-    public void setSubmissionUndecided(List<ObjectId> submissionUndecided) {
+    public void setSubmissionUndecided(List<String> submissionUndecided) {
         this.submissionUndecided = submissionUndecided;
     }
 
-    public List<ObjectId> getProblemLiked() {
+    public List<String> getProblemLiked() {
         return problemLiked;
     }
 
-    public void setProblemLiked(List<ObjectId> problemLiked) {
+    public void setProblemLiked(List<String> problemLiked) {
         this.problemLiked = problemLiked;
     }
 
-    public void addProblemLiked(ObjectId problemId) {
+    public void addProblemLiked(String problemId) {
         this.problemLiked.add(problemId);
     }
 
-    public void deleteProblemLiked(ObjectId problemId) {
+    public void deleteProblemLiked(String problemId) {
         this.problemLiked.remove(this.problemLiked.indexOf(problemId));
     }
 
-    public List<ObjectId> getProblemListLiked() {
+    public List<String> getProblemListLiked() {
         return problemListLiked;
     }
 
-    public void setProblemListLiked(List<ObjectId> problemListLiked) {
+    public void setProblemListLiked(List<String> problemListLiked) {
         this.problemListLiked = problemListLiked;
     }
 
-    public void addProblemListLiked(ObjectId problemId) {
+    public void addProblemListLiked(String problemId) {
         this.problemListLiked.add(problemId);
     }
 
-    public void deleteProblemListLiked(ObjectId problemId) {
+    public void deleteProblemListLiked(String problemId) {
         this.problemListLiked.remove(this.problemListLiked.indexOf(problemId));
     }
 
-    public void addSubmissionHistory(ObjectId submissionId) {
+    public void addSubmissionHistory(String submissionId) {
         this.submissionHistory.add(submissionId);
     }
 
-    public void addSubmissionUndicided(ObjectId submissionId) {
+    public void addSubmissionUndicided(String submissionId) {
         this.submissionUndecided.add(submissionId);
     }
 
-    public void deleteSubmissionUndicided(ObjectId submissionId) {
+    public void deleteSubmissionUndicided(String submissionId) {
         this.submissionUndecided.remove(submissionUndecided.indexOf(submissionId));
     }
 
@@ -242,19 +238,19 @@ public class User {
         this.setPassword(password);
     }
 
-    public List<ObjectId> getGroupIn(){
+    public List<String> getGroupIn() {
         return this.groupIn;
     }
 
-    public void setGroupIn(List<ObjectId> groupIn) {
+    public void setGroupIn(List<String> groupIn) {
         this.groupIn = groupIn;
     }
 
-    public void addGroupIn(ObjectId group){
+    public void addGroupIn(String group) {
         this.groupIn.add(group);
     }
 
-    public void deleteGroupIn(ObjectId group){
+    public void deleteGroupIn(String group) {
         this.groupIn.remove(this.groupIn.indexOf(group));
     }
 
@@ -274,27 +270,27 @@ public class User {
         this.messages.remove(message);
     }
 
-    public List<ObjectId> getProblemListForked() {
+    public List<String> getProblemListForked() {
         return this.problemListForked;
     }
 
-    public void setProblemListForked(List<ObjectId> problemListForked) {
+    public void setProblemListForked(List<String> problemListForked) {
         this.problemListForked = problemListForked;
     }
 
-    public void addProblemListForked(ObjectId objectId) {
+    public void addProblemListForked(String objectId) {
         this.problemListForked.add(objectId);
     }
 
-    public void deleteProblemListForked(ObjectId objectId) {
+    public void deleteProblemListForked(String objectId) {
         this.problemListForked.remove(objectId);
     }
 
-    public List<ObjectId> getInvitation() {
+    public List<String> getInvitation() {
         return this.invitation;
     }
 
-    public void setInvitation(List<ObjectId> invitation) {
+    public void setInvitation(List<String> invitation) {
         this.invitation = invitation;
     }
 }

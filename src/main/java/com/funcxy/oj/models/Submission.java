@@ -1,6 +1,5 @@
 package com.funcxy.oj.models;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
@@ -9,32 +8,32 @@ import org.springframework.data.mongodb.core.index.Indexed;
  */
 public class Submission {
     @Id
-    private ObjectId id;
+    private String id;
     @Indexed
-    private ObjectId userId;
+    private String userId;
     @Indexed
-    private ObjectId problemListId;
+    private String problemListId;
     @Indexed
-    private ObjectId problemId;
+    private String problemId;
     @Indexed
-    private ObjectId submissionId;
+    private String submissionId;
     private String status;
     private String sentence;
     private String content;
 
-    public ObjectId getProblemListId() {
+    public String getProblemListId() {
         return problemListId;
     }
 
-    public void setProblemListId(ObjectId problemListId) {
+    public void setProblemListId(String problemListId) {
         this.problemListId = problemListId;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -65,19 +64,19 @@ public class Submission {
         this.content = content;
     }
 
-    public ObjectId getProblemId() {
+    public String getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(ObjectId problemId) {
+    public void setProblemId(String problemId) {
         this.problemId = problemId;
     }
 
-    public ObjectId getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(ObjectId userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }

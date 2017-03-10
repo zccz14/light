@@ -8,7 +8,6 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -54,10 +53,10 @@ public class ProblemController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        problem.setCreator(new ObjectId(session.getAttribute("userId").toString()));
+        problem.setCreator(session.getAttribute("userId").toString());
 
         Problem tempProblem = problemRepository.save(problem);
-        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        User user = userRepository.findById(session.getAttribute("userId").toString());
 
         user.addProblemOwned(tempProblem.getId());
         userRepository.save(user);
@@ -65,7 +64,7 @@ public class ProblemController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity getOneSpecificProblem(@PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity getOneSpecificProblem(@PathVariable String id, HttpSession session) {
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -109,18 +108,17 @@ public class ProblemController {
 //        } else {
 //            return new ResponseEntity<>(problemRepository.findAll(pageable), HttpStatus.OK);
 //        }
-        return new ResponseEntity(problemRepository
-                .getAllProblems(new ObjectId(session
+        return new ResponseEntity<>(problemRepository
+                .getAllProblems(session
                         .getAttribute("userId")
-                        .toString()), pageable), HttpStatus.OK);
+                        .toString(), pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
-    public ResponseEntity updateProblem(@RequestBody @Valid Problem problem, @PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity updateProblem(@RequestBody @Valid Problem problem, @PathVariable String id, HttpSession session) {
         if (!(isSignedIn(session) &&
-                new ObjectId(session
-                        .getAttribute("userId")
-                        .toString())
+                session.getAttribute("userId")
+                        .toString()
                         .equals(problem
                                 .getCreator()))) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
@@ -130,11 +128,10 @@ public class ProblemController {
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProblem(@PathVariable ObjectId id, HttpSession session) {
+    public ResponseEntity deleteProblem(@PathVariable String id, HttpSession session) {
         if (!(isSignedIn(session) &&
-                new ObjectId(session
-                        .getAttribute("userId")
-                        .toString())
+                session.getAttribute("userId")
+                        .toString()
                         .equals(problemRepository
                                 .findById(id)
                                 .getCreator()))) {
@@ -144,7 +141,7 @@ public class ProblemController {
         if (tempProblem == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         problemRepository.delete(tempProblem);
 
-        User user = userRepository.findById(new ObjectId(session.getAttribute("userId").toString()));
+        User user = userRepository.findById(session.getAttribute("userId").toString());
         user.deleteProblemOwned(tempProblem.getId());
         userRepository.save(user);
         return new ResponseEntity<>(tempProblem, HttpStatus.OK);

@@ -1,6 +1,5 @@
 package com.funcxy.oj.models;
 
-import org.bson.types.ObjectId;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -23,17 +22,17 @@ public class ProblemList {
     public static final String PATH = "F:/";
 
     @Id
-    private ObjectId id;
+    private String id;
 
     @Indexed
-    private ObjectId creator;
+    private String creator;
 
-    private List<ObjectId> problemIds = new ArrayList<>(0);
+    private List<String> problemIds = new ArrayList<String>(0);
 
     @NotNull
     private boolean isAccessible = false;
 
-    private List<ObjectId> userList = new ArrayList<>(0);
+    private List<String> userList = new ArrayList<String>(0);
 
     @Indexed
     @NotNull
@@ -49,7 +48,7 @@ public class ProblemList {
     private Date answerEndTime = null;
     private Date readEndTime = null;
     private List<JudgeProblem> judgerList = new ArrayList<>(0);
-    private List<ObjectId> submissionList = new ArrayList<>(0);
+    private List<String> submissionList = new ArrayList<String>(0);
     @NotNull
     private boolean isAnonymous = false;
     @NotNull
@@ -77,27 +76,27 @@ public class ProblemList {
         this.createdTime = createdTime;
     }
 
-    public ObjectId getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(ObjectId id) {
+    public void setId(String id) {
         this.id = id;
     }
 
-    public ObjectId getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(ObjectId creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public List<ObjectId> getUserList() {
+    public List<String> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<ObjectId> userList) {
+    public void setUserList(List<String> userList) {
         this.userList = userList;
     }
 
@@ -157,11 +156,11 @@ public class ProblemList {
         this.judgerList = judgerList;
     }
 
-    public List<ObjectId> getSubmissionList() {
+    public List<String> getSubmissionList() {
         return submissionList;
     }
 
-    public void setSubmissionList(List<ObjectId> submissionList) {
+    public void setSubmissionList(List<String> submissionList) {
         this.submissionList = submissionList;
     }
 
@@ -213,11 +212,11 @@ public class ProblemList {
         this.canBeCopied = canBeCopied;
     }
 
-    public List<ObjectId> getProblemIds() {
+    public List<String> getProblemIds() {
         return problemIds;
     }
 
-    public void setProblemIds(List<ObjectId> problemIds) {
+    public void setProblemIds(List<String> problemIds) {
         this.problemIds = problemIds;
     }
 }

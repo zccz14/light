@@ -2,7 +2,6 @@ package com.funcxy.oj.services;
 
 import com.funcxy.oj.models.Submission;
 import com.funcxy.oj.repositories.SubmissionRepository;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
@@ -25,15 +24,15 @@ public class SubmissionService {
         return submissionRepository.save(submission);
     }
 
-    public Submission findById(ObjectId id) {
+    public Submission findById(String id) {
         return submissionRepository.findById(id);
     }
 
-    public List<Submission> findByProblemId(ObjectId problemId) {
+    public List<Submission> findByProblemId(String problemId) {
         return submissionRepository.findByProblemId(problemId);
     }
 
-    public List<Submission> findByProblemListId(ObjectId problemListId) {
+    public List<Submission> findByProblemListId(String problemListId) {
         return submissionRepository.findByProblemListId(problemListId);
     }
 
