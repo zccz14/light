@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * Created by aak12 on 2017/3/4.
+ * @author aak1247 on 2017/3/4.
  */
 @Document(collection = "groups")
 public class Group {
@@ -24,9 +24,9 @@ public class Group {
     @Indexed
     @NotNull
     private ObjectId ownerId;
-    @Indexed
+    @Indexed(unique = true)
     @NotBlank(message = "组名为空")
-    private String name;
+    private String groupName;
 
     private List<ObjectId> memberId;
     private List<ObjectId> joiningMemberId;
@@ -49,12 +49,12 @@ public class Group {
         this.ownerId = ownerId;
     }
 
-    public String getName() {
-        return name;
+    public String getGroupName() {
+        return groupName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setGroupName(String name) {
+        this.groupName = name;
     }
 
     public List<ObjectId> getMemberId() {
@@ -88,6 +88,7 @@ public class Group {
     public void setType(GroupType type) {
         this.type = type;
     }
+
     public void addMember(ObjectId memberId){
         this.joiningMemberId.remove(joiningMemberId.indexOf(memberId));
         this.memberId.add(memberId);
@@ -96,4 +97,13 @@ public class Group {
     public void askJoin(ObjectId joinId){
         this.joiningMemberId.add(joinId);
     }
+
+    public void addProblemListOwned(ObjectId problemListId){
+        this.ownedProblemList.add(problemListId);
+    }
+
+    public void deleteProblemListOwned(ObjectId problemListId){
+        this.ownedProblemList.remove(this.ownedProblemList.indexOf(problemListId));
+    }
+
 }

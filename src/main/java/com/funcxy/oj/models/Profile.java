@@ -9,7 +9,7 @@ import javax.validation.constraints.Past;
 import java.util.Date;
 
 /**
- * Created by aak1247 on 2017/3/3.
+ * @author aak1247 on 2017/3/3.
  */
 public class Profile {
     private String avatar;

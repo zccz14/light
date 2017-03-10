@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
 /**
- * Created by DDHEE on 2017/3/7.
+ * @author  DDHEE on 2017/3/7.
  */
 
 @RestController
