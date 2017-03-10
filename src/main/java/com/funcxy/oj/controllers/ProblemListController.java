@@ -112,9 +112,18 @@ public class ProblemListController {
                         .contains(new ObjectId(
                                 session.getAttribute("userId")
                                         .toString()))) {
+            Date readBeginTime = tempProblemList.getReadBeginTime();
+            Date readEndTime = tempProblemList.getReadEndTime();
+
+            if (readBeginTime == null && readEndTime == null) {
+                return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+            }
+
             Date now = new Date(System.currentTimeMillis());
-            if (tempProblemList.getReadEndTime().before(now) &&
-                    tempProblemList.getReadEndTime().after(now)) {
+
+            if ((readBeginTime.before(now) && readEndTime.before(now)) ||
+                    (readBeginTime.before(now) && readEndTime == null) ||
+                    (readEndTime.after(now) && readBeginTime == null)) {
                 return new ResponseEntity(tempProblemList, HttpStatus.OK);
             } else
                 return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
