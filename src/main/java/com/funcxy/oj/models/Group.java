@@ -30,6 +30,7 @@ public class Group {
 
     private List<ObjectId> memberId;
     private List<ObjectId> joiningMemberId;
+    private List<ObjectId> invitedMemberId;
     private List<ObjectId> ownedProblemList;
     private GroupType type;
 
@@ -106,4 +107,24 @@ public class Group {
         this.ownedProblemList.remove(this.ownedProblemList.indexOf(problemListId));
     }
 
+    public void setInvitedMemberId(List<ObjectId> list){
+        this.invitedMemberId = list;
+    }
+
+    public List<ObjectId> getInvitedMemberId(){
+        return this.invitedMemberId;
+    }
+
+    public void inviteMember(ObjectId user){
+        this.invitedMemberId.add(user);
+    }
+
+    public void admit(ObjectId user){
+        if (this.joiningMemberId.contains(user)){
+            joiningMemberId.remove(user);
+        }
+        if (this.invitedMemberId.contains(user)){
+
+        }
+    }
 }
