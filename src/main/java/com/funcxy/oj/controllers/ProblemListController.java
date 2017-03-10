@@ -49,7 +49,7 @@ public class ProblemListController {
         pageable.setSort(sort);
     }
 
-    @RequestMapping(value = "/problemListsOwned", method = RequestMethod.GET)
+    @RequestMapping(value = "/owned", method = RequestMethod.GET)
     public ResponseEntity getProblemListsOwned(@RequestParam int pageNumber,
                                                @RequestParam int pageSize,
                                                HttpSession session) {
@@ -76,7 +76,7 @@ public class ProblemListController {
                                 .toString()), pageable), HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/problemListsIn", method = RequestMethod.GET)
+    @RequestMapping(value = "/in", method = RequestMethod.GET)
     public ResponseEntity getProblemLists(@RequestParam int pageNumber,
                                           @RequestParam int pageSize,
                                           HttpSession session) {
@@ -106,32 +106,45 @@ public class ProblemListController {
             return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
 
+        ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+
+        if (tempProblemList.getCreator().equals(tempObjectId)) {
+            return new ResponseEntity(tempProblemList, HttpStatus.OK);
+        }
+
         if (tempProblemList.isAccessible() ||
                 tempProblemList
                         .getUserList()
-                        .contains(new ObjectId(
-                                session.getAttribute("userId")
-                                        .toString()))) {
+                        .contains(tempObjectId)) {
             Date readBeginTime = tempProblemList.getReadBeginTime();
             Date readEndTime = tempProblemList.getReadEndTime();
 
-            if (readBeginTime == null && readEndTime == null) {
-                return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
-            }
-
             Date now = new Date(System.currentTimeMillis());
 
-            if ((readBeginTime.before(now) && readEndTime.before(now)) ||
-                    (readBeginTime.before(now) && readEndTime == null) ||
-                    (readEndTime.after(now) && readBeginTime == null)) {
+            if ((readBeginTime == null && readEndTime == null)) {
                 return new ResponseEntity(tempProblemList, HttpStatus.OK);
-            } else
-                return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
+            }
+
+            if (readBeginTime != null) {
+                if (readBeginTime.before(now) && readEndTime == null) {
+                    return new ResponseEntity(tempProblemList, HttpStatus.OK);
+                }
+            }
+
+            if (readEndTime != null) {
+                if (readEndTime.after(now) && readBeginTime == null) {
+                    return new ResponseEntity(tempProblemList, HttpStatus.OK);
+                }
+            }
+
+            if (readBeginTime.before(now) && readEndTime.before(now)) {
+                return new ResponseEntity(tempProblemList, HttpStatus.OK);
+            }
+            return new ResponseEntity(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
 
         return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
-
 
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity createProblemList(@Valid @RequestBody ProblemList problemList,
@@ -162,14 +175,14 @@ public class ProblemListController {
                                             @PathVariable ObjectId id,
                                             HttpSession session) {
         ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        ProblemList tempProblemList = problemListRepository.findById(id);
 
         if (!(isSignedIn(session)
-                && tempObjectId
-                .equals(problemListRepository.findById(id).getCreator()))) {
+                && tempObjectId.equals(tempProblemList.getCreator()))) {
             return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (!problemList.isAccessible()) {
+        if (problemList.isAccessible()) {
             problemList.setUserList(null);
         }
 

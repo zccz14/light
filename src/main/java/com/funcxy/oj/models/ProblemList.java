@@ -16,7 +16,6 @@ import java.util.List;
  * Modified by wtupc96 on 2017/3/4.
  *
  * @author Peter
- * @author chenyu
  * @version 1.0
  */
 @Document(collection = "problemLists")

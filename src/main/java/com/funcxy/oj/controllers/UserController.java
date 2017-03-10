@@ -13,7 +13,7 @@ import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,8 +21,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -123,7 +121,7 @@ public class UserController {
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
           if (userRepository.findOneByUsername(username)==null)
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT
+              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_ACCEPTABLE);
           else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
     }
 
