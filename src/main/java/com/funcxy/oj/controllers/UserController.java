@@ -113,12 +113,11 @@ public class UserController {
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
-          if (userRepository.findOneByUsername(username)==null){
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
-          }
-          else {
-              return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
-          }
+        if (userRepository.findOneByUsername(username) == null) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(), HttpStatus.FOUND);
+        }
     }
 
     @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
