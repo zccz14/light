@@ -16,7 +16,6 @@ import java.util.List;
  * Modified by wtupc96 on 2017/3/4.
  *
  * @author Peter
- * @author chenyu
  * @version 1.0
  */
 @Document(collection = "problemLists")
@@ -43,10 +42,10 @@ public class ProblemList {
     private String type;
 
     private Date createdTime;
-    private Date readBeginTime;
-    private Date answerBeginTime;
-    private Date answerEndTime;
-    private Date readEndTime;
+    private Date readBeginTime = null;
+    private Date answerBeginTime = null;
+    private Date answerEndTime = null;
+    private Date readEndTime = null;
     private List<JudgeProblem> judgerList = new ArrayList<>(0);
     private List<ObjectId> submissionList = new ArrayList<>(0);
     @NotNull
@@ -83,7 +82,6 @@ public class ProblemList {
     public void setCreator(ObjectId creator) {
         this.creator = creator;
     }
-
 
     public List<ObjectId> getUserList() {
         return userList;

@@ -18,7 +18,7 @@ public class Submission {
     private ObjectId problemId;
     @Indexed
     private ObjectId submissionId;
-    private Boolean status;
+    private String status;
     private String sentence;
     private String content;
 
@@ -38,8 +38,14 @@ public class Submission {
         this.id = id;
     }
 
+    public String getStatus() {
+        return status;
+    }
 
 
+    public void setStatus(String status) {
+        this.status = status;
+    }
 
 
 
@@ -73,21 +79,5 @@ public class Submission {
 
     public void setUserId(ObjectId userId) {
         this.userId = userId;
-    }
-
-    public Boolean getStatus() {
-        return status;
-    }
-
-    public void setStatus(Boolean status) {
-        this.status = status;
-    }
-
-    public ObjectId getSubmissionId() {
-        return submissionId;
-    }
-
-    public void setSubmissionId(ObjectId submissionId) {
-        this.submissionId = submissionId;
     }
 }

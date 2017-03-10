@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Created by lqp on 2017/3/1.
  */
-public interface SubmissionRepository extends MongoRepository<Submission, String> {
+public interface SubmissionRepository extends MongoRepository<Submission, ObjectId> {
     Submission findById(ObjectId id);
 
     List<Submission> findByUserId(ObjectId userId);
@@ -19,7 +19,6 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
     List<Submission> findByProblemId(ObjectId problemId);
 
     List<Submission> findByStatus(String status);
-
 
     List<Submission> findBySentence(String sentence);
 

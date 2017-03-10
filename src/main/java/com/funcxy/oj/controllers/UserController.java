@@ -2,27 +2,24 @@ package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.Passport;
+import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.Profile;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
-import com.funcxy.oj.utils.DataPageable;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -201,7 +198,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{username}/profile/password",method = PUT)
-    public ResponseEntity updatePassword(@RequestBody String password,@ PathVariable String username,HttpSession httpSession){//修改密码
+    public ResponseEntity updatePassword(@RequestBody String password, @PathVariable String username, HttpSession httpSession) {//修改密码
         if(!UserUtil.isSignedIn(httpSession)){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
@@ -209,6 +206,24 @@ public class UserController {
         if (user == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         user.setPassword(password);
         userRepository.save(user);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/{username}/fork", method = POST)//fork problemList
+    public ResponseEntity forkProblem(@PathVariable String username,
+                                      @RequestBody ProblemList problemList,
+                                      HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        if (user.getProblemListForked().contains(problemList.getId())) {
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
+        }
+        if (!problemList.isCanBeCopied()) {
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
+        }
+        user.addProblemListForked(problemList.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
 }

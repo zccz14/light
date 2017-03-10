@@ -53,6 +53,12 @@ public class User {
 
     private boolean hasVerified = false;
 
+    private List<Message> messages;
+    @JsonIgnore
+    private List<ObjectId> problemListForked = new ArrayList<>(0);
+    @JsonIgnore
+    private List<ObjectId> invitation = new ArrayList<>(0);
+
     public ObjectId getId() {
         return this.id;
     }
@@ -236,12 +242,12 @@ public class User {
         this.setPassword(password);
     }
 
-    public void setGroupIn(List<ObjectId> groupIn){
-        this.groupIn = groupIn;
-    }
-
     public List<ObjectId> getGroupIn(){
         return this.groupIn;
+    }
+
+    public void setGroupIn(List<ObjectId> groupIn) {
+        this.groupIn = groupIn;
     }
 
     public void addGroupIn(ObjectId group){
@@ -252,4 +258,43 @@ public class User {
         this.groupIn.remove(this.groupIn.indexOf(group));
     }
 
+    public List<Message> getMessages() {
+        return this.messages;
+    }
+
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public void addMessage(Message message) {
+        this.messages.add(message);
+    }
+
+    public void deleteMessage(Message message) {
+        this.messages.remove(message);
+    }
+
+    public List<ObjectId> getProblemListForked() {
+        return this.problemListForked;
+    }
+
+    public void setProblemListForked(List<ObjectId> problemListForked) {
+        this.problemListForked = problemListForked;
+    }
+
+    public void addProblemListForked(ObjectId objectId) {
+        this.problemListForked.add(objectId);
+    }
+
+    public void deleteProblemListForked(ObjectId objectId) {
+        this.problemListForked.remove(objectId);
+    }
+
+    public List<ObjectId> getInvitation() {
+        return this.invitation;
+    }
+
+    public void setInvitation(List<ObjectId> invitation) {
+        this.invitation = invitation;
+    }
 }

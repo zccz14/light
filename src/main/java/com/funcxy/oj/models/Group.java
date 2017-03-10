@@ -107,12 +107,12 @@ public class Group {
         this.ownedProblemList.remove(this.ownedProblemList.indexOf(problemListId));
     }
 
-    public void setInvitedMemberId(List<ObjectId> list){
-        this.invitedMemberId = list;
-    }
-
     public List<ObjectId> getInvitedMemberId(){
         return this.invitedMemberId;
+    }
+
+    public void setInvitedMemberId(List<ObjectId> list) {
+        this.invitedMemberId = list;
     }
 
     public void inviteMember(ObjectId user){
@@ -120,11 +120,12 @@ public class Group {
     }
 
     public void admit(ObjectId user){
-        if (this.joiningMemberId.contains(user)){
-            joiningMemberId.remove(user);
-        }
-        if (this.invitedMemberId.contains(user)){
+        joiningMemberId.remove(user);
+        invitedMemberId.remove(user);
+        if (!memberId.contains(user)) memberId.add(user);
+    }
 
-        }
+    public void refuse(ObjectId user) {
+        joiningMemberId.remove(user);
     }
 }

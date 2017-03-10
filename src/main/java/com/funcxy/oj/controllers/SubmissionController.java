@@ -116,6 +116,6 @@ public class SubmissionController {
         // }
         // Submission theSubmission = submissionRepository.findById(submission.getSubmissionId());
         // ObjectId submissionID = theSubmission.getSubmissionId();
-        return new ResponseEntity<>(submissionRepository.findById(submission.getSubmissionId()), HttpStatus.OK);
+        return new ResponseEntity<>(submissionRepository.findById(submission.getId()), HttpStatus.OK);
     }
 }
