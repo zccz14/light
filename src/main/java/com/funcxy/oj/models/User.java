@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  * User DOM
- * @author ddhee
+ * @author ddhee aak1247 zccz14
  */
 @Document(collection = "users")
 public class User {
@@ -29,32 +29,61 @@ public class User {
     private String email;
     @NotEmpty(message = "密码为空")
     private String password;
+    /**
+     * 个人资料
+     */
     private Profile profile = new Profile();
-    @JsonIgnore
-    private List<String> groupIn = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> problemOwned = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> problemListOwned = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> submissionHistory = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> submissionUndecided = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> problemLiked = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> problemListLiked = new ArrayList<String>(0);
-    @JsonIgnore
+    /**
+     * 所属用户组列表
+     */
+    private List<String> groupIn = new ArrayList<>(0);
+    /**
+     * 创建的题目列表
+     */
+    private List<String> problemOwned = new ArrayList<>(0);
+    /**
+     * 创建的题单列表
+     */
+    private List<String> problemListOwned = new ArrayList<>(0);
+    /**
+     * 提交历史记录
+     */
+    private List<String> submissionHistory = new ArrayList<>(0);
+    /**
+     * 待评提交列表
+     */
+    private List<String> submissionUndecided = new ArrayList<>(0);
+    /**
+     * 收藏题目列表
+     */
+    private List<String> problemLiked = new ArrayList<>(0);
+    /**
+     * 收藏题单列表
+     */
+    private List<String> problemListLiked = new ArrayList<>(0);
+    /**
+     * 验证码
+     */
     private String identifyString = "";
-
+    /**
+     * 是否已验证
+     */
     private boolean hasVerified = false;
-
+    /**
+     * 消息列表
+     */
     private List<Message> messages;
-    @JsonIgnore
-    private List<String> problemListForked = new ArrayList<String>(0);
-    @JsonIgnore
-    private List<String> invitation = new ArrayList<String>(0);
-    @JsonIgnore
+    /**
+     * 复制的题单列表
+     */
+    private List<String> problemListForked = new ArrayList<>(0);
+    /**
+     * 收到的邀请列表
+     */
+    private List<String> invitation = new ArrayList<>(0);
+    /**
+     * 评测转发规则列表
+     */
     private List<Dispatcher> dispatchers = new ArrayList<>(0);
 
     public String getId() {
@@ -189,19 +218,6 @@ public class User {
 
     public void setProfile(Profile profile) {
         this.profile = profile;
-    }
-
-    @JsonIgnore
-    public String getLocation(){
-        return this.profile.getLocation();
-    }
-    @JsonIgnore
-    public String getBio(){
-        return this.profile.getBio();
-    }
-    @JsonIgnore
-    public String getNickname(){
-        return this.profile.getNickname();
     }
 
     @JsonIgnore
