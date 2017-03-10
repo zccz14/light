@@ -16,7 +16,8 @@ public class Submission {
     private ObjectId problemListId;
     @Indexed
     private ObjectId problemId;
-
+    @Indexed
+    private ObjectId submissionId;
     private String status;
     private String sentence;
     private String content;
@@ -36,14 +37,17 @@ public class Submission {
     public void setId(ObjectId id) {
         this.id = id;
     }
-    
+
     public String getStatus() {
         return status;
     }
 
+
     public void setStatus(String status) {
         this.status = status;
     }
+
+
 
     public String getSentence() {
         return sentence;

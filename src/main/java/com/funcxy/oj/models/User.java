@@ -57,7 +57,7 @@ public class User {
     @JsonIgnore
     private List<ObjectId> problemListForked = new ArrayList<>(0);
     @JsonIgnore
-    private List<Boolean> invitation = new ArrayList<>(0);
+    private List<ObjectId> invitation = new ArrayList<>(0);
 
     public ObjectId getId() {
         return this.id;
@@ -242,12 +242,12 @@ public class User {
         this.setPassword(password);
     }
 
-    public void setGroupIn(List<ObjectId> groupIn){
-        this.groupIn = groupIn;
-    }
-
     public List<ObjectId> getGroupIn(){
         return this.groupIn;
+    }
+
+    public void setGroupIn(List<ObjectId> groupIn) {
+        this.groupIn = groupIn;
     }
 
     public void addGroupIn(ObjectId group){
@@ -258,35 +258,43 @@ public class User {
         this.groupIn.remove(this.groupIn.indexOf(group));
     }
 
-    public void setMessages(List<Message> messages){
-        this.messages = messages;
-    }
-
-    public List<Message> getMessages(){
+    public List<Message> getMessages() {
         return this.messages;
     }
 
-    public void addMessage(Message message){
+    public void setMessages(List<Message> messages) {
+        this.messages = messages;
+    }
+
+    public void addMessage(Message message) {
         this.messages.add(message);
     }
 
-    public void deleteMessage(Message message){
+    public void deleteMessage(Message message) {
         this.messages.remove(message);
     }
 
-    public void setProblemListForked(List<ObjectId> problemListForked){
-        this.problemListForked = problemListForked;
-    }
-
-    public List<ObjectId> getProblemListForked(){
+    public List<ObjectId> getProblemListForked() {
         return this.problemListForked;
     }
 
-    public void addProblemListForked(ObjectId objectId){
+    public void setProblemListForked(List<ObjectId> problemListForked) {
+        this.problemListForked = problemListForked;
+    }
+
+    public void addProblemListForked(ObjectId objectId) {
         this.problemListForked.add(objectId);
     }
 
-    public void deleteProblemListForked(ObjectId objectId){
+    public void deleteProblemListForked(ObjectId objectId) {
         this.problemListForked.remove(objectId);
+    }
+
+    public List<ObjectId> getInvitation() {
+        return this.invitation;
+    }
+
+    public void setInvitation(List<ObjectId> invitation) {
+        this.invitation = invitation;
     }
 }
