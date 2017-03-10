@@ -120,11 +120,8 @@ public class Group {
     }
 
     public void admit(ObjectId user){
-        if (this.joiningMemberId.contains(user)){
-            joiningMemberId.remove(user);
-        }
-        if (this.invitedMemberId.contains(user)){
-
-        }
+        joiningMemberId.remove(user);
+        invitedMemberId.remove(user);
+        if (!memberId.contains(user))memberId.add(user);
     }
 }

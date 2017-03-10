@@ -7,6 +7,7 @@ import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
 import com.funcxy.oj.models.Group;
 import com.funcxy.oj.models.GroupType;
+import com.funcxy.oj.models.Message;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.UserRepository;
@@ -172,7 +173,7 @@ public class GroupController {
         group.askJoin(user.getId());
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    //TODO: 邀请成员
+    //邀请成员
     @RequestMapping(value = "{groupName}/invite",method = POST)
     public ResponseEntity invite(@PathVariable String groupName,
                                  @RequestBody User user,
@@ -181,15 +182,47 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
+        User userFound = userRepository.findById(user.getId());
+        if (userFound == null){
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        }
         if (group == null){
             return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         }
         group.inviteMember(user.getId());
+        userFound.addMessage(new Message("Invitation","you are invited to "+group.getGroupName(),2));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    //TODO: 同意加入
-    //TODO: 拒绝加入
+    //TODO: 同意/拒绝加入(群组管理员视角)
+    class InnerClassReport{
+        String result;
+        /**
+         * @param result admit/refuse
+         */
+        public InnerClassReport(String result){
+            this.result = result;
+        }
+    }
+    @RequestMapping(value = "/{groupName}/manage",method = POST)
+    public ResponseEntity handleApply(@PathVariable String groupName,
+                                      @RequestBody InnerClassReport report,
+                                      HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        Group group = groupRepository.findOneByGroupName(groupName);
+        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        if (!group.getOwnerId().equals(user.getId())){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        if (report.result.equals("admit")){
 
+        }else if(report.result.equals("refuse")){
 
+        }
+        return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
+    }
+
+    //TODO: 劝退成员
     //TODO: 获取群组成员列表
 }
