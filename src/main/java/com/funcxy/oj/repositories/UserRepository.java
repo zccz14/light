@@ -10,19 +10,28 @@ import java.util.List;
 
 /**
  * User DAO
+ *
  * @author ddhee
  */
 public interface UserRepository extends MongoRepository<User, String> {
     User findById(String id);
-    List<User> findByUsernameLike (String username);
+
+    List<User> findByUsernameLike(String username);
+
     User findOneByEmail(String email);
+
     User findOneByUsername(String username);
+
     List<User> findByEmail(String email);
+
     List<User> findByUsername(String username);
+
     @Query("{'profile':{'location':?0}}")
     List<User> findByProfile_Location(String location);
+
     @Query("{'profile':{'nickname':?0}}")
     List<User> findByProfile_NicknameLike(String nickname);
+
     @Query("{'profile':{'bio':?0}}")
     List<User> findByProfile_BioLike(String bio);
 

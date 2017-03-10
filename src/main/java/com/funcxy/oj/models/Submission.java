@@ -47,7 +47,6 @@ public class Submission {
     }
 
 
-
     public String getSentence() {
         return sentence;
     }

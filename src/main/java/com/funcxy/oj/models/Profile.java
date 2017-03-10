@@ -30,46 +30,60 @@ public class Profile {
     private Date birthday;
     @Indexed
     private String location;
-    public void setAvatar(String avatar){
-        this.avatar = avatar;
-    }
-    public String getAvatar(){
+
+    public String getAvatar() {
         return this.avatar;
     }
-    public void setPersonalUrl(String personalUrl){
-        this.personalUrl = personalUrl;
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
-    public String getPersonalUrl(){
+
+    public String getPersonalUrl() {
         return this.personalUrl;
     }
-    public void setNickname(String nickname){
-        this.nickname = nickname;
+
+    public void setPersonalUrl(String personalUrl) {
+        this.personalUrl = personalUrl;
     }
-    public String getNickname(){
+
+    public String getNickname() {
         return this.nickname;
     }
-    public void setBio(String bio){
-        this.bio = bio;
+
+    public void setNickname(String nickname) {
+        this.nickname = nickname;
     }
-    public String getBio(){
+
+    public String getBio() {
         return this.bio;
     }
-    public void setGender(int gender){
-        this.gender = gender;
+
+    public void setBio(String bio) {
+        this.bio = bio;
     }
-    public int getGender(){
+
+    public int getGender() {
         return this.gender;
     }
-    public void setBirthday(Date birthday){
-        this.birthday = birthday;
+
+    public void setGender(int gender) {
+        this.gender = gender;
     }
-    public Date getBirthday(){
+
+    public Date getBirthday() {
         return this.birthday;
     }
-    public void setLocation(String location){
-        this.location = location;
+
+    public void setBirthday(Date birthday) {
+        this.birthday = birthday;
     }
-    public String getLocation(){
+
+    public String getLocation() {
         return this.location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

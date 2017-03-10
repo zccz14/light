@@ -14,6 +14,7 @@ import java.util.List;
 
 /**
  * User DOM
+ *
  * @author ddhee aak1247 zccz14
  */
 @Document(collection = "users")
@@ -95,12 +96,11 @@ public class User {
     }
 
     public String getUsername() {
-        username.trim();
         return username;
     }
 
     public void setUsername(String username) {
-        this.username = username;
+        this.username = username.trim();
     }
 
     public String getEmail() {
@@ -108,8 +108,7 @@ public class User {
     }
 
     public void setEmail(String email) {
-        email.trim();
-        this.email = email;
+        this.email = email.trim();
     }
 
     public void setPassword(String password) {
@@ -212,7 +211,7 @@ public class User {
         this.submissionUndecided.remove(submissionUndecided.indexOf(submissionId));
     }
 
-    public Profile getProfile(){
+    public Profile getProfile() {
         return this.profile;
     }
 
@@ -225,20 +224,20 @@ public class User {
         return this.identifyString;
     }
 
-    public boolean hasVerifiedEmail(){//是否已验证邮件
+    public boolean hasVerifiedEmail() {//是否已验证邮件
         return this.hasVerified;
     }
 
-    public void  verifyingEmail(){//设为已验证状态
+    public void verifyingEmail() {//设为已验证状态
         this.identifyString = "verified";
         this.hasVerified = true;
     }
 
-    public void notVerified(){//设定随机字符串为验证字符串
+    public void notVerified() {//设定随机字符串为验证字符串
         this.identifyString = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
     }
 
-    public boolean toVerifyEmail(String verify){
+    public boolean toVerifyEmail(String verify) {
         return this.identifyString.equals(verify);
     }
 
@@ -250,9 +249,9 @@ public class User {
         return this.id.equals(user.getId());
     }
 
-    public void findPassword(){
+    public void findPassword() {
         String password = UserUtil.getRandomCharAndNumr(10);
-        UserUtil.sendFindPasswordEmail(this.email,password);
+        UserUtil.sendFindPasswordEmail(this.email, password);
         this.setPassword(password);
     }
 

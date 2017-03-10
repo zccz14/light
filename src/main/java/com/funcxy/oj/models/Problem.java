@@ -66,7 +66,7 @@ public class Problem {
         return type;
     }
 
-    public void setType(String type){
+    public void setType(String type) {
         this.type = type.trim();
     }
 
@@ -88,8 +88,8 @@ public class Problem {
 
     @Override
     public boolean equals(Object obj) {
-        if(this.getId() != null)
-            return this.getId().equals(((Problem)obj).getId());
+        if (this.getId() != null)
+            return this.getId().equals(((Problem) obj).getId());
         else
             return super.equals(obj);
     }

@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
- * @author  aak1247 on 2017/3/4.
+ * @author aak1247 on 2017/3/4.
  */
 @RestController
 @RequestMapping("/groups")
@@ -36,34 +36,38 @@ public class GroupController {
     UserRepository userRepository;
     @Autowired
     GroupRepository groupRepository;
+
     //创建群组
-    @RequestMapping(value = "/create",method = POST)
-    public ResponseEntity<Object> createGroup(@RequestBody @Valid Group group, HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
+    @RequestMapping(value = "/create", method = POST)
+    public ResponseEntity<Object> createGroup(@RequestBody @Valid Group group, HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
-        if (groupRepository.findOneByGroupName(group.getGroupName())!=null)return new ResponseEntity<Object>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+        if (groupRepository.findOneByGroupName(group.getGroupName()) != null)
+            return new ResponseEntity<Object>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         user.addGroupIn(group.getId());
         groupRepository.save(group);
         userRepository.save(user);
-        return new ResponseEntity<Object>(group,HttpStatus.CREATED);
+        return new ResponseEntity<Object>(group, HttpStatus.CREATED);
     }
     //解散群组
 
-    @RequestMapping(value = "/{groupName}/dismiss",method = POST)//解散群组
-    public ResponseEntity dismissGroup(@RequestBody DismissVerification dismissVerification,@PathVariable String groupName, HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+    @RequestMapping(value = "/{groupName}/dismiss", method = POST)//解散群组
+    public ResponseEntity dismissGroup(@RequestBody DismissVerification dismissVerification, @PathVariable String groupName, HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findById(dismissVerification.groupId);
-        if (!user.getId().equals(group.getOwnerId()))return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
-        if (user == null||group == null) return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
-        if (!user.passwordVerify(dismissVerification.password)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        if (!user.getId().equals(group.getOwnerId()))
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        if (user == null || group == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        if (!user.passwordVerify(dismissVerification.password)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        if (!group.getGroupName().equals(dismissVerification.name)) return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
+        if (!group.getGroupName().equals(dismissVerification.name))
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         user.deleteGroupIn(group.getId());
         groupRepository.delete(group);
         userRepository.save(user);
@@ -71,86 +75,86 @@ public class GroupController {
     }
 
     //搜索群组
-    @RequestMapping(value = "/search",method = GET)
+    @RequestMapping(value = "/search", method = GET)
     public ResponseEntity searchGroup(@RequestParam(defaultValue = "/*") String groupName,
                                       @RequestParam(defaultValue = "/*") String type,
-                                      Pageable pageable){
-        Page<Group> groups = groupRepository.roughFind(groupName,type,pageable);
-        return new ResponseEntity<>(groups,HttpStatus.OK);
+                                      Pageable pageable) {
+        Page<Group> groups = groupRepository.roughFind(groupName, type, pageable);
+        return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
     // 查看群组资料
-    @RequestMapping(value = "/{groupName}",method = GET)
-    public ResponseEntity getGroup(@PathVariable String groupName,HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+    @RequestMapping(value = "/{groupName}", method = GET)
+    public ResponseEntity getGroup(@PathVariable String groupName, HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (group == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
-        return new ResponseEntity<>(group,HttpStatus.OK);
+        if (group == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
     //修改群组资料
-    @RequestMapping(value = "/{groupName}/profile",method = PUT)
+    @RequestMapping(value = "/{groupName}/profile", method = PUT)
     public ResponseEntity updateGroup(@PathVariable String groupName,
                                       @RequestBody Group group,
-                                      HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                      HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group groupFound = groupRepository.findOneByGroupName(groupName);
         if (!groupFound.getOwnerId().equals(userRepository.findById(httpSession.getAttribute("userId").toString()))) {
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        if (group.getOwnerId()!=null)groupFound.setOwnerId(group.getOwnerId());
-        if (group.getGroupName()!=null){
-            if (groupRepository.findOneByGroupName(group.getGroupName())!=null){
-                return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+        if (group.getGroupName() != null) {
+            if (groupRepository.findOneByGroupName(group.getGroupName()) != null) {
+                return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
             }
             groupFound.setGroupName(group.getGroupName());
         }
-        if (group.getType()!=null){
+        if (group.getType() != null) {
             groupFound.setType(group.getType());
         }
         groupRepository.save(groupFound);
-        return new ResponseEntity<>(groupFound,HttpStatus.OK);
+        return new ResponseEntity<>(groupFound, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/{groupName}/alienate",method = PUT)
+    @RequestMapping(value = "/{groupName}/alienate", method = PUT)
     public ResponseEntity alienate(@PathVariable String groupName,
                                    @RequestBody InnerClassUser owner,
-                                   HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                   HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (group == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (group == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (!group.getOwnerId().equals(httpSession.getAttribute("userId").toString())) {
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         group.setOwnerId(httpSession.getAttribute("userId").toString());
         groupRepository.save(group);
-        return new ResponseEntity<>(group,HttpStatus.OK);
+        return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
     //申请加入
-    @RequestMapping(value = "/{groupName}/apply-for",method = POST)
+    @RequestMapping(value = "/{groupName}/apply-for", method = POST)
     public ResponseEntity applyFor(@PathVariable String groupName,
                                    @RequestBody User user,
-                                   HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                   HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (group == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (group == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
 
-        if (group.getMemberId().contains(user.getId())||group.getInvitedMemberId().contains(user.getId())){
-            return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+        if (group.getMemberId().contains(user.getId()) || group.getInvitedMemberId().contains(user.getId())) {
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
 
-        if (group.getType().equals(GroupType.FREE)){
+        if (group.getType().equals(GroupType.FREE)) {
             group.addMember(user.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -159,20 +163,20 @@ public class GroupController {
     }
 
     //邀请成员
-    @RequestMapping(value = "{groupName}/invite",method = POST)
+    @RequestMapping(value = "{groupName}/invite", method = POST)
     public ResponseEntity invite(@PathVariable String groupName,
                                  @RequestBody User user,
-                                 HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                 HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
         User userFound = userRepository.findById(user.getId());
         if (userFound == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (group == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (group == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         group.inviteMember(user.getId());
         userFound.addMessage(new Message("Invitation", "you are invited to " + group.getGroupName(), 2));

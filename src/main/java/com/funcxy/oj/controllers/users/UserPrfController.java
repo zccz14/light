@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 
 /**
- * @author  DDHEE on 2017/3/7.
+ * @author DDHEE on 2017/3/7.
  */
 
 @RestController
@@ -46,6 +46,7 @@ public class UserPrfController {
         pageable = new DataPageable();
         pageable.setSort(new Sort(Sort.Direction.ASC, "title"));
     }
+
     //收藏问题
     @RequestMapping(value = "/{username}/liked-problems/{problemId}", method = RequestMethod.POST)
     public ResponseEntity<Object> likeProblem(@PathVariable String username, @PathVariable String problemId, HttpSession httpSession) {
@@ -116,6 +117,7 @@ public class UserPrfController {
         user.deleteProblemListLiked(problemListId);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     //获取收藏的题单
     @RequestMapping(value = "/{username}/liked-problem-lists", method = RequestMethod.GET)
     public ResponseEntity getLikedProblemLists(@PathVariable String username, HttpSession httpSession) {
