@@ -124,4 +124,8 @@ public class Group {
         invitedMemberId.remove(user);
         if (!memberId.contains(user))memberId.add(user);
     }
+
+    public void refuse(ObjectId user){
+        joiningMemberId.remove(user);
+    }
 }

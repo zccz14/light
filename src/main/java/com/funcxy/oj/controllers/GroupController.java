@@ -193,7 +193,7 @@ public class GroupController {
         userFound.addMessage(new Message("Invitation","you are invited to "+group.getGroupName(),2));
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    //TODO: 同意/拒绝加入(群组管理员视角)
+    //同意/拒绝加入(群组管理员视角) 仅针对请求加入的情况
     class InnerClassReport{
         String result;
         /**
@@ -216,13 +216,25 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
         if (report.result.equals("admit")){
-
+            user.addGroupIn(group.getId());
+            if (user.getGroupIn().contains(group.getId())){
+                return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+            }else {
+                user.addGroupIn(group.getId());
+                group.addMember(user.getId());
+                userRepository.save(user);
+                groupRepository.save(group);
+                return new ResponseEntity<>(HttpStatus.OK);
+            }
         }else if(report.result.equals("refuse")){
-
+            group.refuse(user.getId());
+            return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
     }
 
     //TODO: 劝退成员
+
+    
     //TODO: 获取群组成员列表
 }
