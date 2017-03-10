@@ -5,6 +5,7 @@ import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.UnsupportedMediaType;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.User;
+import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.DataPageable;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.UsesSunHttpServer;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -45,12 +47,21 @@ public class ProblemListController {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private GroupRepository groupRepository;
+
     private DataPageable pageable;
 
     {
         pageable = new DataPageable();
         pageable.setSort(sort);
     }
+
+
+    public boolean isGroup(ObjectId id){
+        return groupRepository.findById(id)!=null;
+    }
+
 
     @RequestMapping(value = "/owned", method = RequestMethod.GET)
     public ResponseEntity getProblemListsOwned(@RequestParam int pageNumber,
@@ -110,12 +121,15 @@ public class ProblemListController {
         }
 
         ObjectId tempObjectId = new ObjectId(session.getAttribute("userId").toString());
+        User user = userRepository.findById(tempObjectId);
 
         if (tempProblemList.getCreator().equals(tempObjectId)) {
             return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
         }
 
         if (tempProblemList.isAccessible() ||
+                (isGroup(tempProblemList.getCreator())
+                        &&user.getGroupIn().contains(tempProblemList.getCreator()))||
                 tempProblemList
                         .getUserList()
                         .contains(tempObjectId)) {

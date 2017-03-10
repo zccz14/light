@@ -80,11 +80,11 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
+//        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
             problemListRepository.save(problemList);
             return new ResponseEntity<>(problemList,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+//        }
+//        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
     // 删除题单
     @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.DELETE)
@@ -102,13 +102,13 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
+//        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
             group.deleteProblemListOwned(problemList.getId());
             problemListRepository.delete(problemList);
             groupRepository.save(group);
             return new ResponseEntity(HttpStatus.OK);
-        }
-        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+//        }
+//        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
     // 获取题单列表
     @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.GET)
@@ -137,25 +137,25 @@ public class GroupPLController {
                 ),
                 HttpStatus.OK);
     }
-    // 查看单个题单
-    @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.GET)
-    public ResponseEntity retrieveProblemList(@PathVariable String groupName,
-                                              @PathVariable String problemListTitle,                                                                                                                                                                                                                                           
-                                              HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
-        }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
-        Group group = groupRepository.findOneByGroupName(groupName);
-        ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
-        if (user == null || group == null || problemList == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
-        }
-        if (user.getGroupIn().contains(group.getId())){
-            return new ResponseEntity<>(problemList,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
-    }
+    // 查看单个题单:路由到题单下对应router
+//    @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.GET)
+//    public ResponseEntity retrieveProblemList(@PathVariable String groupName,
+//                                              @PathVariable String problemListTitle,
+//                                              HttpSession httpSession){
+//        if (!UserUtil.isSignedIn(httpSession)){
+//            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+//        }
+//        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+//        Group group = groupRepository.findOneByGroupName(groupName);
+//        ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
+//        if (user == null || group == null || problemList == null){
+//            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+//        }
+//        if (user.getGroupIn().contains(group.getId())){
+//            return new ResponseEntity<>(problemList,HttpStatus.OK);
+//        }
+//        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+//    }
     // 添加题单的题目
     @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.POST)
     public ResponseEntity addProblem(@PathVariable String groupName,
@@ -175,15 +175,15 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())) {
+//        if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())) {
             if (problemList.getProblemIds().contains(problem.getId())){
                 return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
             }
             problemList.getProblemIds().add(problem.getId());
             problemListRepository.save(problemList);
             return new ResponseEntity<>(problemList,HttpStatus.OK);
-        }
-        return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+//        }
+//        return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
     // 删除题单的题目
     @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.DELETE)
@@ -204,13 +204,14 @@ public class GroupPLController {
             if (!user.getGroupIn().contains(group.getId())) {
                 return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }
-            if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())){
+//            if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())){
                 if (!problemList.getProblemIds().contains(problem.getId())){
                     return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
                 }
                 problemList.getProblemIds().remove(problem.getId());
                 problemListRepository.save(problemList);
-            }
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(problemList,HttpStatus.OK);
+//            }
+//            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
 }
