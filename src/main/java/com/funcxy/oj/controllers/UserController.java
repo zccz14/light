@@ -21,6 +21,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -37,12 +39,6 @@ public class UserController {
     private ProblemListRepository problemListRepository;
     @Autowired
     private ProblemRepository problemRepository;
-    private DataPageable pageable;
-
-    {
-        pageable = new DataPageable();
-        pageable.setSort(new Sort(Sort.Direction.ASC, "title"));
-    }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
     public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession){
@@ -120,9 +116,12 @@ public class UserController {
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
-          if (userRepository.findOneByUsername(username)==null)
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_ACCEPTABLE);
-          else return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
+          if (userRepository.findOneByUsername(username)==null){
+              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+          }
+          else {
+              return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
+          }
     }
 
     @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
@@ -172,7 +171,7 @@ public class UserController {
      * @param nickname 昵称，支持正则
      * @param bio 个人简介，支持正则
      * @param location 所在地，支持正则
-     * 正则表达式中元字符不能单独出现
+     * 正则表达式中元字符不能单独出现,需在前面加/符号（Java语法的正则表达式）
      * @param pageable 由page size 和 sort三个字段构成，如：
      *                 page=0
      *                 size=10
