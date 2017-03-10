@@ -20,6 +20,8 @@ import java.util.List;
  */
 @Document(collection = "problemLists")
 public class ProblemList {
+    public static final String PATH = "F:/";
+
     @Id
     private ObjectId id;
 
@@ -40,7 +42,7 @@ public class ProblemList {
     @Indexed
     @NotNull
     private String type;
-
+    private String coverUrl;
     private Date createdTime;
     private Date readBeginTime = null;
     private Date answerBeginTime = null;
@@ -58,6 +60,14 @@ public class ProblemList {
     private boolean resultVisibleToSubmitterSelf = true;
     @NotNull
     private boolean canBeCopied = true;
+
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
 
     public Date getCreatedTime() {
         return createdTime;

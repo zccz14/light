@@ -7,22 +7,18 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
-import com.funcxy.oj.utils.DataPageable;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.List;
 
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
@@ -116,12 +112,11 @@ public class UserController {
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
     public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username){
-          if (userRepository.findOneByUsername(username)==null){
-              return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
-          }
-          else {
-              return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(),  HttpStatus.FOUND);
-          }
+        if (userRepository.findOneByUsername(username) == null) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
+        } else {
+            return new ResponseEntity<>(userRepository.findOneByUsername(username).getProfile(), HttpStatus.FOUND);
+        }
     }
 
     @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
