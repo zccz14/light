@@ -29,6 +29,6 @@ public interface UserRepository extends MongoRepository<User, String> {
     List<User> findByNicknameLike(String nickname);
     @Query("{'profile':{'bio':?0}}")
     List<User> findByBioLike(String bio);
-    @Query("{'username':{ '$regex':?0}, 'email':{ '$regex':?1}}, 'profile': {'nickname': {'$regex':?2}, 'bio': {'$regex':?3}, 'location':{'$regex':?4}}}               }")
+    @Query("{'username':{ '$regex':?0}, 'email':{ '$regex':?1}}, 'profile': {'nickname': {'$regex':?2}, 'bio': {'$regex':?3}, 'location':{'$regex':?4}}}")
     Page<User> roughFind(String username, String email, String nickname, String bio, String location, Pageable pageable);
 }
