@@ -53,6 +53,12 @@ public class User {
 
     private boolean hasVerified = false;
 
+    private List<Message> messages;
+    @JsonIgnore
+    private List<ObjectId> problemListForked = new ArrayList<>(0);
+    @JsonIgnore
+    private List<Boolean> invitation = new ArrayList<>(0);
+
     public ObjectId getId() {
         return this.id;
     }
@@ -252,4 +258,35 @@ public class User {
         this.groupIn.remove(this.groupIn.indexOf(group));
     }
 
+    public void setMessages(List<Message> messages){
+        this.messages = messages;
+    }
+
+    public List<Message> getMessages(){
+        return this.messages;
+    }
+
+    public void addMessage(Message message){
+        this.messages.add(message);
+    }
+
+    public void deleteMessage(Message message){
+        this.messages.remove(message);
+    }
+
+    public void setProblemListForked(List<ObjectId> problemListForked){
+        this.problemListForked = problemListForked;
+    }
+
+    public List<ObjectId> getProblemListForked(){
+        return this.problemListForked;
+    }
+
+    public void addProblemListForked(ObjectId objectId){
+        this.problemListForked.add(objectId);
+    }
+
+    public void deleteProblemListForked(ObjectId objectId){
+        this.problemListForked.remove(objectId);
+    }
 }
