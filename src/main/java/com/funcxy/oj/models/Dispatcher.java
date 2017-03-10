@@ -1,7 +1,7 @@
 package com.funcxy.oj.models;
 
 /**
- * @author aak1247 on 2017/3/10.
+ * @author  aak1247 on 2017/3/10.
  */
 public class Dispatcher {
     private String url;
