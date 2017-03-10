@@ -27,12 +27,12 @@ public class ProblemList {
     @Indexed
     private String creator;
 
-    private List<String> problemIds = new ArrayList<String>(0);
+    private List<String> problemIds = new ArrayList<>(0);
 
     @NotNull
     private boolean isAccessible = false;
 
-    private List<String> userList = new ArrayList<String>(0);
+    private List<String> userList = new ArrayList<>(0);
 
     @Indexed
     @NotNull
@@ -48,7 +48,7 @@ public class ProblemList {
     private Date answerEndTime = null;
     private Date readEndTime = null;
     private List<JudgeProblem> judgerList = new ArrayList<>(0);
-    private List<String> submissionList = new ArrayList<String>(0);
+    private List<String> submissionList = new ArrayList<>(0);
     @NotNull
     private boolean isAnonymous = false;
     @NotNull

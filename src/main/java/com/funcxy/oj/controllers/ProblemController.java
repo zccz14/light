@@ -32,19 +32,24 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 public class ProblemController {
     private static final Sort sort = new Sort(Sort.Direction.ASC, "title");
 
-    @Autowired
+    private final
     ProblemRepository problemRepository;
 
-    @Autowired
-    UserRepository userRepository;
+    private final UserRepository userRepository;
 
-    @Autowired
-    MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
     private DataPageable pageable;
 
     {
         pageable = new DataPageable();
         pageable.setSort(sort);
+    }
+
+    @Autowired
+    public ProblemController(ProblemRepository problemRepository, UserRepository userRepository, MongoTemplate mongoTemplate) {
+        this.problemRepository = problemRepository;
+        this.userRepository = userRepository;
+        this.mongoTemplate = mongoTemplate;
     }
 
     @RequestMapping(method = RequestMethod.POST)

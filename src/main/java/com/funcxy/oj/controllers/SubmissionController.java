@@ -29,20 +29,24 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 @RequestMapping("/submission")
 
 public class SubmissionController {
+    private final SubmissionRepository submissionRepository;
+    private final MongoTemplate mongoTemplate;
+    private final ProblemListRepository problemListRepository;
+    private final UserRepository userRepository;
+
     @Autowired
-    private SubmissionRepository submissionRepository;
-    @Autowired
-    private MongoTemplate mongoTemplate;
-    @Autowired
-    private ProblemListRepository problemListRepository;
-    @Autowired
-    private UserRepository userRepository;
+    public SubmissionController(SubmissionRepository submissionRepository, MongoTemplate mongoTemplate, ProblemListRepository problemListRepository, UserRepository userRepository) {
+        this.submissionRepository = submissionRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.problemListRepository = problemListRepository;
+        this.userRepository = userRepository;
+    }
 
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
     public ResponseEntity handInSubmission(@PathVariable String id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(submissionRepository.findById(id), HttpStatus.OK);
     }
@@ -51,7 +55,7 @@ public class SubmissionController {
     @RequestMapping(value = "/{id}", method = RequestMethod.POST)
     public ResponseEntity createSubmission(@Valid Submission submission, @PathVariable String id, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         submission.setId(id);
         return new ResponseEntity<Object>(submissionRepository.save(submission), HttpStatus.OK);
@@ -77,9 +81,9 @@ public class SubmissionController {
         } else {
             String judgerId = judger.get(0);
             if (judgerId.equals(userId)) {
-                return new ResponseEntity(submissionRepository.save(submission), HttpStatus.OK);
+                return new ResponseEntity<>(submissionRepository.save(submission), HttpStatus.OK);
             } else {
-                return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
+                return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }
         }
 
@@ -89,7 +93,7 @@ public class SubmissionController {
     @RequestMapping(value = "/", method = RequestMethod.GET)
     public ResponseEntity searchSubmission(@RequestBody @Valid Submission submission, HttpSession session) {
         if (!isSignedIn(session)) {
-            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        User theUser = userRepository.findById(id);
 // ObjectId userId = theUser.getId();

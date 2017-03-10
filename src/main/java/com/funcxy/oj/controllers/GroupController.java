@@ -32,10 +32,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
-    @Autowired
+    final
     UserRepository userRepository;
-    @Autowired
+    final
     GroupRepository groupRepository;
+
+    @Autowired
+    public GroupController(UserRepository userRepository, GroupRepository groupRepository) {
+        this.userRepository = userRepository;
+        this.groupRepository = groupRepository;
+    }
+
 
     //创建群组
     @RequestMapping(value = "/create", method = POST)
@@ -45,11 +52,11 @@ public class GroupController {
         }
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         if (groupRepository.findOneByGroupName(group.getGroupName()) != null)
-            return new ResponseEntity<Object>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         user.addGroupIn(group.getId());
         groupRepository.save(group);
         userRepository.save(user);
-        return new ResponseEntity<Object>(group, HttpStatus.CREATED);
+        return new ResponseEntity<>(group, HttpStatus.CREATED);
     }
     //解散群组
 
@@ -247,7 +254,7 @@ public class GroupController {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.BAD_REQUEST);
         } else {
             return new ResponseEntity<>(
-                    new PageImpl<User>(group.getMemberId()
+                    new PageImpl<>(group.getMemberId()
                             .stream()
                             .map(
                                     mem -> userRepository.findById(mem)

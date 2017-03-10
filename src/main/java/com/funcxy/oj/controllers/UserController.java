@@ -29,12 +29,16 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private final UserRepository userRepository;
+    private final ProblemListRepository problemListRepository;
+    private final ProblemRepository problemRepository;
+
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ProblemListRepository problemListRepository;
-    @Autowired
-    private ProblemRepository problemRepository;
+    public UserController(UserRepository userRepository, ProblemListRepository problemListRepository, ProblemRepository problemRepository) {
+        this.userRepository = userRepository;
+        this.problemListRepository = problemListRepository;
+        this.problemRepository = problemRepository;
+    }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
     public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) {
@@ -90,7 +94,7 @@ public class UserController {
                     userRepository.save(userFoundByEmail);
                     //发邮件
                     UserUtil.sendVerifyEmail(userFoundByEmail.getEmail(), userFoundByEmail.getUsername() + "/" + userFoundByEmail.getIdentifyString());
-                    return new ResponseEntity<Object>(userFoundByEmail, HttpStatus.OK);
+                    return new ResponseEntity<>(userFoundByEmail, HttpStatus.OK);
                 } else {
                     return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
                 }

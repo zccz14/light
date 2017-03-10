@@ -14,11 +14,15 @@ import java.util.List;
  */
 @Service
 public class SubmissionService {
-    @Autowired
-    SubmissionRepository submissionRepository;
+    private final SubmissionRepository submissionRepository;
+
+    private final MongoTemplate mongoTemplate;
 
     @Autowired
-    MongoTemplate mongoTemplate;
+    public SubmissionService(SubmissionRepository submissionRepository, MongoTemplate mongoTemplate) {
+        this.submissionRepository = submissionRepository;
+        this.mongoTemplate = mongoTemplate;
+    }
 
     public Submission save(@Valid Submission submission) {
         return submissionRepository.save(submission);

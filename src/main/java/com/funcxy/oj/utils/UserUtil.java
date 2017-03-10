@@ -85,7 +85,6 @@ public class UserUtil {
             sendEmail(email, subject, content);
         } catch (Exception e) {
             System.out.println("not found");
-            return;
         }
 
     }

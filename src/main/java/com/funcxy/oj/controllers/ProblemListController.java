@@ -35,20 +35,24 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 public class ProblemListController {
     private static final Sort sort = new Sort(Sort.Direction.ASC, "title");
 
-    @Autowired
-    private ProblemListRepository problemListRepository;
+    private final ProblemListRepository problemListRepository;
 
-    @Autowired
-    private MongoTemplate mongoTemplate;
+    private final MongoTemplate mongoTemplate;
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
 
     private DataPageable pageable;
 
     {
         pageable = new DataPageable();
         pageable.setSort(sort);
+    }
+
+    @Autowired
+    public ProblemListController(ProblemListRepository problemListRepository, MongoTemplate mongoTemplate, UserRepository userRepository) {
+        this.problemListRepository = problemListRepository;
+        this.mongoTemplate = mongoTemplate;
+        this.userRepository = userRepository;
     }
 
     @RequestMapping(value = "/owned", method = RequestMethod.GET)

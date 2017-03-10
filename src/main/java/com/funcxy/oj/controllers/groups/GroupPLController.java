@@ -29,12 +29,19 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/groups")
 public class GroupPLController {
-    @Autowired
+    final
     GroupRepository groupRepository;
-    @Autowired
+    final
     UserRepository userRepository;
-    @Autowired
+    final
     ProblemListRepository problemListRepository;
+
+    @Autowired
+    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository) {
+        this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
+        this.problemListRepository = problemListRepository;
+    }
 
     // 创建题单
     @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.POST)
@@ -122,7 +129,7 @@ public class GroupPLController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(
-                new PageImpl<ProblemList>(
+                new PageImpl<>(
                         group.getOwnedProblemList()
                                 .stream()
                                 .map(id -> problemListRepository.findById(id))

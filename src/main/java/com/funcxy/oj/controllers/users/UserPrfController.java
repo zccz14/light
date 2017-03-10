@@ -34,17 +34,21 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 @RestController
 @RequestMapping("/users")
 public class UserPrfController {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    ProblemRepository problemRepository;
-    @Autowired
-    ProblemListRepository problemListRepository;
+    private final UserRepository userRepository;
+    private final ProblemRepository problemRepository;
+    private final ProblemListRepository problemListRepository;
     private DataPageable pageable;
 
     {
         pageable = new DataPageable();
         pageable.setSort(new Sort(Sort.Direction.ASC, "title"));
+    }
+
+    @Autowired
+    public UserPrfController(UserRepository userRepository, ProblemRepository problemRepository, ProblemListRepository problemListRepository) {
+        this.userRepository = userRepository;
+        this.problemRepository = problemRepository;
+        this.problemListRepository = problemListRepository;
     }
 
     //收藏问题
@@ -125,7 +129,7 @@ public class UserPrfController {
             User user = userRepository.findById(httpSession.getAttribute("userId").toString());
             if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
             List<String> likedProblemList = user.getProblemListLiked();
-            return new ResponseEntity<>(new PageImpl<CleanedProblemList>(
+            return new ResponseEntity<>(new PageImpl<>(
                     likedProblemList
                             .stream()
                             .map(
@@ -159,7 +163,7 @@ public class UserPrfController {
         List<String> likedProblem = user.getProblemLiked();
 
         return new ResponseEntity<>(
-                new PageImpl<CleanedProblem>(
+                new PageImpl<>(
                         likedProblem.stream()
                                 .map(
                                         pro -> new CleanedProblem(
