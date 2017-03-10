@@ -2,8 +2,9 @@ package com.funcxy.oj.services;
 
 import com.funcxy.oj.models.Submission;
 import com.funcxy.oj.repositories.SubmissionRepository;
-import com.sun.corba.se.spi.ior.ObjectId;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.validation.Valid;
@@ -16,6 +17,9 @@ import java.util.List;
 public class SubmissionService {
     @Autowired
     SubmissionRepository submissionRepository;
+
+    @Autowired
+    MongoTemplate mongoTemplate;
 
     public Submission save(@Valid Submission submission) {
         return submissionRepository.save(submission);
