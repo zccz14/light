@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.funcxy.oj.utils.UserUtil;
-import com.sun.org.apache.xpath.internal.operations.Equals;
 import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -13,7 +12,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -36,19 +35,24 @@ public class User {
     private String password;
     private Profile profile = new Profile();
     @JsonIgnore
-    private List<ObjectId> problemOwned;
+    private List<ObjectId> groupIn = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemListOwned;
+    private List<ObjectId> problemOwned = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> submissionHistory;
+    private List<ObjectId> problemListOwned = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> submissionUndecided;
+    private List<ObjectId> submissionHistory = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemLiked;
+    private List<ObjectId> submissionUndecided = new ArrayList<>(0);
     @JsonIgnore
-    private List<ObjectId> problemListLiked;
+    private List<ObjectId> problemLiked = new ArrayList<>(0);
+    @JsonIgnore
+    private List<ObjectId> problemListLiked = new ArrayList<>(0);
+    @JsonIgnore
+    private String identifyString = "";
 
-    private String identify = "";
+    private boolean hasVerified = false;
+
     public ObjectId getId() {
         return this.id;
     }
@@ -95,6 +99,10 @@ public class User {
         return problemListOwned;
     }
 
+    public void setProblemListOwned(List<ObjectId> problemListOwned) {
+        this.problemListOwned = problemListOwned;
+    }
+
     public void addProblemOwned(ObjectId problemId) {
         this.problemOwned.add(problemId);
     }
@@ -109,9 +117,6 @@ public class User {
 
     public void deleteProblemListOwned(ObjectId problemListId) {
         this.problemListOwned.remove(this.problemListOwned.indexOf(problemListId));
-    }
-    public void setProblemListOwned(List<ObjectId> problemListOwned) {
-        this.problemListOwned = problemListOwned;
     }
 
     public List<ObjectId> getSubmissionHistory() {
@@ -138,6 +143,14 @@ public class User {
         this.problemLiked = problemLiked;
     }
 
+    public void addProblemLiked(ObjectId problemId) {
+        this.problemLiked.add(problemId);
+    }
+
+    public void deleteProblemLiked(ObjectId problemId) {
+        this.problemLiked.remove(this.problemLiked.indexOf(problemId));
+    }
+
     public List<ObjectId> getProblemListLiked() {
         return problemListLiked;
     }
@@ -146,12 +159,32 @@ public class User {
         this.problemListLiked = problemListLiked;
     }
 
-    public void setProfile(Profile profile){
-        this.profile = profile;
+    public void addProblemListLiked(ObjectId problemId) {
+        this.problemListLiked.add(problemId);
+    }
+
+    public void deleteProblemListLiked(ObjectId problemId) {
+        this.problemListLiked.remove(this.problemListLiked.indexOf(problemId));
+    }
+
+    public void addSubmissionHistory(ObjectId submissionId) {
+        this.submissionHistory.add(submissionId);
+    }
+
+    public void addSubmissionUndicided(ObjectId submissionId) {
+        this.submissionUndecided.add(submissionId);
+    }
+
+    public void deleteSubmissionUndicided(ObjectId submissionId) {
+        this.submissionUndecided.remove(submissionUndecided.indexOf(submissionId));
     }
 
     public Profile getProfile(){
         return this.profile;
+    }
+
+    public void setProfile(Profile profile) {
+        this.profile = profile;
     }
 
     @JsonIgnore
@@ -168,29 +201,55 @@ public class User {
     }
 
     @JsonIgnore
-    public String getIdentify(){
-        return this.identify;
-    }
-    public void setIdentify(String identify){
-        this.identify = identify;
+    public String getIdentifyString() {
+        return this.identifyString;
     }
 
     public boolean hasVerifiedEmail(){//是否已验证邮件
-        return this.identify.equals(new String("verified"));
+        return this.hasVerified;
     }
 
     public void  verifyingEmail(){//设为已验证状态
-        this.identify = new String("verified");
+        this.identifyString = "verified";
+        this.hasVerified = true;
     }
 
     public void notVerified(){//设定随机字符串为验证字符串
-        this.identify = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
+        this.identifyString = UserUtil.getRandomCharAndNumr(20);//随机字符串长度为20位
     }
+
     public boolean toVerifyEmail(String verify){
-        return this.identify.equals(verify);
+        return this.identifyString.equals(verify);
     }
+
+    public boolean getHasVerified() {
+        return this.hasVerified;
+    }
+
     public boolean equals(User user) {
         return this.id.equals(user.getId());
+    }
+
+    public void findPassword(){
+        String password = UserUtil.getRandomCharAndNumr(10);
+        UserUtil.sendFindPasswordEmail(this.email,password);
+        this.setPassword(password);
+    }
+
+    public void setGroupIn(List<ObjectId> groupIn){
+        this.groupIn = groupIn;
+    }
+
+    public List<ObjectId> getGroupIn(){
+        return this.groupIn;
+    }
+
+    public void addGroupIn(ObjectId group){
+        this.groupIn.add(group);
+    }
+
+    public void deleteGroupIn(ObjectId group){
+        this.groupIn.remove(this.groupIn.indexOf(group));
     }
 
 }

@@ -6,7 +6,6 @@ import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
@@ -25,9 +24,7 @@ public class Problem {
     private ObjectId id;
 
     @Indexed
-    @NotNull
-    @DBRef(lazy = true)
-    private User creator;
+    private ObjectId creator;
 
     @Indexed
     @NotNull
@@ -53,11 +50,11 @@ public class Problem {
         this.id = id;
     }
 
-    public User getCreator() {
+    public ObjectId getCreator() {
         return creator;
     }
 
-    public void setCreator(User creator) {
+    public void setCreator(ObjectId creator) {
         this.creator = creator;
     }
 
