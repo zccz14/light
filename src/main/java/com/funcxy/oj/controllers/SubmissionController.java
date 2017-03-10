@@ -1,6 +1,7 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.errors.NotFoundError;
 import com.funcxy.oj.models.JudgeProblem;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.Submission;
@@ -8,7 +9,6 @@ import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.SubmissionRepository;
 import com.funcxy.oj.repositories.UserRepository;
-import com.funcxy.oj.utils.InvalidException;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -74,7 +74,7 @@ public class SubmissionController {
                 .map(v -> v.getJudgeId())
                 .collect(Collectors.toList());
         if (judger == null) {
-            return new ResponseEntity<>(new InvalidException("problem not found"), HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         } else {
             ObjectId judgerId = judger.get(0);
             if (judgerId.equals(userId)) {
@@ -87,33 +87,35 @@ public class SubmissionController {
 
     }
 
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET)
-    public ResponseEntity searchSubmission(@RequestBody @Valid Submission submission, @PathVariable ObjectId id, HttpSession session) {
-        // if (!isSignedIn(session)) {
+    @RequestMapping(value = "/", method = RequestMethod.GET)
+    public ResponseEntity searchSubmission(@RequestBody @Valid Submission submission, HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+//        User theUser = userRepository.findById(id);
+// ObjectId userId = theUser.getId();
+//        Submission theSubmission = submissionRepository.findById(id);
+        //  ObjectId problemListId = theSubmission.getProblemListId();
+        //ProblemList problemList = problemListRepository.findById(problemListId);
+        // List<JudgeProblem> list = problemList.getJudgerList();
+        //ObjectId problemId = theSubmission.getProblemId();
+        // List<ObjectId> judger = list.stream()
+        // .filter(v -> v.getProblemId().equals(problemId))
+        //.map(v -> v.getJudgeId())
+        // .collect(Collectors.toList());
+        // if (judger == null) {
+        //   return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        // } else {
+        // ObjectId judgerId = judger.get(0);
+        // if (judgerId.equals(userId)) {
+        //Submission theSubmissionid = submissionRepository.findById(id);
+        // return new ResponseEntity(theSubmissionid, HttpStatus.OK);
+        // } else {
         // return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
         // }
-        User theUser = userRepository.findById(id);
-        ObjectId userId = theUser.getId();
-        Submission theSubmission = submissionRepository.findById(id);
-        ObjectId problemListId = theSubmission.getProblemListId();
-        ProblemList problemList = problemListRepository.findById(problemListId);
-        List<JudgeProblem> list = problemList.getJudgerList();
-        ObjectId problemId = theSubmission.getProblemId();
-        List<ObjectId> judger = list.stream()
-                .filter(v -> v.getProblemId().equals(problemId))
-                .map(v -> v.getJudgeId())
-                .collect(Collectors.toList());
-        if (judger == null) {
-            return new ResponseEntity<>(new InvalidException("problem not found"), HttpStatus.NOT_FOUND);
-        } else {
-            ObjectId judgerId = judger.get(0);
-            if (judgerId.equals(userId)) {
-                Submission theSubmissionid = submissionRepository.findById(id);
-                return new ResponseEntity(theSubmissionid, HttpStatus.OK);
-            } else {
-                return new ResponseEntity(new ForbiddenError(), HttpStatus.FORBIDDEN);
-            }
-        }
-
+        // }
+        // Submission theSubmission = submissionRepository.findById(submission.getSubmissionId());
+        // ObjectId submissionID = theSubmission.getSubmissionId();
+        return new ResponseEntity<>(submissionRepository.findById(submission.getSubmissionId()), HttpStatus.OK);
     }
 }

@@ -1,7 +1,7 @@
 package com.funcxy.oj.repositories;
 
 import com.funcxy.oj.models.Submission;
-import com.sun.corba.se.spi.ior.ObjectId;
+import org.bson.types.ObjectId;
 import org.springframework.data.mongodb.repository.MongoRepository;
 
 import java.util.List;
