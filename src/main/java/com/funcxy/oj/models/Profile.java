@@ -10,15 +10,36 @@ import java.util.Date;
  * @author aak1247 on 2017/3/3.
  */
 public class Profile {
+    /**
+     * 头像 URL
+     */
     private String avatar;
+    /**
+     * 个人 URL
+     */
     @URL
     private String personalUrl;
+    /**
+     * 昵称
+     */
     @Indexed
     private String nickname;
+    /**
+     * 格言
+     */
     private String bio;
+    /**
+     * 性别
+     */
     private Gender gender = Gender.UNKNOWN;
+    /**
+     * 生日
+     */
     @Past
     private Date birthday;
+    /**
+     * 地址
+     */
     @Indexed
     private String location;
 

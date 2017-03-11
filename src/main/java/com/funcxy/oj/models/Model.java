@@ -6,6 +6,9 @@ package com.funcxy.oj.models;
  * @author zccz14
  */
 public abstract class Model {
+    /**
+     * ID
+     */
     private String id;
 
     public String getId() {

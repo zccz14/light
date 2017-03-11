@@ -164,7 +164,6 @@ public class ProblemListController {
         String tempObjectId = session.getAttribute("userId").toString();
 
         problemList.setCreator(tempObjectId);
-        problemList.setCreatedTime(new Date());
         ProblemList tempProblemList = problemListRepository.save(problemList);
 
         User user = userRepository.findById(tempObjectId);

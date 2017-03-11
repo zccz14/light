@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -60,7 +59,6 @@ public class GroupPLController {
             problemList.setUserList(null);
         }
         problemList.setCreator(httpSession.getAttribute("userId").toString());
-        problemList.setCreatedTime(new Date());
         problemListRepository.save(problemList);
         group.addProblemListOwned(problemList.getId());
         groupRepository.save(group);

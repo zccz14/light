@@ -18,42 +18,85 @@ import java.util.List;
  */
 @Document(collection = "problemLists")
 public class ProblemList extends Model {
+    // TODO: 取消这个 PATH
     public static final String PATH = "F:/";
-
+    /**
+     * 创建者 ID
+     */
     @Indexed
     private String creator;
-
-    private List<String> problemIds = new ArrayList<>(0);
-
+    /**
+     * 题目列表
+     */
+    private List<String> problemIds = new ArrayList<>();
+    /**
+     * 是否公开
+     */
     @NotNull
     private boolean isAccessible = false;
-
-    private List<String> userList = new ArrayList<>(0);
-
+    /**
+     * 参与用户列表
+     */
+    private List<String> userList = new ArrayList<>();
+    /**
+     * 题单标题
+     */
     @Indexed
     @NotNull
     private String title;
-
+    /**
+     * 题单类型
+     */
     @Indexed
     @NotNull
-    private String type;
+    private String type; // TODO: use enum
+    /**
+     * 题单封面 URL
+     */
     private String coverUrl;
-    private Date createdTime;
+    /**
+     * 开始阅卷时间
+     */
     private Date readBeginTime = null;
+    /**
+     * 开始答题时间
+     */
     private Date answerBeginTime = null;
+    /**
+     * 结束答题时间
+     */
     private Date answerEndTime = null;
+    /**
+     * 结束阅卷时间
+     */
     private Date readEndTime = null;
-    private List<JudgeProblem> judgerList = new ArrayList<>(0);
-    private List<String> submissionList = new ArrayList<>(0);
-    @NotNull
+    /**
+     * 判题者列表
+     */
+    private List<JudgeProblem> judgerList = new ArrayList<>();
+    /**
+     * 提交列表
+     */
+    private List<String> submissionList = new ArrayList<>();
+    /**
+     * 是否允许匿名提交
+     */
     private boolean isAnonymous = false;
-    @NotNull
+    /**
+     * 提交者是否对评测者可见
+     */
     private boolean submitterVisibleToJudge = false;
-    @NotNull
+    /**
+     * 评测结果是否公开
+     */
     private boolean resultVisibleToOthers = true;
-    @NotNull
+    /**
+     * 评测结果是否对提交者可见
+     */
     private boolean resultVisibleToSubmitterSelf = true;
-    @NotNull
+    /**
+     * 题单是否可以被拷贝
+     */
     private boolean canBeCopied = true;
 
     public String getCoverUrl() {
@@ -62,14 +105,6 @@ public class ProblemList extends Model {
 
     public void setCoverUrl(String coverUrl) {
         this.coverUrl = coverUrl;
-    }
-
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
     }
 
     public String getCreator() {

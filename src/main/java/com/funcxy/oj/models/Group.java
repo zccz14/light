@@ -12,18 +12,37 @@ import java.util.List;
  */
 @Document(collection = "groups")
 public class Group extends Model {
-
+    /**
+     * 所有者 ID
+     */
     @Indexed
     @NotNull
     private String ownerId;
+    /**
+     * 组名
+     */
     @Indexed(unique = true)
     @NotBlank(message = "组名为空")
     private String groupName;
-
+    /**
+     * 成员列表
+     */
     private List<String> memberId;
+    /**
+     * 想加入的成员列表
+     */
     private List<String> joiningMemberId;
+    /**
+     * 邀请加入的成员列表
+     */
     private List<String> invitedMemberId;
+    /**
+     * 组拥有的题单列表
+     */
     private List<String> ownedProblemList;
+    /**
+     * 组类型
+     */
     private GroupType type;
 
     public String getOwnerId() {

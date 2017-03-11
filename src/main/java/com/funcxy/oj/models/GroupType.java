@@ -4,5 +4,16 @@ package com.funcxy.oj.models;
  * @author aak12 on 2017/3/4.
  */
 public enum GroupType {
-    FREE, OPEN, CLOSE
+    /**
+     * 允许自由加入
+     */
+    FREE,
+    /**
+     * 可以申请加入
+     */
+    OPEN,
+    /**
+     * 只允许邀请加入
+     */
+    CLOSE
 }

@@ -15,23 +15,34 @@ import javax.validation.constraints.NotNull;
 
 @Document(collection = "problems")
 public class Problem extends Model {
+    /**
+     * 创建者 ID
+     */
     @Indexed
     private String creator;
-
+    /**
+     * 题目标题
+     */
     @Indexed
     @NotNull
     @NotBlank
     private String title;
-
+    /**
+     * 题目类型
+     */
     @Indexed
     @NotBlank
     @NotNull
     private String type;
-
+    /**
+     * 题面
+     */
     @NotNull
     @NotBlank
     private String description;
-
+    /**
+     * 参考答案
+     */
     private String referenceAnswer;
 
     public String getCreator() {
