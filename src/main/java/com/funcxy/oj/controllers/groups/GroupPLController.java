@@ -29,11 +29,11 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/groups")
 public class GroupPLController {
-    final
+    private final
     GroupRepository groupRepository;
-    final
+    private final
     UserRepository userRepository;
-    final
+    private final
     ProblemListRepository problemListRepository;
 
     @Autowired
@@ -132,7 +132,7 @@ public class GroupPLController {
                 new PageImpl<>(
                         group.getOwnedProblemList()
                                 .stream()
-                                .map(id -> problemListRepository.findById(id))
+                                .map(problemListRepository::findById)
                                 .collect(Collectors.toList()),
                         pageable,
                         group.getOwnedProblemList().size()

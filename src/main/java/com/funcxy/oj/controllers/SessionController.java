@@ -21,7 +21,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 @RequestMapping("/session")
 public class SessionController {
-    final
+    private final
     UserRepository userRepository;
 
     @Autowired

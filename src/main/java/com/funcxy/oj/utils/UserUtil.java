@@ -48,7 +48,7 @@ public class UserUtil {
         return str;
     }
 
-    public static void sendEmail(String email, String header, String content) {
+    private static void sendEmail(String email, String header, String content) {
         Properties projectProps = new Properties();
         Properties mailProps = new Properties();
         String url = new File("").getAbsolutePath();

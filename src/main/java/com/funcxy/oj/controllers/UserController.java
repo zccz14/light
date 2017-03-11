@@ -53,7 +53,7 @@ public class UserController {
                 if (userFound == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
                 System.out.println(userFound);
                 if (userFound.passwordVerify(passport.password)) {
-                    httpSession.setAttribute("userId", userFound.getId().toString());
+                    httpSession.setAttribute("userId", userFound.getId());
                     return new ResponseEntity<>(userFound, HttpStatus.OK);
                 }
             } else if (regExpUsername.matches(passport.username)) {
@@ -61,7 +61,7 @@ public class UserController {
                 if (userFound == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
                 System.out.println("found by username" + userFound);
                 if (userFound.passwordVerify(passport.password)) {
-                    httpSession.setAttribute("userId", userFound.getId().toString());
+                    httpSession.setAttribute("userId", userFound.getId());
                     return new ResponseEntity<>(userFound, HttpStatus.OK);
                 }
                 System.out.println("password wrong" + passport.password);

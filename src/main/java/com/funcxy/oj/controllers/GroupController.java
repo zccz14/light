@@ -32,9 +32,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
-    final
+    private final
     UserRepository userRepository;
-    final
+    private final
     GroupRepository groupRepository;
 
     @Autowired
@@ -110,7 +110,7 @@ public class GroupController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group groupFound = groupRepository.findOneByGroupName(groupName);
-        if (!groupFound.getOwnerId().equals(userRepository.findById(httpSession.getAttribute("userId").toString()))) {
+        if (!groupFound.getOwnerId().equals(userRepository.findById(httpSession.getAttribute("userId").toString()).getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        if (group.getOwnerId()!=null)groupFound.setOwnerId(group.getOwnerId());
@@ -257,7 +257,7 @@ public class GroupController {
                     new PageImpl<>(group.getMemberId()
                             .stream()
                             .map(
-                                    mem -> userRepository.findById(mem)
+                                    userRepository::findById
                             )
                             .collect(Collectors.toList()),
                             pageable,

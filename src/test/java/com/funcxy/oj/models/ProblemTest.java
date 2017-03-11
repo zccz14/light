@@ -7,7 +7,7 @@ package com.funcxy.oj.models;
 //@RunWith(SpringJUnit4ClassRunner.class)
 //@SpringBootTest(classes = Application.class)
 //@SpringBootConfiguration
-public class ProblemTest {
+class ProblemTest {
 //    private static Problem problem;
 //    private static User USER = new User();
 //    private static final String TYPE = "Test_Type";

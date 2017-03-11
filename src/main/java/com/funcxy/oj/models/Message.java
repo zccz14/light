@@ -4,10 +4,10 @@ package com.funcxy.oj.models;
  * @author aak1247 on 2017/3/10.
  */
 public class Message {
-    public String title;
-    public String content;
-    public int type = 3;
-    public boolean hasRead = false;
+    private String title;
+    private String content;
+    private int type = 3;
+    private boolean hasRead = false;
 
     /**
      * @param type 0 for system message

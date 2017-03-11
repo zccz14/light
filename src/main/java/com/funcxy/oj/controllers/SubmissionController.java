@@ -74,7 +74,7 @@ public class SubmissionController {
         String problemId = theSubmission.getProblemId();
         List<String> judger = list.stream()
                 .filter(v -> v.getProblemId().equals(problemId))
-                .map(v -> v.getJudgeId())
+                .map(JudgeProblem::getJudgeId)
                 .collect(Collectors.toList());
         if (judger == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);

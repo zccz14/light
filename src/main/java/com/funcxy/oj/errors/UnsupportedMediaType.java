@@ -7,7 +7,7 @@ package com.funcxy.oj.errors;
  * @version 1.0
  */
 public class UnsupportedMediaType extends Error {
-    UnsupportedMediaType(String message) {
+    private UnsupportedMediaType(String message) {
         super(415, message);
     }
 

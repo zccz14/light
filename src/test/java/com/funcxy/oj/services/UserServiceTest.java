@@ -6,7 +6,7 @@ package com.funcxy.oj.services;
 
 //@RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
 //@SpringBootTest(classes = Application.class)
-public class UserServiceTest {
+class UserServiceTest {
 //    static User user = new User();
 //    static String usernameValid = "zccz14";
 //    static String usernameDuplicated = "  z ccz 1  4 ";
