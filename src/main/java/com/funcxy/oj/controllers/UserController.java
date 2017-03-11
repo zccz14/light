@@ -1,6 +1,7 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.contents.Passport;
+import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.Profile;
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
-    public ResponseEntity<Object> signIn(@RequestBody Passport passport, HttpSession httpSession) {
+    public ResponseEntity signIn(@RequestBody SignInPassport passport, HttpSession httpSession) {
         if (passport.username == null) {
             return new ResponseEntity<>(new FieldsRequiredError(), HttpStatus.BAD_REQUEST);
         } else {
@@ -75,7 +76,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/sign-up", method = POST)//注册
-    public ResponseEntity<Object> signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) {
+    public ResponseEntity signUp(@RequestBody @Valid Passport passport, HttpSession httpSession) {
         System.out.println(passport.username + passport.email + passport.password);
         if (Validation.isValid(passport)) {
             System.out.println(passport.username + " sign up");
@@ -115,7 +116,7 @@ public class UserController {
     }
 
     @RequestMapping(value = "/{username}/profile", method = GET)//获取详细资料
-    public ResponseEntity<Object> profile(HttpSession httpSession, @PathVariable String username) {
+    public ResponseEntity profile(HttpSession httpSession, @PathVariable String username) {
         if (userRepository.findOneByUsername(username) == null) {
             return new ResponseEntity<>(new BadRequestError(), HttpStatus.NOT_FOUND);
         } else {
