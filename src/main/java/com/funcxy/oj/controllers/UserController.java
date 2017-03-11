@@ -1,7 +1,7 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.errors.*;
-import com.funcxy.oj.models.Passport;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.Profile;
 import com.funcxy.oj.models.User;

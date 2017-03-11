@@ -1,4 +1,6 @@
-package com.funcxy.oj.models;
+package com.funcxy.oj.contents;
+
+import com.funcxy.oj.models.Problem;
 
 import java.io.Serializable;
 

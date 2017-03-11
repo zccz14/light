@@ -1,10 +1,10 @@
 package com.funcxy.oj.controllers.users;
 
+import com.funcxy.oj.contents.ProblemHeader;
+import com.funcxy.oj.contents.ProblemListHeader;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
-import com.funcxy.oj.models.ProblemHeader;
-import com.funcxy.oj.models.ProblemListHeader;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;

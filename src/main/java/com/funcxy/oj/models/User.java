@@ -1,6 +1,7 @@
 package com.funcxy.oj.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.utils.UserUtil;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;

@@ -1,4 +1,4 @@
-package com.funcxy.oj.models;
+package com.funcxy.oj.contents;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
