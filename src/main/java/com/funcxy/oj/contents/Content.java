@@ -6,10 +6,3 @@ package com.funcxy.oj.contents;
 interface Content {
 }
 
-interface RequestContent extends Content {
-
-}
-
-interface ResponseContent extends Content {
-
-}
