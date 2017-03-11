@@ -5,10 +5,7 @@ import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.FieldsInvalidError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
-import com.funcxy.oj.models.Group;
-import com.funcxy.oj.models.GroupType;
-import com.funcxy.oj.models.Message;
-import com.funcxy.oj.models.User;
+import com.funcxy.oj.models.*;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
@@ -186,7 +183,7 @@ public class GroupController {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         group.inviteMember(user.getId());
-        userFound.addMessage(new Message("Invitation", "you are invited to " + group.getGroupName(), 2));
+        userFound.addMessage(new Message("Invitation", "you are invited to " + group.getGroupName(), MessageType.INVITATION));
         return new ResponseEntity<>(HttpStatus.OK);
     }
 

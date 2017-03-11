@@ -1,7 +1,6 @@
 package com.funcxy.oj.models;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -12,10 +11,7 @@ import java.util.List;
  * @author aak1247 on 2017/3/4.
  */
 @Document(collection = "groups")
-public class Group {
-
-    @Id
-    private String id;
+public class Group extends Model {
 
     @Indexed
     @NotNull
@@ -29,14 +25,6 @@ public class Group {
     private List<String> invitedMemberId;
     private List<String> ownedProblemList;
     private GroupType type;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getOwnerId() {
         return ownerId;

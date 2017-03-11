@@ -1,21 +1,17 @@
 package com.funcxy.oj.models;
 
 /**
- * @author aak1247 on 2017/3/10.
+ * 消息模型
+ *
+ * @author aak1247
  */
 public class Message {
     private String title;
     private String content;
-    private int type = 3;
+    private MessageType type = MessageType.OTHERS;
     private boolean hasRead = false;
 
-    /**
-     * @param type 0 for system message
-     *             1 for personal message
-     *             2 for invitation
-     *             3 for others
-     */
-    public Message(String title, String content, int type) {
+    public Message(String title, String content, MessageType type) {
         this.title = title;
         this.content = content;
         this.type = type;

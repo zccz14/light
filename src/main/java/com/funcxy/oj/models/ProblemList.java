@@ -1,6 +1,5 @@
 package com.funcxy.oj.models;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -18,11 +17,8 @@ import java.util.List;
  * @version 1.0
  */
 @Document(collection = "problemLists")
-public class ProblemList {
+public class ProblemList extends Model {
     public static final String PATH = "F:/";
-
-    @Id
-    private String id;
 
     @Indexed
     private String creator;
@@ -74,14 +70,6 @@ public class ProblemList {
 
     public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getCreator() {

@@ -3,8 +3,6 @@ package com.funcxy.oj.models;
 import org.hibernate.validator.constraints.URL;
 import org.springframework.data.mongodb.core.index.Indexed;
 
-import javax.validation.constraints.Max;
-import javax.validation.constraints.Min;
 import javax.validation.constraints.Past;
 import java.util.Date;
 
@@ -18,14 +16,7 @@ public class Profile {
     @Indexed
     private String nickname;
     private String bio;
-    @Max(3)
-    @Min(0)
-    private int gender;
-    /*
-    0 not set
-    1 male
-    1 female
-     */
+    private Gender gender = Gender.UNKNOWN;
     @Past
     private Date birthday;
     @Indexed
@@ -63,14 +54,6 @@ public class Profile {
         this.bio = bio;
     }
 
-    public int getGender() {
-        return this.gender;
-    }
-
-    public void setGender(int gender) {
-        this.gender = gender;
-    }
-
     public Date getBirthday() {
         return this.birthday;
     }
@@ -85,5 +68,13 @@ public class Profile {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public Gender getGender() {
+        return gender;
+    }
+
+    public void setGender(Gender gender) {
+        this.gender = gender;
     }
 }

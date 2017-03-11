@@ -5,7 +5,6 @@ import com.funcxy.oj.utils.UserUtil;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -13,21 +12,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * User DOM
+ * User 模型
  *
  * @author ddhee aak1247 zccz14
  */
 @Document(collection = "users")
-public class User {
-    @Id
-    private String id;
+public class User extends Model {
+    /**
+     * 用户名
+     */
     @Indexed(unique = true)
     @NotBlank(message = "用户名为空")
     private String username;
+    /**
+     * Email
+     */
     @Indexed(unique = true)
     @NotEmpty(message = "Email地址为空")
     @Email(message = "Email地址无效")
     private String email;
+    /**
+     * 密码
+     */
     @NotEmpty(message = "密码为空")
     private String password;
     /**
@@ -87,12 +93,15 @@ public class User {
      */
     private List<Dispatcher> dispatchers = new ArrayList<>(0);
 
-    public String getId() {
-        return this.id;
+    public User() {
+        super();
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public User(Passport passport) {
+        super();
+        setUsername(passport.username);
+        setPassword(passport.password);
+        setEmail(passport.email);
     }
 
     public String getUsername() {
@@ -246,7 +255,7 @@ public class User {
     }
 
     public boolean equals(User user) {
-        return this.id.equals(user.getId());
+        return this.getId().equals(user.getId());
     }
 
     public void findPassword() {

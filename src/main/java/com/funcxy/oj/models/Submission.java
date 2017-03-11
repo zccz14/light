@@ -1,14 +1,11 @@
 package com.funcxy.oj.models;
 
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * Created by niyou2016 on 2017/2/28 0028.
  */
-public class Submission {
-    @Id
-    private String id;
+public class Submission extends Model {
     @Indexed
     private String userId;
     @Indexed
@@ -27,14 +24,6 @@ public class Submission {
 
     public void setProblemListId(String problemListId) {
         this.problemListId = problemListId;
-    }
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
     }
 
     public String getStatus() {

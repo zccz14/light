@@ -4,9 +4,9 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
 
 /**
- * Created by zccz14 on 2017/3/2.
+ * 传入的 Passport
  */
-public class Passport {
+public class Passport implements RequestContent {
     @NotEmpty
     public String username;
     @NotEmpty

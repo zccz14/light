@@ -3,8 +3,8 @@ package com.funcxy.oj.controllers.users;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
-import com.funcxy.oj.models.CleanedProblem;
-import com.funcxy.oj.models.CleanedProblemList;
+import com.funcxy.oj.models.ProblemHeader;
+import com.funcxy.oj.models.ProblemListHeader;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -83,6 +83,7 @@ public class UserPrfController {
             return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
         user.addProblemListLiked(problemListId);
+        // TODO: return user = userRepository.save(user);
         return new ResponseEntity<>(new User(), HttpStatus.OK);
     }
 
@@ -133,7 +134,8 @@ public class UserPrfController {
                     likedProblemList
                             .stream()
                             .map(
-                                    pro -> new CleanedProblemList(
+                                    pro -> new ProblemListHeader(
+                                            // TODO: performance issue
                                             problemListRepository.findById(pro).getId(),
                                             problemListRepository.findById(pro).getTitle(),
                                             problemListRepository.findById(pro).getType()
@@ -166,7 +168,8 @@ public class UserPrfController {
                 new PageImpl<>(
                         likedProblem.stream()
                                 .map(
-                                        pro -> new CleanedProblem(
+                                        pro -> new ProblemHeader(
+                                                // TODO: 这里的两次查询是什么鬼，还有这里会造成 1 + N 查询性能问题
                                                 problemRepository.findById(pro).getId(),
                                                 problemRepository.findById(pro).getTitle()
                                         )

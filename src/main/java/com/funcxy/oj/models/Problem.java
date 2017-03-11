@@ -1,24 +1,20 @@
 package com.funcxy.oj.models;
 
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by wtupc96 on 2017/2/28.
+ * 题目模型类
  *
  * @author Peter
  * @version 1.0
  */
 
 @Document(collection = "problems")
-public class Problem {
-    @Id
-    private String id;
-
+public class Problem extends Model {
     @Indexed
     private String creator;
 
@@ -37,14 +33,6 @@ public class Problem {
     private String description;
 
     private String referenceAnswer;
-
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getCreator() {
         return creator;
