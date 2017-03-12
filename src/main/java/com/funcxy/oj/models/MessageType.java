@@ -17,6 +17,10 @@ public enum MessageType {
      */
     INVITATION,
     /**
+     *
+     */
+    PROPOSE,
+    /**
      * 其他
      */
     OTHERS
