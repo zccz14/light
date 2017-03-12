@@ -90,13 +90,13 @@ public class ProblemListController {
         pageable.setPageSize(pageSize);
 
         if (!isSignedIn(session)) {
-            return new ResponseEntity<>(problemListRepository.findByIsAccessible(true, pageable), HttpStatus.OK);
+            return new ResponseEntity<>(problemListRepository.findByIsPublic(true, pageable), HttpStatus.OK);
         }
 
         String userId = session.getAttribute("userId").toString();
 
         return new ResponseEntity<>(problemListRepository
-                .findByIsAccessibleOrCreatorOrUserListLike(true,
+                .findByIsPublicOrCreatorOrUserListLike(true,
                         userId, userId, pageable), HttpStatus.OK);
     }
 

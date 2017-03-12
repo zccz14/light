@@ -30,6 +30,7 @@ public class ProblemList extends Model {
     /**
      * 是否公开
      */
+    @Indexed
     @NotNull
     private boolean isPublic = false;
     /**
