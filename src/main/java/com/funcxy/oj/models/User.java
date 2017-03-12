@@ -2,6 +2,7 @@ package com.funcxy.oj.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.funcxy.oj.contents.Passport;
+import com.funcxy.oj.contents.UserHeader;
 import com.funcxy.oj.utils.UserUtil;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
@@ -83,10 +84,12 @@ public class User extends Model {
     private List<Message> messages;
     /**
      * 复制的题单列表
+     * problemListId
      */
     private List<String> problemListForked = new ArrayList<>(0);
     /**
      * 收到的邀请列表
+     * groupId
      */
     private List<String> invitation = new ArrayList<>(0);
     /**

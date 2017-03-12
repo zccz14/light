@@ -30,8 +30,9 @@ public class ProblemList extends Model {
     /**
      * 是否公开
      */
+    @Indexed
     @NotNull
-    private boolean isAccessible = false;
+    private boolean isPublic = false;
     /**
      * 参与用户列表
      */
@@ -71,7 +72,7 @@ public class ProblemList extends Model {
     /**
      * 判题者列表
      */
-    private List<JudgeProblem> judgerList = new ArrayList<>();
+    private List<String> judgerList = new ArrayList<>();
     /**
      * 提交列表
      */
@@ -169,11 +170,11 @@ public class ProblemList extends Model {
         this.readEndTime = readEndTime;
     }
 
-    public List<JudgeProblem> getJudgerList() {
+    public List<String> getJudgerList() {
         return judgerList;
     }
 
-    public void setJudgerList(List<JudgeProblem> judgerList) {
+    public void setJudgerList(List<String> judgerList) {
         this.judgerList = judgerList;
     }
 
@@ -209,12 +210,12 @@ public class ProblemList extends Model {
         this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
     }
 
-    public boolean isAccessible() {
-        return isAccessible;
+    public boolean isPublic() {
+        return isPublic;
     }
 
-    public void setAccessible(boolean accessible) {
-        isAccessible = accessible;
+    public void setPublic(boolean isPublic) {
+        isPublic = isPublic;
     }
 
     public boolean isAnonymous() {

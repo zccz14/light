@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
+import java.util.List;
+
 /**
  * Created by wtupc96 on 2017/2/28.
  *
@@ -55,4 +57,6 @@ public interface ProblemRepository extends MongoRepository<Problem, String> {
 
     @Query(value = "{?0:?1}", fields = "{'title':1}")
     Page<Problem> findByTheArg(String arg, Object argValue, Pageable pageable);
+
+    List<Problem> findByTitleLike(String title);
 }

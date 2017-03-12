@@ -24,7 +24,7 @@ public class Submission extends Model {
     /**
      * 提交状态
      */
-    private String status; // TODO: use enum
+    private SubmissionStatus status; // TODO: use enum
     /**
      * 判决结果
      */
@@ -42,14 +42,13 @@ public class Submission extends Model {
         this.problemListId = problemListId;
     }
 
-    public String getStatus() {
+    public SubmissionStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(SubmissionStatus status) {
         this.status = status;
     }
-
 
     public String getSentence() {
         return sentence;
