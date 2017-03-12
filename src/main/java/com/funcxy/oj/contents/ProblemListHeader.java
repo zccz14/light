@@ -1,6 +1,7 @@
 package com.funcxy.oj.contents;
 
 import com.funcxy.oj.models.ProblemList;
+import com.funcxy.oj.models.ProblemListType;
 
 import java.io.Serializable;
 
@@ -12,9 +13,9 @@ import java.io.Serializable;
 public class ProblemListHeader implements Serializable, ResponseContent {
     public String id;
     public String title;
-    public String type;
+    public ProblemListType type;
 
-    public ProblemListHeader(String id, String title, String type) {
+    public ProblemListHeader(String id, String title, ProblemListType type) {
         this.id = id;
         this.title = title;
         this.type = type;

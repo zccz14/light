@@ -33,7 +33,7 @@ public class Problem extends Model {
     @Indexed
     @NotBlank
     @NotNull
-    private String type;
+    private ProblemType type = ProblemType.OPEN_QUESTION;
     /**
      * 题面
      */
@@ -61,14 +61,6 @@ public class Problem extends Model {
         this.title = title.trim();
     }
 
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type.trim();
-    }
-
     public String getDescription() {
         return description;
     }
@@ -92,4 +84,13 @@ public class Problem extends Model {
         else
             return super.equals(obj);
     }
+
+    public ProblemType getType() {
+        return type;
+    }
+
+    public void setType(ProblemType type) {
+        this.type = type;
+    }
+
 }

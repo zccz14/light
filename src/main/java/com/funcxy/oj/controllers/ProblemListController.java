@@ -20,7 +20,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Properties;
 
 import static com.funcxy.oj.utils.UploadFiles.upload;
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
@@ -66,16 +71,6 @@ public class ProblemListController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(value = "/owned", method = RequestMethod.GET)
-    public ResponseEntity getProblemListsOwned(@RequestParam int pageNumber,
-                                               @RequestParam int pageSize,
-                                               HttpSession session) {
-        if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-
-        pageable.setPageSize(pageSize);
-        pageable.setPageNumber(pageNumber);
         // 后端题单检索功能，版权所有，请勿删除。
 //        if (creator != null && title != null) {
 //            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
@@ -86,26 +81,23 @@ public class ProblemListController {
 //        } else {
 //            return new ResponseEntity(problemListRepository.findAll(pageable), HttpStatus.OK);
 //        }
-        return new ResponseEntity<>(problemListRepository
-                .getAllProblemListsCreated(
-                        session.getAttribute("userId")
-                                .toString(), pageable), HttpStatus.OK);
-    }
 
-    @RequestMapping(value = "/in", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblemLists(@RequestParam int pageNumber,
                                           @RequestParam int pageSize,
                                           HttpSession session) {
-        if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
+        pageable.setPageSize(pageSize);
+
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(problemListRepository.findByIsAccessible(true, pageable), HttpStatus.OK);
+        }
+
+        String userId = session.getAttribute("userId").toString();
 
         return new ResponseEntity<>(problemListRepository
-                .findByUserListLike(
-                        session.getAttribute("userId")
-                                .toString(), pageable), HttpStatus.OK);
+                .findByIsAccessibleOrCreatorOrUserListLike(true,
+                        userId, userId, pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
@@ -146,17 +138,23 @@ public class ProblemListController {
             if (readBeginTime != null) {
                 if (readBeginTime.before(now) && readEndTime == null) {
                     return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                } else if (readBeginTime.after(now) && readEndTime == null) {
+                    return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
                 }
             }
 
             if (readEndTime != null) {
                 if (readEndTime.after(now) && readBeginTime == null) {
                     return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                } else if (readEndTime.before(now) && readBeginTime == null) {
+                    return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
                 }
             }
 
-            if (readBeginTime.before(now) && readEndTime.after(now)) {
-                return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+            if (readBeginTime != null && readEndTime != null) {
+                if (readBeginTime.before(now) && readEndTime.after(now)) {
+                    return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                }
             }
             return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
@@ -194,8 +192,14 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (cover.getOriginalFilename().matches("^\\S*.(jpg$)|(png$)|(bmp$)")) {
-            return new ResponseEntity<>(upload(cover, ProblemList.PATH), HttpStatus.OK);
+        if (cover.getOriginalFilename().matches("^\\S*.((jpg$)|(png$)|(bmp$))")) {
+            Properties properties = new Properties();
+            try {
+                properties.load(new BufferedInputStream(new FileInputStream(new File("").getAbsolutePath() + "\\src\\main\\resources\\project.properties")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(upload(cover, properties.getProperty("coverPath")), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(new UnsupportedMediaType(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
