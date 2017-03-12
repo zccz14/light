@@ -60,16 +60,6 @@ public class ProblemListController {
         this.userRepository = userRepository;
     }
 
-    @RequestMapping(value = "/owned", method = RequestMethod.GET)
-    public ResponseEntity getProblemListsOwned(@RequestParam int pageNumber,
-                                               @RequestParam int pageSize,
-                                               HttpSession session) {
-        if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-
-        pageable.setPageSize(pageSize);
-        pageable.setPageNumber(pageNumber);
         // 后端题单检索功能，版权所有，请勿删除。
 //        if (creator != null && title != null) {
 //            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
@@ -80,26 +70,23 @@ public class ProblemListController {
 //        } else {
 //            return new ResponseEntity(problemListRepository.findAll(pageable), HttpStatus.OK);
 //        }
-        return new ResponseEntity<>(problemListRepository
-                .getAllProblemListsCreated(
-                        session.getAttribute("userId")
-                                .toString(), pageable), HttpStatus.OK);
-    }
 
-    @RequestMapping(value = "/in", method = RequestMethod.GET)
+    @RequestMapping(method = RequestMethod.GET)
     public ResponseEntity getProblemLists(@RequestParam int pageNumber,
                                           @RequestParam int pageSize,
                                           HttpSession session) {
-        if (!isSignedIn(session)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        pageable.setPageSize(pageSize);
         pageable.setPageNumber(pageNumber);
+        pageable.setPageSize(pageSize);
+
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(problemListRepository.findByIsAccessible(true, pageable), HttpStatus.OK);
+        }
+
+        String userId = session.getAttribute("userId").toString();
 
         return new ResponseEntity<>(problemListRepository
-                .findByUserListLike(
-                        session.getAttribute("userId")
-                                .toString(), pageable), HttpStatus.OK);
+                .findByIsAccessibleOrCreatorOrUserListLike(true,
+                        userId, userId, pageable), HttpStatus.OK);
     }
 
     @RequestMapping(value = "/{id}", method = RequestMethod.GET)
