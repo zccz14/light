@@ -1,6 +1,7 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.BadRequestError;
+import com.funcxy.oj.errors.FieldsInvalidError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.UnsupportedMediaType;
 import com.funcxy.oj.models.ProblemList;
@@ -60,7 +61,7 @@ public class ProblemListController {
         this.userRepository = userRepository;
     }
 
-        // 后端题单检索功能，版权所有，请勿删除。
+    // 后端题单检索功能，版权所有，请勿删除。
 //        if (creator != null && title != null) {
 //            return new ResponseEntity(problemListRepository.findByCreatorLikeAndTitleLike(creator, title, pageable), HttpStatus.OK);
 //        } else if (creator != null) {
@@ -155,6 +156,10 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
+        if (isNotValidDate(problemList)) {
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
+        }
+
         if (!problemList.isAccessible()) {
             problemList.setUserList(null);
         }
@@ -203,6 +208,10 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
+        if (isNotValidDate(problemList)) {
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
+        }
+
         if (problemList.isAccessible()) {
             problemList.setUserList(null);
         }
@@ -235,4 +244,35 @@ public class ProblemListController {
 
         return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
     }
+
+    private boolean isNotValidDate(ProblemList problemList) {
+        Date readBeginTime;
+        Date readEndTime = null;
+        Date answerBeginTime;
+        Date answerEndTime = null;
+
+        if ((readBeginTime = problemList.getReadBeginTime()) != null
+                && (readEndTime = problemList.getReadEndTime()) != null) {
+            if (readBeginTime.after(readEndTime)) {
+                return false;
+            }
+        }
+
+        if ((answerBeginTime = problemList.getAnswerBeginTime()) != null &&
+                (answerEndTime = problemList.getAnswerEndTime()) != null) {
+            if (answerBeginTime.after(answerEndTime)) {
+                return false;
+            }
+        }
+
+        if ((readBeginTime != null && answerBeginTime != null) &&
+                readBeginTime.after(answerBeginTime)) {
+            return false;
+        }
+
+        return !((readEndTime != null && answerEndTime != null) &&
+                readEndTime.before(answerEndTime));
+
+    }
+
 }
