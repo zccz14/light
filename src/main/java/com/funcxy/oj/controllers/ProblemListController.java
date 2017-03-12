@@ -272,7 +272,6 @@ public class ProblemListController {
 
         return !((readEndTime != null && answerEndTime != null) &&
                 readEndTime.before(answerEndTime));
-
     }
 
 }
