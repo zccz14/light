@@ -1,7 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="EntryPointsManager">
-    <entry_points version="2.0" />
+    <entry_points version="2.0">
+      <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblem title" />
+      <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblem id" />
+      <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblemList id" />
+      <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblemList title" />
+      <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblemList type" />
+    </entry_points>
+    <pattern value="com.funcxy.oj.models.Dispatcher" method="setUrl" />
+    <pattern value="com.funcxy.oj.models.Dispatcher" method="getUrl" />
+    <pattern value="com.funcxy.oj.models.Dispatcher" method="getType" />
+    <pattern value="com.funcxy.oj.errors.Error" method="getCode" />
+    <pattern value="com.funcxy.oj.errors.Error" method="setCode" />
+    <pattern value="com.funcxy.oj.errors.Error" method="getMessage" />
+    <pattern value="com.funcxy.oj.errors.Error" method="setMessage" />
+    <pattern value="com.funcxy.oj.errors.FieldsDuplicateError" method="getFields" />
+    <pattern value="com.funcxy.oj.errors.FieldsDuplicateError" method="setFields" />
+    <pattern value="com.funcxy.oj.errors.FieldsInvalidError" method="getFields" />
+    <pattern value="com.funcxy.oj.errors.FieldsInvalidError" method="setFields" />
+    <pattern value="com.funcxy.oj.errors.FieldsRequiredError" method="getFields" />
+    <pattern value="com.funcxy.oj.errors.FieldsRequiredError" method="setFields" />
   </component>
   <component name="JavadocGenerationManager">
     <option name="OUTPUT_DIRECTORY" />
@@ -28,7 +47,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>

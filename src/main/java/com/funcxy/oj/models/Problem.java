@@ -1,60 +1,55 @@
 package com.funcxy.oj.models;
 
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import org.bson.types.ObjectId;
 import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by wtupc96 on 2017/2/28.
+ * 题目模型类
  *
  * @author Peter
  * @version 1.0
  */
 
 @Document(collection = "problems")
-public class Problem {
-    @Id
-    @JsonSerialize(using = ToStringSerializer.class)
-    private ObjectId id;
-
+public class Problem extends Model {
+    /**
+     * 创建者 ID
+     */
     @Indexed
-    private ObjectId creator;
-
+    private String creator;
+    /**
+     * 题目标题
+     */
     @Indexed
     @NotNull
     @NotBlank
     private String title;
-
+    /**
+     * 题目类型
+     */
     @Indexed
     @NotBlank
     @NotNull
     private String type;
-
+    /**
+     * 题面
+     */
     @NotNull
     @NotBlank
     private String description;
-
+    /**
+     * 参考答案
+     */
     private String referenceAnswer;
 
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public ObjectId getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(ObjectId creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
@@ -70,7 +65,7 @@ public class Problem {
         return type;
     }
 
-    public void setType(String type){
+    public void setType(String type) {
         this.type = type.trim();
     }
 
@@ -92,8 +87,8 @@ public class Problem {
 
     @Override
     public boolean equals(Object obj) {
-        if(this.getId() != null)
-            return this.getId().equals(((Problem)obj).getId());
+        if (this.getId() != null)
+            return this.getId().equals(((Problem) obj).getId());
         else
             return super.equals(obj);
     }

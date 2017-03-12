@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.util.Date;
 import java.util.stream.Collectors;
 
 /**
@@ -33,52 +32,61 @@ import java.util.stream.Collectors;
 @RestController
 @RequestMapping("/groups")
 public class GroupPLController {
-    @Autowired
+    private final
     GroupRepository groupRepository;
-    @Autowired
+    private final
     UserRepository userRepository;
-    @Autowired
+    private final
     ProblemListRepository problemListRepository;
-    @Autowired
+    private final
     ProblemRepository problemRepository;
+
+    @Autowired
+    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository,ProblemRepository problemRepository) {
+        this.groupRepository = groupRepository;
+        this.userRepository = userRepository;
+        this.problemListRepository = problemListRepository;
+        this.problemRepository = problemRepository;
+    }
+
     // 创建题单
-    @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.POST)
+    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.POST)
     public ResponseEntity createProblemList(@PathVariable String groupName,
                                             @RequestBody @Valid ProblemList problemList,
-                                            HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
+                                            HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (user == null || group == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (user == null || group == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (!problemList.isAccessible()){
+        if (!problemList.isAccessible()) {
             problemList.setUserList(null);
         }
-        problemList.setCreator(new ObjectId(httpSession.getAttribute("userId").toString()));
-        problemList.setCreatedTime(new Date());
+        problemList.setCreator(httpSession.getAttribute("userId").toString());
         problemListRepository.save(problemList);
         group.addProblemListOwned(problemList.getId());
         groupRepository.save(group);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
     //修改题单
-    @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.PUT)
+    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.PUT)
     public ResponseEntity updateProblemList(@PathVariable String groupName,
                                             @RequestBody @Valid ProblemList problemList,
-                                            HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                            HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (user == null || group == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (user == null || group == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (!user.getGroupIn().contains(group.getId())){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        if (!user.getGroupIn().contains(group.getId())) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 //        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
             problemListRepository.save(problemList);
@@ -86,18 +94,19 @@ public class GroupPLController {
 //        }
 //        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
+
     // 删除题单
-    @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblemList(@PathVariable String groupName,
-                                           @RequestBody ProblemList problemList,
-                                           HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                            @RequestBody ProblemList problemList,
+                                            HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (user == null ||group == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (user == null || group == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         if (!user.getGroupIn().contains(group.getId())){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
@@ -110,28 +119,29 @@ public class GroupPLController {
 //        }
 //        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
+
     // 获取题单列表
     @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.GET)
     public ResponseEntity getProblemList(@PathVariable String groupName,
                                               Pageable pageable,
-                                             HttpSession httpSession){
-        if (!UserUtil.isSignedIn(httpSession)){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                                              HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Group group = groupRepository.findOneByGroupName(groupName);
-        if (group == null || user == null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (group == null || user == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (group.getType().equals(GroupType.CLOSE)&&!user.getGroupIn().contains(user.getId())){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        if (group.getType().equals(GroupType.CLOSE) && !user.getGroupIn().contains(user.getId())) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         return new ResponseEntity<>(
-                new PageImpl<ProblemList>(
+                new PageImpl<>(
                         group.getOwnedProblemList()
-                        .stream()
-                        .map(id->problemListRepository.findById(id))
-                        .collect(Collectors.toList()),
+                                .stream()
+                                .map(problemListRepository::findById)
+                                .collect(Collectors.toList()),
                         pageable,
                         group.getOwnedProblemList().size()
                 ),

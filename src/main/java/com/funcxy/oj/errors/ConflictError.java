@@ -5,12 +5,12 @@ package com.funcxy.oj.errors;
  *
  * @author zccz14
  */
-public class ConflictError extends Error {
+class ConflictError extends Error {
     ConflictError(String message) {
         super(409, message);
     }
 
-    public ConflictError() {
+    ConflictError() {
         this("Conflict");
     }
 }

@@ -1,52 +1,54 @@
 package com.funcxy.oj.models;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
  * Created by niyou2016 on 2017/2/28 0028.
  */
-public class Submission {
-    @Id
-    private ObjectId id;
+public class Submission extends Model {
+    /**
+     * 提交者 ID
+     */
     @Indexed
-    private ObjectId userId;
+    private String userId;
+    /**
+     * 题单 ID
+     */
     @Indexed
-    private ObjectId problemListId;
+    private String problemListId;
+    /**
+     * 题目 ID
+     */
     @Indexed
-    private ObjectId problemId;
-    @Indexed
-    private ObjectId submissionId;
-    private String status;
+    private String problemId;
+    /**
+     * 提交状态
+     */
+    private String status; // TODO: use enum
+    /**
+     * 判决结果
+     */
     private String sentence;
+    /**
+     * 提交者提交的内容
+     */
     private String content;
 
-    public ObjectId getProblemListId() {
+    public String getProblemListId() {
         return problemListId;
     }
 
-    public void setProblemListId(ObjectId problemListId) {
+    public void setProblemListId(String problemListId) {
         this.problemListId = problemListId;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
     }
 
     public String getStatus() {
         return status;
     }
 
-
     public void setStatus(String status) {
         this.status = status;
     }
-
 
 
     public String getSentence() {
@@ -65,19 +67,19 @@ public class Submission {
         this.content = content;
     }
 
-    public ObjectId getProblemId() {
+    public String getProblemId() {
         return problemId;
     }
 
-    public void setProblemId(ObjectId problemId) {
+    public void setProblemId(String problemId) {
         this.problemId = problemId;
     }
 
-    public ObjectId getUserId() {
+    public String getUserId() {
         return userId;
     }
 
-    public void setUserId(ObjectId userId) {
+    public void setUserId(String userId) {
         this.userId = userId;
     }
 }

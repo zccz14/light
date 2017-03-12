@@ -1,7 +1,5 @@
 package com.funcxy.oj.models;
 
-import org.bson.types.ObjectId;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -19,46 +17,86 @@ import java.util.List;
  * @version 1.0
  */
 @Document(collection = "problemLists")
-public class ProblemList {
+public class ProblemList extends Model {
+    // TODO: 取消这个 PATH
     public static final String PATH = "F:/";
-
-    @Id
-    private ObjectId id;
-
+    /**
+     * 创建者 ID
+     */
     @Indexed
-    private ObjectId creator;
-
-    private List<ObjectId> problemIds = new ArrayList<>(0);
-
+    private String creator;
+    /**
+     * 题目列表
+     */
+    private List<String> problemIds = new ArrayList<>();
+    /**
+     * 是否公开
+     */
     @NotNull
     private boolean isAccessible = false;
-
-    private List<ObjectId> userList = new ArrayList<>(0);
-
+    /**
+     * 参与用户列表
+     */
+    private List<String> userList = new ArrayList<>();
+    /**
+     * 题单标题
+     */
     @Indexed
     @NotNull
     private String title;
-
+    /**
+     * 题单类型
+     */
     @Indexed
     @NotNull
-    private String type;
+    private String type; // TODO: use enum
+    /**
+     * 题单封面 URL
+     */
     private String coverUrl;
-    private Date createdTime;
+    /**
+     * 开始阅卷时间
+     */
     private Date readBeginTime = null;
+    /**
+     * 开始答题时间
+     */
     private Date answerBeginTime = null;
+    /**
+     * 结束答题时间
+     */
     private Date answerEndTime = null;
+    /**
+     * 结束阅卷时间
+     */
     private Date readEndTime = null;
-    private List<JudgeProblem> judgerList = new ArrayList<>(0);
-    private List<ObjectId> submissionList = new ArrayList<>(0);
-    @NotNull
+    /**
+     * 判题者列表
+     */
+    private List<JudgeProblem> judgerList = new ArrayList<>();
+    /**
+     * 提交列表
+     */
+    private List<String> submissionList = new ArrayList<>();
+    /**
+     * 是否允许匿名提交
+     */
     private boolean isAnonymous = false;
-    @NotNull
+    /**
+     * 提交者是否对评测者可见
+     */
     private boolean submitterVisibleToJudge = false;
-    @NotNull
+    /**
+     * 评测结果是否公开
+     */
     private boolean resultVisibleToOthers = true;
-    @NotNull
+    /**
+     * 评测结果是否对提交者可见
+     */
     private boolean resultVisibleToSubmitterSelf = true;
-    @NotNull
+    /**
+     * 题单是否可以被拷贝
+     */
     private boolean canBeCopied = true;
 
     public String getCoverUrl() {
@@ -69,35 +107,19 @@ public class ProblemList {
         this.coverUrl = coverUrl;
     }
 
-    public Date getCreatedTime() {
-        return createdTime;
-    }
-
-    public void setCreatedTime(Date createdTime) {
-        this.createdTime = createdTime;
-    }
-
-    public ObjectId getId() {
-        return id;
-    }
-
-    public void setId(ObjectId id) {
-        this.id = id;
-    }
-
-    public ObjectId getCreator() {
+    public String getCreator() {
         return creator;
     }
 
-    public void setCreator(ObjectId creator) {
+    public void setCreator(String creator) {
         this.creator = creator;
     }
 
-    public List<ObjectId> getUserList() {
+    public List<String> getUserList() {
         return userList;
     }
 
-    public void setUserList(List<ObjectId> userList) {
+    public void setUserList(List<String> userList) {
         this.userList = userList;
     }
 
@@ -157,11 +179,11 @@ public class ProblemList {
         this.judgerList = judgerList;
     }
 
-    public List<ObjectId> getSubmissionList() {
+    public List<String> getSubmissionList() {
         return submissionList;
     }
 
-    public void setSubmissionList(List<ObjectId> submissionList) {
+    public void setSubmissionList(List<String> submissionList) {
         this.submissionList = submissionList;
     }
 
@@ -213,11 +235,11 @@ public class ProblemList {
         this.canBeCopied = canBeCopied;
     }
 
-    public List<ObjectId> getProblemIds() {
+    public List<String> getProblemIds() {
         return problemIds;
     }
 
-    public void setProblemIds(List<ObjectId> problemIds) {
+    public void setProblemIds(List<String> problemIds) {
         this.problemIds = problemIds;
     }
 }

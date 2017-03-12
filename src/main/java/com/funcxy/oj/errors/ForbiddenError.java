@@ -7,7 +7,7 @@ package com.funcxy.oj.errors;
  * @version 1.0
  */
 public class ForbiddenError extends Error {
-    ForbiddenError(String message){
+    private ForbiddenError(String message) {
         super(403, message);
     }
 
