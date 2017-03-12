@@ -251,27 +251,16 @@ public class ProblemListController {
         Date answerBeginTime;
         Date answerEndTime = null;
 
-        if ((readBeginTime = problemList.getReadBeginTime()) != null
-                && (readEndTime = problemList.getReadEndTime()) != null) {
-            if (readBeginTime.after(readEndTime)) {
-                return false;
-            }
-        }
-
-        if ((answerBeginTime = problemList.getAnswerBeginTime()) != null &&
-                (answerEndTime = problemList.getAnswerEndTime()) != null) {
-            if (answerBeginTime.after(answerEndTime)) {
-                return false;
-            }
-        }
-
-        if ((readBeginTime != null && answerBeginTime != null) &&
-                readBeginTime.after(answerBeginTime)) {
-            return false;
-        }
-
-        return !((readEndTime != null && answerEndTime != null) &&
-                readEndTime.before(answerEndTime));
+        return !((readBeginTime = problemList.getReadBeginTime()) != null &&
+                (readEndTime = problemList.getReadEndTime()) != null &&
+                readBeginTime.after(readEndTime)) &&
+                !((answerBeginTime = problemList.getAnswerBeginTime()) != null &&
+                        (answerEndTime = problemList.getAnswerEndTime()) != null &&
+                        answerBeginTime.after(answerEndTime)) &&
+                !((readBeginTime != null && answerBeginTime != null) &&
+                        readBeginTime.after(answerBeginTime)) &&
+                !((readEndTime != null && answerEndTime != null) &&
+                        readEndTime.before(answerEndTime));
     }
 
 }
