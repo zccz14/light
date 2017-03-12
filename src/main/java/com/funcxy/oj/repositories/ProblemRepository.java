@@ -14,8 +14,21 @@ import org.springframework.data.mongodb.repository.Query;
  * @version 1.0
  */
 public interface ProblemRepository extends MongoRepository<Problem, String> {
+    /**
+     * 根据ID查询某一个问题
+     *
+     * @param id 目标问题的ID
+     * @return 问题
+     */
     Problem findById(String id);
 
+    /**
+     * 查询某用户创建的所有题目
+     *
+     * @param creator  创建者
+     * @param pageable 分页参数
+     * @return 该用户创建的所有问题
+     */
     @Query(value = "{'creator':?0}", fields = "{'title':1}")
     Page<Problem> getAllProblems(String creator, Pageable pageable);
 
