@@ -18,8 +18,6 @@ import java.util.List;
  */
 @Document(collection = "problemLists")
 public class ProblemList extends Model {
-    // TODO: 取消这个 PATH
-    public static final String PATH = "F:/";
     /**
      * 创建者 ID
      */
@@ -49,7 +47,7 @@ public class ProblemList extends Model {
      */
     @Indexed
     @NotNull
-    private String type; // TODO: use enum
+    private ProblemListType type = ProblemListType.DEFAULT;
     /**
      * 题单封面 URL
      */
@@ -131,11 +129,11 @@ public class ProblemList extends Model {
         this.title = title;
     }
 
-    public String getType() {
+    public ProblemListType getType() {
         return type;
     }
 
-    public void setType(String type) {
+    public void setType(ProblemListType type) {
         this.type = type;
     }
 
