@@ -30,8 +30,9 @@ public class ProblemList extends Model {
     /**
      * 是否公开
      */
+    @Indexed
     @NotNull
-    private boolean isAccessible = false;
+    private boolean isPublic = false;
     /**
      * 参与用户列表
      */
@@ -209,12 +210,12 @@ public class ProblemList extends Model {
         this.resultVisibleToSubmitterSelf = resultVisibleToSubmitterSelf;
     }
 
-    public boolean isAccessible() {
-        return isAccessible;
+    public boolean isPublic() {
+        return isPublic;
     }
 
-    public void setAccessible(boolean accessible) {
-        isAccessible = accessible;
+    public void setPublic(boolean isPublic) {
+        isPublic = isPublic;
     }
 
     public boolean isAnonymous() {

@@ -11,13 +11,13 @@ public class UserHeader implements ResponseContent {
     private final String username;
     private final String email;
 
-    private UserHeader(String id, String username, String email) {
+    public UserHeader(String id, String username, String email) {
         this.id = id;
         this.username = username;
         this.email = email;
     }
 
-    private UserHeader(User user) {
+    public UserHeader(User user) {
         this(user.getId(), user.getUsername(), user.getEmail());
     }
 

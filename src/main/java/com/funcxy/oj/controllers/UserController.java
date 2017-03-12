@@ -12,6 +12,7 @@ import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -25,7 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * User Controller
- * Created by zccz14 on 2017/3/2.
+ * @author zccz14 aak1247
  */
 @RestController
 @RequestMapping("/users")
@@ -214,6 +215,13 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * fork 题单
+     * @param username 用户名
+     * @param problemList 要fork的题单
+     * @param httpSession session
+     * @return 成功时返回OK
+     */
     @RequestMapping(value = "/{username}/fork", method = POST)//fork problemList
     public ResponseEntity forkProblem(@PathVariable String username,
                                       @RequestBody ProblemList problemList,
@@ -228,7 +236,22 @@ public class UserController {
         if (!problemList.isCanBeCopied()) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
-        user.addProblemListForked(problemList.getId());
+        ProblemList problemListForked;
+        problemListForked = problemList;
+        problemListForked.setId(ObjectId.get().toString());
+        problemListForked.setCreator(user.getId());
+        user.addProblemListForked(problemListForked.getId());
+        userRepository.save(user);
+        problemListRepository.insert(problemListForked);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    /*
+    TODO:判题API
+    TODO:处理邀请
+    TODO:处理题单请求（创建/修改/删除,同意创建逻辑类似fork，其他类似）
+    TODO:发私信
+    TODO:阅读私信
+    TODO:删除私信
+     */
+
 }

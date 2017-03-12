@@ -32,8 +32,8 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Stri
     Page<ProblemList> findByCreatorLikeAndTitleLike(User creator, String title, Pageable pageable);
 
     @Query(fields = "{'coverUrl:1,'title':1,'creator':1}")
-    Page<ProblemList> findByIsAccessible(boolean isAccessible, Pageable pageable);
+        Page<ProblemList> findByIsPublic(boolean isPublic, Pageable pageable);
 
     @Query(fields = "{'coverUrl:1,'title':1,'creator':1}")
-    Page<ProblemList> findByIsAccessibleOrCreatorOrUserListLike(boolean isAccessible, String creator, String userId, Pageable pageable);
+    Page<ProblemList> findByIsPublicOrCreatorOrUserListLike(boolean isPublic, String creator, String userId, Pageable pageable);
 }
