@@ -169,16 +169,16 @@ public class GroupPLController {
 //        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
 //    }
     // 添加题单的题目（应合并到problemList下对应路由）
-    @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{groupName}/problemList/{problemListId}",method = RequestMethod.POST)
     public ResponseEntity addProblem(@PathVariable String groupName,
-                                     @PathVariable String problemListTitle,
+                                     @PathVariable String problemListId,
                                      @RequestBody Problem problem,
                                      HttpSession httpSession) {
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         Group group = groupRepository.findOneByGroupName(groupName);
-        ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
+        ProblemList problemList = problemListRepository.findById(problemListId);
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         problem = problemRepository.findById(problem.getId());
         if (group == null || problemList == null || user == null || problem==null) {
@@ -198,24 +198,24 @@ public class GroupPLController {
         return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
     // 删除题单的题目（应合并到problemList下对应路由）
-    @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{groupName}/problemList/{problemListId}",method = RequestMethod.DELETE)
     public ResponseEntity deleteProblem(@PathVariable String groupName,
-                                        @PathVariable String problemListTitle,
+                                        @PathVariable String problemListId,
                                         @RequestBody Problem problem,
                                         HttpSession httpSession){
-            if (!UserUtil.isSignedIn(httpSession)) {
-                return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-            }
-            Group group = groupRepository.findOneByGroupName(groupName);
-            ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
-            User user = userRepository.findById(httpSession.getAttribute("userId").toString());
-            problem = problemRepository.findById(problem.getId());
-            if (group == null || problemList == null || user == null || problem==null) {
-                return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
-            }
-            if (!user.getGroupIn().contains(group.getId())) {
-                return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-            }
+        if (!UserUtil.isSignedIn(httpSession)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+        Group group = groupRepository.findOneByGroupName(groupName);
+        ProblemList problemList = problemListRepository.findById(problemListId);
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
+        problem = problemRepository.findById(problem.getId());
+        if (group == null || problemList == null || user == null || problem==null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        }
+        if (!user.getGroupIn().contains(group.getId())) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
         if (groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId())){//鉴权
                 if (!problemList.getProblemIds().contains(problem.getId())){
                     return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);

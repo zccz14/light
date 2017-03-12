@@ -26,7 +26,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * User Controller
- * Created by zccz14 on 2017/3/2.
+ * @author zccz14 aak1247
  */
 @RestController
 @RequestMapping("/users")
@@ -236,13 +236,22 @@ public class UserController {
         if (!problemList.isCanBeCopied()) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
-        ProblemList problemListForked = new ProblemList();
+        ProblemList problemListForked;
         problemListForked = problemList;
         problemListForked.setId(ObjectId.get().toString());
+        problemListForked.setCreator(user.getId());
         user.addProblemListForked(problemListForked.getId());
         userRepository.save(user);
         problemListRepository.insert(problemListForked);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+    /*
+    TODO:判题API
+    TODO:处理邀请
+    TODO:处理题单请求（创建/修改/删除,同意创建逻辑类似fork，其他类似）
+    TODO:发私信
+    TODO:阅读私信
+    TODO:删除私信
+     */
 
 }
