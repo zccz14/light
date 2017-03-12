@@ -120,7 +120,7 @@ public class ProblemListController {
     /**
      * GET查看题单详情
      *
-     * @param id 需要查看的题单的ID
+     * @param id      需要查看的题单的ID
      * @param session 请求会话
      * @return 是否获取成功
      */
@@ -186,7 +186,7 @@ public class ProblemListController {
             // 指定了开始阅读时间以及结束阅读时间并且当前时间在阅读期限之内
             if (readBeginTime != null && readEndTime != null &&
                     (readBeginTime.before(now) && readEndTime.after(now))) {
-                    return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
             }
             return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
@@ -198,7 +198,7 @@ public class ProblemListController {
      * POST创建题单
      *
      * @param problemList 待创建的题单
-     * @param session 请求会话
+     * @param session     请求会话
      * @return 是否创建成功
      */
     @RequestMapping(method = RequestMethod.POST)
@@ -236,7 +236,7 @@ public class ProblemListController {
     /**
      * POST上传题单封面
      *
-     * @param cover 封面图片
+     * @param cover   封面图片
      * @param session 请求会话
      * @return 是否上传成功
      */
@@ -266,8 +266,8 @@ public class ProblemListController {
      * PUT更改题单信息
      *
      * @param problemList 更新后的题单信息
-     * @param id 目标题单ID
-     * @param session 请求会话
+     * @param id          目标题单ID
+     * @param session     请求会话
      * @return 是否修改成功
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
@@ -302,7 +302,7 @@ public class ProblemListController {
     /**
      * DELETE删除题单
      *
-     * @param id 目标题单ID
+     * @param id      目标题单ID
      * @param session 请求会话
      * @return 是否删除成功
      */
