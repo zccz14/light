@@ -72,7 +72,7 @@ public class ProblemList extends Model {
     /**
      * 判题者列表
      */
-    private List<JudgeProblem> judgerList = new ArrayList<>();
+    private List<String> judgerList = new ArrayList<>();
     /**
      * 提交列表
      */
@@ -170,11 +170,11 @@ public class ProblemList extends Model {
         this.readEndTime = readEndTime;
     }
 
-    public List<JudgeProblem> getJudgerList() {
+    public List<String> getJudgerList() {
         return judgerList;
     }
 
-    public void setJudgerList(List<JudgeProblem> judgerList) {
+    public void setJudgerList(List<String> judgerList) {
         this.judgerList = judgerList;
     }
 

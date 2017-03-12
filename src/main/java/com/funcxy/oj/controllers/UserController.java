@@ -136,18 +136,28 @@ public class UserController {
         return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/find/username", method = GET)//精确查找用户名
+    /**
+     * Head方法，用于查询用户名是否重复
+     * @param username 用户名
+     * @return 不冲突时返回OK（200）
+     */
+    @RequestMapping(value = "/find/username", method = HEAD)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username) {
         User userFound = userRepository.findOneByUsername(username);
-        if (userFound == null) return new ResponseEntity<>("not found", HttpStatus.OK);
-        return new ResponseEntity<>("find", HttpStatus.CONFLICT);
+        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
-    @RequestMapping(value = "/find/email", method = GET)//精确查找邮箱
+    /**
+     * Head方法，用于查询邮箱是否重复
+     * @param email 邮箱
+     * @return 不冲突时返回OK（200）
+     */
+    @RequestMapping(value = "/find/email", method = HEAD)//精确查找邮箱
     public ResponseEntity hasEmail(@RequestParam String email) {
         User userFound = userRepository.findOneByEmail(email);
-        if (userFound == null) return new ResponseEntity<>("not found", HttpStatus.OK);
-        return new ResponseEntity<>("find", HttpStatus.CONFLICT);
+        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     @RequestMapping(value = "/{username}/{verify}", method = GET)//验证邮箱
@@ -245,13 +255,16 @@ public class UserController {
         problemListRepository.insert(problemListForked);
         return new ResponseEntity<>(HttpStatus.OK);
     }
-    /*
-    TODO:判题API
-    TODO:处理邀请
-    TODO:处理题单请求（创建/修改/删除,同意创建逻辑类似fork，其他类似）
-    TODO:发私信
-    TODO:阅读私信
-    TODO:删除私信
-     */
+
+    //TODO:判题API
+//    @RequestMapping(value = "/{username}/judge/{submissionId}",method = PUT)
+//    public ResponseEntity judge(@PathVariable String username,
+//                                @RequestBody )
+    //TODO:处理邀请
+    //TODO:处理题单请求（创建/修改/删除,同意创建逻辑类似fork，其他类似）
+    //TODO:发私信
+    //TODO:阅读私信
+    //TODO:删除私信
+
 
 }
