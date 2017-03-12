@@ -11,7 +11,7 @@ public enum Gender {
     /**
      * 女性
      */
-    REMALE,
+    FEMALE,
     /**
      * 未知
      */
