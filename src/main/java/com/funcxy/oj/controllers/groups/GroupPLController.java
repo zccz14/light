@@ -9,7 +9,6 @@ import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
-import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -24,9 +23,9 @@ import java.util.stream.Collectors;
 /**
  * @author ddhee
  * 权限说明：
- * 群组成员都可以创建题单
- * 只有管理员和题单创建者有权修改/删除题单
- * 创建者退出群组后失去权限
+ * 只有管理员有权创建/修改/删除题单
+ * 对于open和free的群组，所有人（包括外部人员）可以查看题单列表，close的群组只有群组内成员可以查看题单列表
+ * 群组内成员可以查看题单
  */
 
 @RestController
@@ -62,7 +61,10 @@ public class GroupPLController {
         if (user == null || group == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (!problemList.isAccessible()) {
+        if (!group.getOwnerId().equals(user.getId())){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        if (!problemList.isPublic()) {
             problemList.setUserList(null);
         }
         problemList.setCreator(httpSession.getAttribute("userId").toString());
@@ -72,7 +74,7 @@ public class GroupPLController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //修改题单
+    //修改题单（应合并到problemList下对应路由）
     @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.PUT)
     public ResponseEntity updateProblemList(@PathVariable String groupName,
                                             @RequestBody @Valid ProblemList problemList,
@@ -88,14 +90,14 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-//        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
+        if (groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId())){//鉴权
             problemListRepository.save(problemList);
             return new ResponseEntity<>(problemList,HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
 
-    // 删除题单
+    // 删除题单（应合并到problemList下对应路由）
     @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblemList(@PathVariable String groupName,
                                             @RequestBody ProblemList problemList,
@@ -111,13 +113,13 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())){
             return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
         }
-//        if (problemList.getCreator().equals(user.getId())||group.getOwnerId().equals(user.getId())){
+        if (groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId())){//鉴权
             group.deleteProblemListOwned(problemList.getId());
             problemListRepository.delete(problemList);
             groupRepository.save(group);
             return new ResponseEntity(HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
 
     // 获取题单列表
@@ -166,7 +168,7 @@ public class GroupPLController {
 //        }
 //        return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
 //    }
-    // 添加题单的题目
+    // 添加题单的题目（应合并到problemList下对应路由）
     @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.POST)
     public ResponseEntity addProblem(@PathVariable String groupName,
                                      @PathVariable String problemListTitle,
@@ -177,7 +179,7 @@ public class GroupPLController {
         }
         Group group = groupRepository.findOneByGroupName(groupName);
         ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
-        User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         problem = problemRepository.findById(problem.getId());
         if (group == null || problemList == null || user == null || problem==null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
@@ -185,17 +187,17 @@ public class GroupPLController {
         if (!user.getGroupIn().contains(group.getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-//        if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())) {
+        if (groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId())){//鉴权
             if (problemList.getProblemIds().contains(problem.getId())){
                 return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
             }
             problemList.getProblemIds().add(problem.getId());
             problemListRepository.save(problemList);
             return new ResponseEntity<>(problemList,HttpStatus.OK);
-//        }
-//        return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+        return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
     }
-    // 删除题单的题目
+    // 删除题单的题目（应合并到problemList下对应路由）
     @RequestMapping(value = "/{groupName}/problemList/{problemListTitle}",method = RequestMethod.DELETE)
     public ResponseEntity deleteProblem(@PathVariable String groupName,
                                         @PathVariable String problemListTitle,
@@ -206,7 +208,7 @@ public class GroupPLController {
             }
             Group group = groupRepository.findOneByGroupName(groupName);
             ProblemList problemList = problemListRepository.findOneByTitle(problemListTitle);
-            User user = userRepository.findById(new ObjectId(httpSession.getAttribute("userId").toString()));
+            User user = userRepository.findById(httpSession.getAttribute("userId").toString());
             problem = problemRepository.findById(problem.getId());
             if (group == null || problemList == null || user == null || problem==null) {
                 return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
@@ -214,14 +216,14 @@ public class GroupPLController {
             if (!user.getGroupIn().contains(group.getId())) {
                 return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }
-//            if (problemList.getCreator().equals(user.getId()) || group.getOwnerId().equals(user.getId())){
+        if (groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId())){//鉴权
                 if (!problemList.getProblemIds().contains(problem.getId())){
                     return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
                 }
                 problemList.getProblemIds().remove(problem.getId());
                 problemListRepository.save(problemList);
                 return new ResponseEntity<>(problemList,HttpStatus.OK);
-//            }
-//            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            }
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
     }
 }

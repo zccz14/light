@@ -54,7 +54,7 @@ public class ProblemListController {
     }
 
 
-    public boolean isGroup(ObjectId id){
+    public boolean isGroup(String id){
         return groupRepository.findById(id)!=null;
     }
 
@@ -128,7 +128,7 @@ public class ProblemListController {
             return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
         }
 
-        if (tempProblemList.isAccessible() ||
+        if (tempProblemList.isPublic() ||
                 (isGroup(tempProblemList.getCreator())
                         &&user.getGroupIn().contains(tempProblemList.getCreator()))||
                 tempProblemList
@@ -171,7 +171,7 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (!problemList.isAccessible()) {
+        if (!problemList.isPublic()) {
             problemList.setUserList(null);
         }
 
@@ -213,7 +213,7 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (problemList.isAccessible()) {
+        if (problemList.isPublic()) {
             problemList.setUserList(null);
         }
 

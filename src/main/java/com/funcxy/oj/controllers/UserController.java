@@ -12,6 +12,7 @@ import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -214,6 +215,13 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    /**
+     * fork 题单
+     * @param username 用户名
+     * @param problemList 要fork的题单
+     * @param httpSession session
+     * @return 成功时返回OK
+     */
     @RequestMapping(value = "/{username}/fork", method = POST)//fork problemList
     public ResponseEntity forkProblem(@PathVariable String username,
                                       @RequestBody ProblemList problemList,
@@ -228,7 +236,13 @@ public class UserController {
         if (!problemList.isCanBeCopied()) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
-        user.addProblemListForked(problemList.getId());
+        ProblemList problemListForked = new ProblemList();
+        problemListForked = problemList;
+        problemListForked.setId(ObjectId.get().toString());
+        user.addProblemListForked(problemListForked.getId());
+        userRepository.save(user);
+        problemListRepository.insert(problemListForked);
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
 }
