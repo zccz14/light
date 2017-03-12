@@ -18,7 +18,12 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Date;
+import java.util.Properties;
 
 import static com.funcxy.oj.utils.UploadFiles.upload;
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
@@ -132,17 +137,23 @@ public class ProblemListController {
             if (readBeginTime != null) {
                 if (readBeginTime.before(now) && readEndTime == null) {
                     return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                } else if (readBeginTime.after(now) && readEndTime == null) {
+                    return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
                 }
             }
 
             if (readEndTime != null) {
                 if (readEndTime.after(now) && readBeginTime == null) {
                     return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                } else if (readEndTime.before(now) && readBeginTime == null) {
+                    return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
                 }
             }
 
-            if (readBeginTime.before(now) && readEndTime.after(now)) {
-                return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+            if (readBeginTime != null && readEndTime != null) {
+                if (readBeginTime.before(now) && readEndTime.after(now)) {
+                    return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
+                }
             }
             return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
         }
@@ -180,8 +191,14 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (cover.getOriginalFilename().matches("^\\S*.(jpg$)|(png$)|(bmp$)")) {
-            return new ResponseEntity<>(upload(cover, ProblemList.PATH), HttpStatus.OK);
+        if (cover.getOriginalFilename().matches("^\\S*.((jpg$)|(png$)|(bmp$))")) {
+            Properties properties = new Properties();
+            try {
+                properties.load(new BufferedInputStream(new FileInputStream(new File("").getAbsolutePath() + "\\src\\main\\resources\\project.properties")));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return new ResponseEntity<>(upload(cover, properties.getProperty("coverPath")), HttpStatus.OK);
         }
 
         return new ResponseEntity<>(new UnsupportedMediaType(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
