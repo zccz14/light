@@ -1,9 +1,6 @@
 package com.funcxy.oj.controllers;
 
-import com.funcxy.oj.errors.BadRequestError;
-import com.funcxy.oj.errors.FieldsInvalidError;
-import com.funcxy.oj.errors.ForbiddenError;
-import com.funcxy.oj.errors.UnsupportedMediaType;
+import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
@@ -277,6 +274,11 @@ public class ProblemListController {
         String tempObjectId = session.getAttribute("userId").toString();
         ProblemList tempProblemList = problemListRepository.findById(id);
 
+        // 不存在该题单
+        if (tempProblemList == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        }
+
         // 鉴权
         if (!(isSignedIn(session)
                 && tempObjectId.equals(tempProblemList.getCreator()))) {
@@ -310,6 +312,11 @@ public class ProblemListController {
     public ResponseEntity deleteProblemList(@PathVariable String id,
                                             HttpSession session) {
         ProblemList tempProblemList = problemListRepository.findById(id);
+
+        // 不存在该题单
+        if (tempProblemList == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        }
 
         String tempObjectId = session.getAttribute("userId").toString();
 
