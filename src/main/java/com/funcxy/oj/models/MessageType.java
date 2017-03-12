@@ -19,7 +19,7 @@ public enum MessageType {
     /**
      *
      */
-    PROPOSE,
+    PROPOSAL,
     /**
      * 其他
      */
