@@ -7,5 +7,12 @@ package com.funcxy.oj.models;
  * @version 1.0
  */
 public enum ProblemListType {
-    TEST, DEFAULT
+    /**
+     * 考试
+     */
+    TEST,
+    /**
+     * 默认
+     */
+    DEFAULT
 }
