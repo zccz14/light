@@ -31,7 +31,7 @@ public interface ProblemRepository extends MongoRepository<Problem, String> {
      * @param pageable 分页参数
      * @return 该用户创建的所有问题
      */
-    @Query(value = "{'creator':?0}", fields = "{'description': -1}")
+    @Query(value = "{'creator':?0}", fields = "{'description': 0}")
     Page<Problem> getAllProblems(String creator, Pageable pageable);
 
     @Query(fields = "{'title':1}")
