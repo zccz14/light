@@ -9,11 +9,6 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
  * @author aak1247 on 2017/3/1.
  */
 public class Validation {
-    public static boolean notValid(User user) {
-        return user.getUsername() == null ||
-                user.getEmail() == null;
-    }
-
     public static boolean isValid(Passport passport) {
         RegularExpression validUsername = new RegularExpression("^[a-zA-Z0-9_]+");
         RegularExpression validPassword = new RegularExpression("^\\S*([a-zA-Z]+\\S*[0-9]+)|([0-9]+\\S*[A-Za-z]+)+\\S*");

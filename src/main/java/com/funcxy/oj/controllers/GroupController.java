@@ -1,6 +1,7 @@
 package com.funcxy.oj.controllers;
 
 
+import com.funcxy.oj.contents.UserHeader;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.FieldsInvalidError;
 import com.funcxy.oj.errors.ForbiddenError;
@@ -124,6 +125,13 @@ public class GroupController {
         return new ResponseEntity<>(groupFound, HttpStatus.OK);
     }
 
+    /**
+     * alienate 转让群组
+     * @param groupName 群组名
+     * @param owner 下一任群主
+     * @param httpSession session
+     * @return 成功时return修改后的群组
+     */
     @RequestMapping(value = "/{groupName}/alienate", method = PUT)
     public ResponseEntity alienate(@PathVariable String groupName,
                                    @RequestBody InnerClassUser owner,
@@ -158,12 +166,15 @@ public class GroupController {
             return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
 
-        if (group.getType().equals(GroupType.FREE)) {
-            group.addMember(user.getId());
-            return new ResponseEntity<>(HttpStatus.OK);
+        switch (group.getType())
+        {
+            case CLOSE:return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+            case FREE:group.addMember(user.getId());
+                return new ResponseEntity<>(HttpStatus.OK);
+            case OPEN:group.askJoin(user.getId());
+                return new ResponseEntity<>(HttpStatus.OK);
+            default:return new ResponseEntity<>(new FieldsInvalidError(),HttpStatus.BAD_REQUEST);
         }
-        group.askJoin(user.getId());
-        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     //邀请成员
@@ -176,17 +187,25 @@ public class GroupController {
         }
         Group group = groupRepository.findOneByGroupName(groupName);
         User userFound = userRepository.findById(user.getId());
-        if (userFound == null) {
-            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
-        }
-        if (group == null) {
+        if (userFound == null || group == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         group.inviteMember(user.getId());
         userFound.addMessage(new Message("Invitation", "you are invited to " + group.getGroupName(), MessageType.INVITATION));
-        return new ResponseEntity<>(HttpStatus.OK);
+        if (userFound.getInvitation().contains(group.getId())){
+            userFound.getInvitation().add(group.getId());
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
     }
 
+    /**
+     * 同意/拒绝加入(群组管理员视角) 仅针对请求加入的情况
+     * @param groupName 群组名称
+     * @param report 处理结果
+     * @param httpSession session
+     * @return 成功时返回OK
+     */
     @RequestMapping(value = "/{groupName}/manage", method = POST)
     public ResponseEntity handleApply(@PathVariable String groupName,
                                       @RequestBody InnerClassReport report,
@@ -199,7 +218,7 @@ public class GroupController {
         if (!group.getOwnerId().equals(user.getId())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
-        if (report.result.equals("admit")) {
+        if (report.admit) {
             user.addGroupIn(group.getId());
             if (user.getGroupIn().contains(group.getId())) {
                 return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
@@ -210,14 +229,19 @@ public class GroupController {
                 groupRepository.save(group);
                 return new ResponseEntity<>(HttpStatus.OK);
             }
-        } else if (report.result.equals("refuse")) {
+        } else{
             group.refuse(user.getId());
             return new ResponseEntity<>(HttpStatus.OK);
         }
-        return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
     }
 
-    //劝退成员
+    /**劝退成员
+     *
+     * @param groupName 群组名称
+     * @param user 要劝退的对象
+     * @param httpSession session
+     * @return 成功时返回OK
+     */
     @RequestMapping(value = "/{groupName}/manage", method = DELETE)
     public ResponseEntity deleteMember(@PathVariable String groupName,
                                        @RequestBody InnerClassUser user,
@@ -227,6 +251,9 @@ public class GroupController {
         }
         User userFound = userRepository.findById(user.userId);
         Group group = groupRepository.findOneByGroupName(groupName);
+        if (userFound == null || group == null){
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        }
         if (!group.getOwnerId().equals(httpSession.getAttribute("userId").toString())) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -248,14 +275,13 @@ public class GroupController {
         Group group = groupRepository.findOneByGroupName(groupName);
         if (group == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         if (group.getType().equals(GroupType.CLOSE)) {
-            return new ResponseEntity<>(new NotFoundError(), HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         } else {
             return new ResponseEntity<>(
                     new PageImpl<>(group.getMemberId()
                             .stream()
-                            .map(
-                                    userRepository::findById
-                            )
+                            .map(userRepository::findById)
+                            .map(UserHeader::new)
                             .collect(Collectors.toList()),
                             pageable,
                             group.getMemberId().size()),
@@ -275,24 +301,20 @@ public class GroupController {
         }
     }
 
-    //转让群组
     class InnerClassUser {
         public String userId;
-
         public InnerClassUser(String objectId) {
             this.userId = objectId;
         }
     }
 
-    //同意/拒绝加入(群组管理员视角) 仅针对请求加入的情况
     class InnerClassReport {
-        String result;
-
+        boolean admit;
         /**
-         * @param result admit/refuse
+         * @param admit true for admit/false for refuse
          */
-        public InnerClassReport(String result) {
-            this.result = result;
+        public InnerClassReport(boolean admit) {
+            this.admit = admit;
         }
     }
 }

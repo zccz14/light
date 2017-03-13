@@ -1,13 +1,12 @@
 package com.funcxy.oj.controllers.groups;
 
+import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
-import com.funcxy.oj.models.Group;
-import com.funcxy.oj.models.GroupType;
-import com.funcxy.oj.models.ProblemList;
-import com.funcxy.oj.models.User;
+import com.funcxy.oj.models.*;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
+import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
 import com.funcxy.oj.utils.UserUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +22,10 @@ import java.util.stream.Collectors;
 
 /**
  * @author ddhee
+ * 权限说明：
+ * 只有管理员有权创建/修改/删除题单
+ * 对于open和free的群组，所有人（包括外部人员）可以查看题单列表，close的群组只有群组内成员可以查看题单列表
+ * 群组内成员可以查看题单
  */
 
 @RestController
@@ -34,12 +37,15 @@ public class GroupPLController {
     UserRepository userRepository;
     private final
     ProblemListRepository problemListRepository;
+    private final
+    ProblemRepository problemRepository;
 
     @Autowired
-    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository) {
+    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository,ProblemRepository problemRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.problemListRepository = problemListRepository;
+        this.problemRepository = problemRepository;
     }
 
     // 创建题单
@@ -55,7 +61,10 @@ public class GroupPLController {
         if (user == null || group == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (!problemList.isAccessible()) {
+        if (!group.getOwnerId().equals(user.getId())){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+        if (!problemList.isPublic()) {
             problemList.setUserList(null);
         }
         problemList.setCreator(httpSession.getAttribute("userId").toString());
@@ -65,54 +74,9 @@ public class GroupPLController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //修改题单
-    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.PUT)
-    public ResponseEntity updateProblemList(@PathVariable String groupName,
-                                            @RequestBody @Valid ProblemList problemList,
-                                            HttpSession httpSession) {
-        if (!UserUtil.isSignedIn(httpSession)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
-        Group group = groupRepository.findOneByGroupName(groupName);
-        if (user == null || group == null) {
-            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
-        }
-        if (!user.getGroupIn().contains(group.getId())) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        problemListRepository.save(problemList);
-        return new ResponseEntity<>(problemList, HttpStatus.OK);
-    }
-
-    // 删除题单
-    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.DELETE)
-    public ResponseEntity deleteProblemList(@PathVariable String groupName,
-                                            @RequestBody ProblemList problemList,
-                                            HttpSession httpSession) {
-        if (!UserUtil.isSignedIn(httpSession)) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
-        Group group = groupRepository.findOneByGroupName(groupName);
-        if (user == null || group == null) {
-            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
-        }
-//        if (!problemListFound.getCreator().equals(user.getId())){
-//            return new ResponseEntity<>(new NotFoundError(),HttpStatus.FORBIDDEN);
-//        }
-        if (!user.getGroupIn().contains(group.getId())) {
-            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-        }
-        group.deleteProblemListOwned(problemList.getId());
-        problemListRepository.delete(problemList);
-        groupRepository.save(group);
-        return new ResponseEntity(HttpStatus.OK);
-    }
-
     // 获取题单列表
-    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.GET)
-    public ResponseEntity retrieveProblemList(@PathVariable String groupName,
+    @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.GET)
+    public ResponseEntity getProblemList(@PathVariable String groupName,
                                               Pageable pageable,
                                               HttpSession httpSession) {
         if (!UserUtil.isSignedIn(httpSession)) {
@@ -137,7 +101,6 @@ public class GroupPLController {
                 ),
                 HttpStatus.OK);
     }
-    // TODO:查看单个题单
-    // TODO:添加题单的题目
-    // TODO:删除题单的题目
+
+
 }

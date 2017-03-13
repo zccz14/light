@@ -17,6 +17,14 @@ public enum MessageType {
      */
     INVITATION,
     /**
+     * 判题提醒
+     */
+    TOJUDGE,
+    /**
+     * 判决结果通知
+     */
+    SENTENCE,
+    /**
      *
      */
     PROPOSAL,

@@ -1,12 +1,16 @@
 package com.funcxy.oj.repositories;
 
 import com.funcxy.oj.models.Submission;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.mongodb.repository.Query;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
 /**
- * Created by lqp on 2017/3/1.
+ * @author  by lqp on 2017/3/1.
  */
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
     Submission findById(String id);
@@ -23,4 +27,12 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
 
     List<Submission> findByContent(String content);
 
+    @Query("{'$and':[{'userId':?0},{'problemId':{'$in':?1}}]}")
+    Page<Submission> roughFind(String userId, List<String> problemId, Pageable pageable);
+
+    @Query("{'userId':{'$in':?0}}")
+    Page<Submission> findByUserIds(List<String> userIds, Pageable pageable);
+
+    @Query("{'userId': {'$in':?0}}")
+    Page<Submission> findByProblemIds(List<String> problemIds, Pageable pageable);
 }
