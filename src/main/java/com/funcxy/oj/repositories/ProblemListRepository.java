@@ -19,26 +19,26 @@ import org.springframework.data.mongodb.repository.Query;
 public interface ProblemListRepository extends MongoRepository<ProblemList, String> {
     ProblemList findById(String id);
 
-    @Query(value = "{'creator':?0}", fields = "{'coverUrl':1,'title':1,'creator':1}")
+    @Query(value = "{'creator':?0}", fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> getAllProblemListsCreated(String creator, Pageable pageable);
 
-    @Query(fields = "{'coverUrl':1,'title':1,'creator':1}")
+    @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> findByUserListLike(String userId, Pageable pageable);
 
-    @Query(fields = "{'coverUrl':1,'title':1,'creator':1}")
+    @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> findByCreatorLike(User user, Pageable pageable);
 
-    @Query(fields = "{'coverUrl':1,'title':1,'creator':1}")
+    @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> findByTitleLike(String title, Pageable pageable);
 
-    @Query(fields = "{'coverUrl':1,'title':1,'creator':1}")
+    @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> findByCreatorLikeAndTitleLike(User creator, String title, Pageable pageable);
     /**
      * @param isPublic 题单公开性
      * @param pageable     分页参数
      * @return 查询结果
      */
-    @Query(fields = "{'coverUrl:1,'title':1,'creator':1}")
+    @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
         Page<ProblemList> findByIsPublic(boolean isPublic, Pageable pageable);
 
     /**
