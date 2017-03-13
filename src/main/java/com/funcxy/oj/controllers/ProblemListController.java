@@ -1,7 +1,10 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.*;
-import com.funcxy.oj.models.*;
+import com.funcxy.oj.models.JudgeProblem;
+import com.funcxy.oj.models.Problem;
+import com.funcxy.oj.models.ProblemList;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -239,13 +242,12 @@ public class ProblemListController {
 
         List<String> problems = problemList.getProblemIds();
 
-        for (int i = 0;i<problems.size();++i){
-            if (i>=problemList.getJudgerList().size()) {
+        for (int i = 0; i < problems.size(); ++i) {
+            if (i >= problemList.getJudgerList().size()) {
                 problemList.getJudgerList().add(tempObjectId);
-            }
-            else if (problemList.getJudgerList().get(i)==null
-                    ||problemList.getJudgerList().get(i)==""){
-                problemList.getJudgerList().set(i,tempObjectId);
+            } else if (problemList.getJudgerList().get(i) == null
+                    || problemList.getJudgerList().get(i) == "") {
+                problemList.getJudgerList().set(i, tempObjectId);
             }
         }
 
@@ -315,12 +317,12 @@ public class ProblemListController {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
         //不能保证一一对应时我是拒绝的
-        if (problemList.getJudgerList().size()!=problemList.getProblemIds().size()){
+        if (problemList.getJudgerList().size() != problemList.getProblemIds().size()) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
 
-        for (String str:problemList.getJudgerList()){
-            if (str == null)problemList.getJudgerList().set(problemList.getJudgerList().indexOf(str),tempObjectId);
+        for (String str : problemList.getJudgerList()) {
+            if (str == null) problemList.getJudgerList().set(problemList.getJudgerList().indexOf(str), tempObjectId);
         }
 
         if ((!tempProblemList.getCreator().equals(tempObjectId))
@@ -398,7 +400,7 @@ public class ProblemListController {
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Problem problem = problemRepository.findById(judgeProblem.getProblemId());
         User judger = null;
-        if (judgeProblem.getJudgeId()!=null) judger = userRepository.findById(judgeProblem.getJudgeId());
+        if (judgeProblem.getJudgeId() != null) judger = userRepository.findById(judgeProblem.getJudgeId());
         if ( problemList == null || user == null || problem==null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
@@ -415,9 +417,9 @@ public class ProblemListController {
 
         problemList.getProblemIds().add(problem.getId());
         //添加对应裁判
-        if (judger == null){
+        if (judger == null) {
             problemList.getJudgerList().add(user.getId());
-        }else {
+        } else {
             problemList.getJudgerList().add(judger.getId());
         }
         problemListRepository.save(problemList);
