@@ -3,10 +3,7 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
 import com.funcxy.oj.models.*;
-import com.funcxy.oj.repositories.ProblemListRepository;
-import com.funcxy.oj.repositories.ProblemRepository;
-import com.funcxy.oj.repositories.SubmissionRepository;
-import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.repositories.*;
 import com.funcxy.oj.utils.UserUtil;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import javax.xml.crypto.Data;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -36,13 +35,19 @@ public class SubmissionController {
     private final ProblemListRepository problemListRepository;
     private final UserRepository userRepository;
     private final ProblemRepository problemRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public SubmissionController(SubmissionRepository submissionRepository,  ProblemListRepository problemListRepository, UserRepository userRepository,ProblemRepository problemRepository) {
+    public SubmissionController(SubmissionRepository submissionRepository,
+                                ProblemListRepository problemListRepository,
+                                UserRepository userRepository,
+                                ProblemRepository problemRepository,
+                                GroupRepository groupRepository) {
         this.submissionRepository = submissionRepository;
         this.problemListRepository = problemListRepository;
         this.userRepository = userRepository;
         this.problemRepository = problemRepository;
+        this.groupRepository = groupRepository;
     }
 
     /**
@@ -68,6 +73,12 @@ public class SubmissionController {
      * @param submission 提交对象
      * @param session session对象
      * @return 成功时返回提交对象
+     * 权限说明：
+     * 提交发出的权限应当与题单的阅读权限相似，有权限发出提交有以下情况：
+     * 1. 公开的题单（提交后应加入参与者列表）
+     * 2. 所在群组的题单
+     * 3. 参与者列表包含该用户的其他私有题单
+     * 除此之外，提交发出还应在开始答题和结束答题时间之间
      */
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity createSubmission(@Valid Submission submission, HttpSession session) {
@@ -76,7 +87,6 @@ public class SubmissionController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        //TODO:鉴权
         User user = userRepository.findById(session.getAttribute("userId").toString());
         ProblemList problemList = problemListRepository .findById(submission.getProblemListId());
         Problem problem = problemRepository.findById(submission.getProblemId());
@@ -84,6 +94,28 @@ public class SubmissionController {
         if (user == null|| problemList == null || problem == null) {
             return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         }
+
+        //权限判定
+        if (!(problemList.isPublic()||
+                (groupRepository.findById(problemList.getCreator())!=null
+                        &&user.getGroupIn().contains(problemList.getCreator()))
+                ||problemList.getUserList().contains(user.getId()))){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+
+        //时间判定
+        Date answerBeginTime = problemList.getAnswerBeginTime();
+        Date answerEndTime = problemList.getAnswerEndTime();
+        Date now = new Date(System.currentTimeMillis());
+
+        if (answerBeginTime!=null && answerBeginTime.after(now)){
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        if (answerEndTime!=null && answerEndTime.before(now)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
+
         User judger = userRepository.findById(problemList.getJudgerList().get(problemList.getProblemIds().indexOf(problem.getId())));
 
         if (judger == null){
@@ -156,28 +188,48 @@ public class SubmissionController {
     /**
      * 搜索提交
      * @param session session
-     * @return 成功时返回
+     * @return 成功时返回搜索到的提交
      */
-//    @RequestMapping(value = "/", method = RequestMethod.GET)
-//    public ResponseEntity searchSubmission(@RequestParam(defaultValue = "") String username,
-//                                           @RequestParam(defaultValue = "") String problemTitle,
-//                                           Pageable pageable,
-//                                           @RequestParam  HttpSession session) {
-//        if (!isSignedIn(session)) {
-//            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
-//        }
-//
-//        User user = userRepository.findOneByUsername(username);
-//        List<Problem> problems = problemRepository.findByTitleLike(problemTitle);
-//        List<Submission> submissionIdList = users.stream().map(User::getId)
-//                .map(submissionRepository::findByUserId).reduce();
-////                        problems.stream().map(Problem::getId).map(submissionRepository::findByProblemId).collect(Collectors.toList()));
-//        Page<Submission> submissions = new PageImpl<Submission>(
-//                ,
-//                pageable,
-//
-//        )
-//
-//        return new ResponseEntity<>(submissionRepository.findById(submission.getId()), HttpStatus.OK);
-//    }
+    @RequestMapping(value = "/search-full", method = RequestMethod.GET)
+    public ResponseEntity searchSubmission(@RequestParam(defaultValue = "") String username,
+                                           @RequestParam(defaultValue = "") String problemTitle,
+                                           Pageable pageable,
+                                           HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        User user = userRepository.findOneByUsername(username);
+        List<Problem> problems = problemRepository.findByTitleLike(problemTitle);
+        Page<Submission> submissions = submissionRepository.roughFind(user.getId(),
+                problems.stream().map(Problem::getId).collect(Collectors.toList()), pageable);
+
+        return new ResponseEntity<>(submissions, HttpStatus.OK);
+    }
+    @RequestMapping(value = "/search-by-username",method = RequestMethod.GET)
+    public ResponseEntity searchByUsername(@RequestParam(defaultValue = "") String username,
+                                           Pageable pageable,
+                                           HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+        List<String> userIds = userRepository.findByUsernameLike(username).stream()
+                .map(User::getId).collect(Collectors.toList());
+        Page<Submission> submissions = submissionRepository.findByUserIds(userIds,pageable);
+        return new ResponseEntity<>(submissions, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/search-by-problemTitle", method = RequestMethod.GET)
+    public ResponseEntity searchByProblemTitle(@RequestParam(defaultValue = "") String problemTitle,
+                                               Pageable pageable,
+                                               HttpSession httpSession){
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        List<String> problemIds = problemRepository.findByTitleLike(problemTitle).stream()
+                .map(Problem::getId).collect(Collectors.toList());
+        return new ResponseEntity<>(submissionRepository.findByProblemIds(problemIds,pageable),HttpStatus.OK);
+    }
+
 }

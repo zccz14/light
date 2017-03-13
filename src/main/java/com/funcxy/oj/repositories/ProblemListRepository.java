@@ -39,7 +39,7 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Stri
      * @return 查询结果
      */
     @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
-        Page<ProblemList> findByIsPublic(boolean isPublic, Pageable pageable);
+    Page<ProblemList> findByIsPublic(boolean isPublic, Pageable pageable);
 
     /**
      * @param isPublic 题单公开性
