@@ -31,7 +31,6 @@ public class Problem extends Model {
      * 题目类型
      */
     @Indexed
-    @NotBlank
     @NotNull
     private ProblemType type = ProblemType.OPEN_QUESTION;
     /**
