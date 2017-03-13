@@ -81,7 +81,7 @@ public class User extends Model {
     /**
      * 消息列表
      */
-    private List<Message> messages;
+    private List<Message> messages = new ArrayList<>(0);
     /**
      * 复制的题单列表
      * problemListId
