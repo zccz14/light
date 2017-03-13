@@ -27,11 +27,12 @@ public interface SubmissionRepository extends MongoRepository<Submission, String
 
     List<Submission> findByContent(String content);
 
+    @Query("{'$and':[{'userId':?0},{'problemId':{'$in':?1}}]}")
+    Page<Submission> roughFind(String userId, List<String> problemId, Pageable pageable);
 
-    @Query("{'userId':?0, 'problemId':?1, 'problemListId':?2}")
-    Page<Submission> roughFind(String userId, String problemId, String problemListId, Pageable pageable);
+    @Query("{'userId':{'$in':?0}}")
+    Page<Submission> findByUserIds(List<String> userIds, Pageable pageable);
 
-//    @Query("{'$and':[{userId}]}")
-//    {$and:[{userId: '21312312321'}, {problemId: {$in: ['21321321', '1']}}]}
-
+    @Query("{'userId': {'$in':?0}}")
+    Page<Submission> findByProblemIds(List<String> problemIds, Pageable pageable);
 }
