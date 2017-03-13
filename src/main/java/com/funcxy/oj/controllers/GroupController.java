@@ -191,9 +191,10 @@ public class GroupController {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         group.inviteMember(user.getId());
-        userFound.addMessage(new Message("Invitation", "you are invited to " + group.getGroupName(), MessageType.INVITATION));
-        if (userFound.getInvitation().contains(group.getId())){
-            userFound.getInvitation().add(group.getId());
+        String tempGroupId = group.getId();
+        userFound.addMessage(new Message("Invitation", "You are invited to " + group.getGroupName(), MessageType.INVITATION, tempGroupId));
+        if (!userFound.getInvitation().contains(tempGroupId)) {
+            userFound.getInvitation().add(tempGroupId);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
