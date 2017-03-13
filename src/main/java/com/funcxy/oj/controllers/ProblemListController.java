@@ -1,10 +1,7 @@
 package com.funcxy.oj.controllers;
 
 import com.funcxy.oj.errors.*;
-import com.funcxy.oj.models.Group;
-import com.funcxy.oj.models.Problem;
-import com.funcxy.oj.models.ProblemList;
-import com.funcxy.oj.models.User;
+import com.funcxy.oj.models.*;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -25,6 +22,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 import java.util.Properties;
 
 import static com.funcxy.oj.utils.UploadFiles.upload;
@@ -212,6 +210,8 @@ public class ProblemListController {
      * @param session session
      * @return 成功时返回题单对象
      * 此API针对个人创建题单，登陆后使用
+     *
+     * 前端传输题单时，对于未指定的judger应使用null占位
      */
     @RequestMapping(method = RequestMethod.POST)
     public ResponseEntity createProblemList(@Valid @RequestBody ProblemList problemList,
@@ -236,6 +236,18 @@ public class ProblemListController {
         // 题单创建者为当前登录的用户
         problemList.setCreator(tempObjectId);
         ProblemList tempProblemList = problemListRepository.save(problemList);
+
+        List<String> problems = problemList.getProblemIds();
+
+        for (int i = 0;i<problems.size();++i){
+            if (i>=problemList.getJudgerList().size()) {
+                problemList.getJudgerList().add(tempObjectId);
+            }
+            else if (problemList.getJudgerList().get(i)==null
+                    ||problemList.getJudgerList().get(i)==""){
+                problemList.getJudgerList().set(i,tempObjectId);
+            }
+        }
 
         // 更新用户创建题单属性
         User user = userRepository.findById(tempObjectId);
@@ -282,6 +294,7 @@ public class ProblemListController {
      * @return 成功时返回题单
      * 此API针对用户和群组
      * 只有当用户为题单创建者或题单对应群组所有者时可修改
+     * 必须保证题目列表和裁判列表一一对应（不等长时会报错）
      */
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT)
     public ResponseEntity modifyProblemList(@RequestBody @Valid ProblemList problemList,
@@ -300,6 +313,14 @@ public class ProblemListController {
         // 题单中的四个日期是否合法
         if (isNotValidDate(problemList)) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
+        }
+        //不能保证一一对应时我是拒绝的
+        if (problemList.getJudgerList().size()!=problemList.getProblemIds().size()){
+            return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
+        }
+
+        for (String str:problemList.getJudgerList()){
+            if (str == null)problemList.getJudgerList().set(problemList.getJudgerList().indexOf(str),tempObjectId);
         }
 
         if ((!tempProblemList.getCreator().equals(tempObjectId))
@@ -360,21 +381,24 @@ public class ProblemListController {
     /**
      * 添加题目到题单
      * @param problemListId 题单id
-     * @param problem 题目对象
+     * @param judgeProblem 包含题目Id和judgerId 其中judgerId可留空
      * @param httpSession session
      * @return 成功时返回新problem对象
      * 针对用户和群组，权限与修改相同
+     *
      */
     @RequestMapping(value = "/{problemListId}",method = RequestMethod.POST)
     public ResponseEntity addProblem(@PathVariable String problemListId,
-                                     @RequestBody Problem problem,
+                                     @RequestBody JudgeProblem judgeProblem,
                                      HttpSession httpSession) {
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         ProblemList problemList = problemListRepository.findById(problemListId);
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
-        problem = problemRepository.findById(problem.getId());
+        Problem problem = problemRepository.findById(judgeProblem.getProblemId());
+        User judger = null;
+        if (judgeProblem.getJudgeId()!=null) judger = userRepository.findById(judgeProblem.getJudgeId());
         if ( problemList == null || user == null || problem==null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
@@ -390,6 +414,12 @@ public class ProblemListController {
         }
 
         problemList.getProblemIds().add(problem.getId());
+        //添加对应裁判
+        if (judger == null){
+            problemList.getJudgerList().add(user.getId());
+        }else {
+            problemList.getJudgerList().add(judger.getId());
+        }
         problemListRepository.save(problemList);
         return new ResponseEntity<>(problemList,HttpStatus.OK);
     }
@@ -425,7 +455,8 @@ public class ProblemListController {
         if (!problemList.getProblemIds().contains(problem.getId())){
             return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
         }
-
+        //删除裁判
+        problemList.getJudgerList().remove(problemList.getProblemIds().indexOf(problem.getId()));
         problemList.getProblemIds().remove(problem.getId());
         problemListRepository.save(problemList);
         return new ResponseEntity<>(problemList,HttpStatus.OK);
@@ -460,5 +491,6 @@ public class ProblemListController {
                 !((readEndTime != null && answerEndTime != null) &&
                         readEndTime.before(answerEndTime));
     }
+
 
 }

@@ -5,6 +5,8 @@ import com.funcxy.oj.contents.ProblemListHeader;
 import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
+import com.funcxy.oj.models.Problem;
+import com.funcxy.oj.models.ProblemList;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -83,7 +85,7 @@ public class UserPrfController {
             return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
         user.addProblemListLiked(problemListId);
-        // TODO: return user = userRepository.save(user);
+        userRepository.save(user);
         return new ResponseEntity<>(new User(), HttpStatus.OK);
     }
 
@@ -129,16 +131,16 @@ public class UserPrfController {
         if (UserUtil.isSignedIn(httpSession)) {
             User user = userRepository.findById(httpSession.getAttribute("userId").toString());
             if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
-            List<String> likedProblemList = user.getProblemListLiked();
+            List<ProblemList> likedProblemList = user.getProblemListLiked().stream()
+                    .map(problemListRepository::findById).collect(Collectors.toList());
             return new ResponseEntity<>(new PageImpl<>(
                     likedProblemList
                             .stream()
                             .map(
                                     pro -> new ProblemListHeader(
-                                            // TODO: performance issue
-                                            problemListRepository.findById(pro).getId(),
-                                            problemListRepository.findById(pro).getTitle(),
-                                            problemListRepository.findById(pro).getType()
+                                            pro.getId(),
+                                            pro.getTitle(),
+                                            pro.getType()
                                     )
                             )
                             .collect(Collectors.toList())
@@ -162,17 +164,13 @@ public class UserPrfController {
         if (user == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        List<String> likedProblem = user.getProblemLiked();
-
+        List<Problem> likedProblem = user.getProblemLiked().stream()
+                .map(problemRepository::findById).collect(Collectors.toList());
         return new ResponseEntity<>(
                 new PageImpl<>(
                         likedProblem.stream()
                                 .map(
-                                        pro -> new ProblemHeader(
-                                                // TODO: 这里的两次查询是什么鬼，还有这里会造成 1 + N 查询性能问题
-                                                problemRepository.findById(pro).getId(),
-                                                problemRepository.findById(pro).getTitle()
-                                        )
+                                        pro -> new ProblemHeader(pro.getId(), pro.getTitle())
                                 ).collect(Collectors.toList()),
                         pageable,
                         likedProblem.size()
