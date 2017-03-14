@@ -4,22 +4,23 @@ import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.*;
-import com.funcxy.oj.repositories.GroupRepository;
-import com.funcxy.oj.repositories.ProblemListRepository;
-import com.funcxy.oj.repositories.ProblemRepository;
-import com.funcxy.oj.repositories.UserRepository;
+import com.funcxy.oj.repositories.*;
+import com.funcxy.oj.utils.DispatchSubmission;
 import com.funcxy.oj.utils.UserUtil;
 import com.funcxy.oj.utils.Validation;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+
+import java.net.URI;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -35,13 +36,22 @@ public class UserController {
     private final ProblemListRepository problemListRepository;
     private final ProblemRepository problemRepository;
     private final GroupRepository groupRepository;
+    private final SubmissionRepository submissionRepository;
+    private final DispatchSubmission dispatchSubmission;
 
     @Autowired
-    public UserController(UserRepository userRepository, ProblemListRepository problemListRepository, ProblemRepository problemRepository, GroupRepository groupRepository) {
+    public UserController(UserRepository userRepository,
+                          ProblemListRepository problemListRepository,
+                          ProblemRepository problemRepository,
+                          GroupRepository groupRepository,
+                          SubmissionRepository submissionRepository,
+                          DispatchSubmission dispatchSubmission) {
         this.userRepository = userRepository;
         this.problemListRepository = problemListRepository;
         this.problemRepository = problemRepository;
         this.groupRepository = groupRepository;
+        this.submissionRepository = submissionRepository;
+        this.dispatchSubmission= dispatchSubmission;
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
@@ -260,9 +270,56 @@ public class UserController {
     }
 
     //TODO:判题API
-//    @RequestMapping(value = "/{username}/judge/{submissionId}",method = PUT)
-//    public ResponseEntity judge(@PathVariable String username,
-//                                @RequestBody )
+
+    /**
+     * GET 判题
+     * @param username
+     * @param httpSession
+     * @return
+     */
+    @RequestMapping(value = "/{username}/judge",method = GET)
+    public ResponseEntity judge(@PathVariable String username,
+                                HttpSession httpSession) {
+
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        User user = userRepository.findById(httpSession.getAttribute("userId").toString());
+
+        if (user == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+
+        List<String> submissionIds = user.getSubmissionUndecided();
+        if (submissionIds.size() == 0){
+            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        }
+        List<Submission> submissions = submissionIds.stream()
+                .map(submissionRepository::findById).collect(Collectors.toList());
+        List<Problem> problems = submissions.stream()
+                .map(Submission::getProblemId)
+                .map(problemRepository::findById)
+                .collect(Collectors.toList());
+        for (Proxy proxy:user.getProxies()){
+            problems.stream()
+                    .filter(problem -> proxy.getType().equals(problem.getType()))
+                    .map( problems::indexOf)
+                    .peek(index -> {
+                        try {
+                            dispatchSubmission.dispatchSubmission(submissions.get(index),new URI(proxy.getUrl()));
+                        }catch (Exception e){
+                            System.out.println(e);
+                        }
+                    }).collect(Collectors.toList());
+        }
+
+        return null;
+    }
+
+
+
+    //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
+
+
 
     /**
      * POST处理Group的邀请信息
@@ -314,7 +371,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
     //TODO:发私信
     //TODO:阅读私信
     //TODO:删除私信

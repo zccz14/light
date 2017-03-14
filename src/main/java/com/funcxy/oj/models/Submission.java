@@ -3,7 +3,7 @@ package com.funcxy.oj.models;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
- * Created by niyou2016 on 2017/2/28 0028.
+ * @author  niyou2016 on 2017/2/28 0028.
  */
 public class Submission extends Model {
     /**
@@ -24,7 +24,7 @@ public class Submission extends Model {
     /**
      * 提交状态
      */
-    private SubmissionStatus status; // TODO: use enum
+    private SubmissionStatus status = SubmissionStatus.UNDECIDED;
     /**
      * 判决结果
      */
