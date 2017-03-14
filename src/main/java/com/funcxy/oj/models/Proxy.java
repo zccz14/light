@@ -38,11 +38,11 @@ public class Proxy {
         this.type = type;
     }
 
-    public String getSubmissionType(){
+    public String getSubmissionType() {
         return this.submissionType;
     }
 
-    public void setSubmissionType(String type){
+    public void setSubmissionType(String type) {
         this.submissionType = type;
     }
 }
