@@ -1,7 +1,6 @@
 package com.funcxy.oj.utils;
 
 import com.funcxy.oj.contents.Passport;
-import com.funcxy.oj.models.User;
 import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 
 
