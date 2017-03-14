@@ -323,7 +323,7 @@ public class GroupController {
 
         Message tempMessage = new Message("Pull request",
                 userRepository.findById(userId).getUsername() + "wants to merge into problemLists.",
-                MessageType.OTHERS, groupName);
+                MessageType.PROPOSAL, groupName);
 
         bindingProblemLists.setMessage(tempMessage);
 

@@ -347,6 +347,11 @@ public class UserController {
         }
 
         Message tempMessage = groupOwner.getMessages().get(index);
+
+        if (tempMessage.getType() != MessageType.PROPOSAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
         String groupName = tempMessage.getAdditionalInformation();
         Group tempGroup = groupRepository.findOneByGroupName(groupName);
         List<BindingProblemLists> bindings = tempGroup.getBindingProblemLists();
@@ -388,6 +393,10 @@ public class UserController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
+        if (message.getType() != MessageType.PERSONAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
         User tempUser = userRepository.findById(message.getAdditionalInformation());
         tempUser.getMessages().add(message);
         userRepository.save(tempUser);
@@ -407,8 +416,6 @@ public class UserController {
     public ResponseEntity readPrivateLetter(@PathVariable String username,
                                             @PathVariable int index,
                                             HttpSession session) {
-
-
         if (!isSignedIn(session)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
@@ -421,7 +428,13 @@ public class UserController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        tempUser.getMessages().get(index).setHasRead(true);
+        Message tempMessage = tempUser.getMessages().get(index);
+
+        if (tempMessage.getType() != MessageType.PERSONAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        tempMessage.setHasRead(true);
 
         userRepository.save(tempUser);
 
