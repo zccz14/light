@@ -25,6 +25,10 @@ public enum MessageType {
      */
     SENTENCE,
     /**
+     *
+     */
+    PROPOSAL,
+    /**
      * 其他
      */
     OTHERS

@@ -239,6 +239,7 @@ public class UserController {
      * @param problemList 要fork的题单
      * @param httpSession session
      * @return 成功时返回OK
+     * 题单无版权
      */
     @RequestMapping(value = "/{username}/fork", method = POST)//fork problemList
     public ResponseEntity forkProblem(@PathVariable String username,
