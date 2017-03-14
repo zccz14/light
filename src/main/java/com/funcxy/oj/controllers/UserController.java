@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.contents.BindingProblemLists;
 import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.errors.*;
@@ -28,7 +29,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 /**
  * User Controller
  *
- * @author zccz14 aak1247
+ * @author zccz14 aak1247 Peter
  */
 @RestController
 @RequestMapping("/users")
@@ -273,7 +274,6 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO:判题API
 
     /**
      * GET 判题
@@ -374,8 +374,126 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO:发私信
-    //TODO:阅读私信
+    /**
+     * POST处理PR
+     *
+     * @param username 当前用户
+     * @param index    Message的index
+     * @param accept   是否同意PR
+     * @param session  请求会话
+     * @return 是否PR成功
+     */
+    @RequestMapping(value = "/{username}/handlePR/{index}", method = POST)
+    public ResponseEntity handlePullRequest(@PathVariable String username,
+                                            @PathVariable int index,
+                                            @RequestParam boolean accept,
+                                            HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        String userId = session.getAttribute("userId").toString();
+        User groupOwner = userRepository.findById(userId);
+
+        if (groupOwner == null ||
+                !groupOwner.getUsername().equals(username)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        Message tempMessage = groupOwner.getMessages().get(index);
+
+        if (tempMessage.getType() != MessageType.PROPOSAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        String groupName = tempMessage.getAdditionalInformation();
+        Group tempGroup = groupRepository.findOneByGroupName(groupName);
+        List<BindingProblemLists> bindings = tempGroup.getBindingProblemLists();
+        BindingProblemLists bindingProblemList = bindings.get(bindings.indexOf(tempMessage));
+
+        if (accept) {
+            ProblemList source = problemListRepository.findById(bindingProblemList.getSourceProblemListId());
+            ProblemList target = problemListRepository.findById(bindingProblemList.getTargetProblemListId());
+
+            List<String> sourceProblemIds = source.getProblemIds();
+            List<String> targetProblemIds = target.getProblemIds();
+
+            targetProblemIds.removeAll(sourceProblemIds);
+            targetProblemIds.addAll(sourceProblemIds);
+        }
+
+        bindings.remove(bindingProblemList);
+        groupRepository.save(tempGroup);
+
+        tempMessage.setHasRead(true);
+        userRepository.save(groupOwner);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * POST在用户之间发送私信
+     *
+     * @param username 当前用户
+     * @param message  私信内容（Type为PERSONAL，additionalInformation内为目标用户ID）
+     * @param session  请求回话
+     * @return 发生成功与否
+     */
+    @RequestMapping(value = "/{username}/sendPrivateLetter", method = POST)
+    public ResponseEntity sendPrivateLetter(@PathVariable String username,
+                                            @RequestBody Message message,
+                                            HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        if (message.getType() != MessageType.PERSONAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        User tempUser = userRepository.findById(message.getAdditionalInformation());
+        tempUser.getMessages().add(message);
+        userRepository.save(tempUser);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * GET阅读私信
+     *
+     * @param username 当前用户
+     * @param index    私信条数
+     * @param session  请求回话
+     * @return 阅读完成
+     */
+    @RequestMapping(value = "/{username}/readPrivateLetter/{index}", method = GET)
+    public ResponseEntity readPrivateLetter(@PathVariable String username,
+                                            @PathVariable int index,
+                                            HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        String tempUserId = session.getAttribute("userId").toString();
+        User tempUser = userRepository.findById(tempUserId);
+
+        if (tempUser == null ||
+                !userRepository.findById(tempUserId).getUsername().equals(username)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        Message tempMessage = tempUser.getMessages().get(index);
+
+        if (tempMessage.getType() != MessageType.PERSONAL) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        tempMessage.setHasRead(true);
+
+        userRepository.save(tempUser);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     //TODO:删除私信
 
 
