@@ -3,9 +3,8 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.errors.*;
-import com.funcxy.oj.models.ProblemList;
-import com.funcxy.oj.models.Profile;
-import com.funcxy.oj.models.User;
+import com.funcxy.oj.models.*;
+import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
 import com.funcxy.oj.repositories.UserRepository;
@@ -22,10 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 
+import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * User Controller
+ *
  * @author zccz14 aak1247
  */
 @RestController
@@ -34,12 +35,14 @@ public class UserController {
     private final UserRepository userRepository;
     private final ProblemListRepository problemListRepository;
     private final ProblemRepository problemRepository;
+    private final GroupRepository groupRepository;
 
     @Autowired
-    public UserController(UserRepository userRepository, ProblemListRepository problemListRepository, ProblemRepository problemRepository) {
+    public UserController(UserRepository userRepository, ProblemListRepository problemListRepository, ProblemRepository problemRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
         this.problemListRepository = problemListRepository;
         this.problemRepository = problemRepository;
+        this.groupRepository = groupRepository;
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
@@ -127,7 +130,7 @@ public class UserController {
 
     @RequestMapping(value = "/{username}/profile", method = PUT)//修改用户资料
     public ResponseEntity putProfile(@RequestBody @Valid Profile profile, @PathVariable String username, HttpSession httpSession) {
-        if (UserUtil.isSignedIn(httpSession)) {
+        if (isSignedIn(httpSession)) {
             User userFound = userRepository.findById(httpSession.getAttribute("userId").toString());
             userFound.setProfile(profile);
             userRepository.save(userFound);
@@ -138,25 +141,27 @@ public class UserController {
 
     /**
      * Head方法，用于查询用户名是否重复
+     *
      * @param username 用户名
      * @return 不冲突时返回OK（200）
      */
     @RequestMapping(value = "/find/username", method = HEAD)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username) {
         User userFound = userRepository.findOneByUsername(username);
-        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        if (userFound == null) return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     /**
      * Head方法，用于查询邮箱是否重复
+     *
      * @param email 邮箱
      * @return 不冲突时返回OK（200）
      */
     @RequestMapping(value = "/find/email", method = HEAD)//精确查找邮箱
     public ResponseEntity hasEmail(@RequestParam String email) {
         User userFound = userRepository.findOneByEmail(email);
-        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        if (userFound == null) return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
@@ -215,7 +220,7 @@ public class UserController {
 
     @RequestMapping(value = "/{username}/profile/password", method = PUT)
     public ResponseEntity updatePassword(@RequestBody String password, @PathVariable String username, HttpSession httpSession) {//修改密码
-        if (!UserUtil.isSignedIn(httpSession)) {
+        if (!isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
@@ -227,7 +232,8 @@ public class UserController {
 
     /**
      * fork 题单
-     * @param username 用户名
+     *
+     * @param username    用户名
      * @param problemList 要fork的题单
      * @param httpSession session
      * @return 成功时返回OK
@@ -236,7 +242,7 @@ public class UserController {
     public ResponseEntity forkProblem(@PathVariable String username,
                                       @RequestBody ProblemList problemList,
                                       HttpSession httpSession) {
-        if (!UserUtil.isSignedIn(httpSession)) {
+        if (!isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
@@ -260,10 +266,114 @@ public class UserController {
 //    @RequestMapping(value = "/{username}/judge/{submissionId}",method = PUT)
 //    public ResponseEntity judge(@PathVariable String username,
 //                                @RequestBody )
-    //TODO:处理邀请
-    //TODO:处理题单请求（创建/修改/删除,同意创建逻辑类似fork，其他类似）
-    //TODO:发私信
-    //TODO:阅读私信
+
+    /**
+     * POST处理Group的邀请信息
+     *
+     * @param username 当前用户
+     * @param message  邀请信息
+     * @param accept   是否同意加入Group
+     * @param session  请求回话
+     * @return 是否加入成功
+     */
+    @RequestMapping(value = "/{username}/myInvited", method = POST)
+    public ResponseEntity handleInvitedMessage(@PathVariable String username,
+                                               @RequestBody Message message,
+                                               @RequestParam boolean accept,
+                                               HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        message.setHasRead(true);
+
+        String tempUserId = session.getAttribute("userId").toString();
+
+        User tempUser = userRepository.findById(tempUserId);
+
+        if (message.getType() != MessageType.INVITATION) {
+            return new ResponseEntity<>(new BadRequestError(), HttpStatus.BAD_REQUEST);
+        }
+
+        String groupId = message.getAdditionalInformation();
+
+        Group tempGroup = groupRepository.findById(groupId);
+
+        if (tempGroup == null || tempUser == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
+        }
+
+        if (accept) {
+            tempUser.getGroupIn().add(groupId);
+            tempGroup.getMemberId().add(tempUserId);
+        }
+
+        tempUser.getInvitation().remove(groupId);
+        tempGroup.getInvitedMemberId().remove(tempUserId);
+
+        userRepository.save(tempUser);
+        groupRepository.save(tempGroup);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
+
+    /**
+     * POST在用户之间发送私信
+     *
+     * @param username 当前用户
+     * @param message  私信内容（Type为PERSONAL，additionalInformation内为目标用户ID）
+     * @param session  请求回话
+     * @return 发生成功与否
+     */
+    @RequestMapping(value = "/{username}/sendPrivateLetter", method = POST)
+    public ResponseEntity sendPrivateLetter(@PathVariable String username,
+                                            @RequestBody Message message,
+                                            HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        User tempUser = userRepository.findById(message.getAdditionalInformation());
+        tempUser.getMessages().add(message);
+        userRepository.save(tempUser);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    /**
+     * GET阅读私信
+     *
+     * @param username 当前用户
+     * @param index
+     * @param session
+     * @return 阅读完成
+     */
+    @RequestMapping(value = "/{username}/readPrivateLetter/{index}", method = GET)
+    public ResponseEntity readPrivateLetter(@PathVariable String username,
+                                            @PathVariable int index,
+                                            HttpSession session) {
+
+
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        String tempUserId = session.getAttribute("userId").toString();
+        User tempUser = userRepository.findById(tempUserId);
+
+        if (tempUser == null ||
+                !userRepository.findById(tempUserId).getUsername().equals(username)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        tempUser.getMessages().get(index).setHasRead(true);
+
+        userRepository.save(tempUser);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
     //TODO:删除私信
 
 
