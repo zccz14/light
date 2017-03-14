@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.util.concurrent.Future;
 
 /**
@@ -20,14 +19,14 @@ public class DispatchSubmission {
 
     private final RestTemplate restTemplate;
 
-    public DispatchSubmission(RestTemplateBuilder restTemplateBuilder){
+    public DispatchSubmission(RestTemplateBuilder restTemplateBuilder) {
         this.restTemplate = restTemplateBuilder.build();
     }
 
     @Async
-    public Future<Submission> dispatchSubmission(SubmissionWithToken submissionWithToken, String url) throws  InterruptedException{
+    public Future<Submission> dispatchSubmission(SubmissionWithToken submissionWithToken, String url) throws InterruptedException {
         HttpEntity<SubmissionWithToken> request = new HttpEntity<>(submissionWithToken);
-        Submission results = restTemplate.postForObject(url,request,Submission.class);
+        Submission results = restTemplate.postForObject(url, request, Submission.class);
         Thread.sleep(1000L);
         return new AsyncResult<>(results);
     }

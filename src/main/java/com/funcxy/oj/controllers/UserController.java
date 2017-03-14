@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -287,13 +285,13 @@ public class UserController {
     /**
      * GET 判题
      *
-     * @param username 用户名
+     * @param username    用户名
      * @param httpSession httpsession对象
      * @return 无返回
      */
     @RequestMapping(value = "/{username}/judge", method = GET)
     public ResponseEntity judge(@PathVariable String username,
-                                HttpSession httpSession) throws InterruptedException{
+                                HttpSession httpSession) throws InterruptedException {
 
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
@@ -320,27 +318,27 @@ public class UserController {
                     .peek(index -> {
                         try {
                             String token = UserUtil.getRandomCharAndNumr(20);
-                            token = UserUtil.encrypt("SHA1",token);
+                            token = UserUtil.encrypt("SHA1", token);
                             Oauth oauth = new Oauth();
                             oauth.setSubmissionId(submissionIds.get(index));
                             oauth.setToken(token);
                             oauthRepository.save(oauth);
                             Submission submission = submissions.get(index);
-                            SubmissionWithToken submissionWithToken = (SubmissionWithToken)submissions.get(index);
+                            SubmissionWithToken submissionWithToken = (SubmissionWithToken) submissions.get(index);
                             submissionWithToken.setToken(token);
-                            Future<Submission> submissionFuture =  dispatchSubmission.dispatchSubmission(
+                            Future<Submission> submissionFuture = dispatchSubmission.dispatchSubmission(
                                     submissionWithToken,
                                     proxy.getUrl());
                             Submission newSubmission = submissionFuture.get(100, TimeUnit.MILLISECONDS);
                             submission.setSentence(newSubmission.getSentence());
                             submission.setStatus(SubmissionStatus.DECIDED);
-                        }catch (InterruptedException e){
+                        } catch (InterruptedException e) {
                             //中断
                             e.printStackTrace();
-                        }catch (TimeoutException e){
+                        } catch (TimeoutException e) {
                             //超时
                             return;
-                        }catch (ExecutionException e){
+                        } catch (ExecutionException e) {
                             //
                         }
                     })
@@ -349,7 +347,6 @@ public class UserController {
 
         return null;
     }
-
 
 
     /**

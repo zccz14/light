@@ -142,33 +142,33 @@ public class SubmissionController {
                                 submission.getProblemId()
                         ).getType()
                 )).peek(
-                        proxy -> {
-                            try{
-                                SubmissionWithToken submissionWithToken = (SubmissionWithToken)submission;
-                                String token = UserUtil.getRandomCharAndNumr(20);
-                                token = UserUtil.encrypt("SHA1",token);
-                                submissionWithToken.setToken(token);
-                                Oauth oauth = new Oauth();
-                                oauth.setToken(token);
-                                oauth.setSubmissionId(submissionWithToken.getId());
-                                oauthRepository.save(oauth);
-                                Future<Submission> submissionFuture = dispatchSubmission.dispatchSubmission(
-                                        submissionWithToken,
-                                        proxy.getUrl()
-                                );
-                                //5秒超时，就不再等待响应
-                                Submission newSubmission = submissionFuture.get(5,TimeUnit.SECONDS);
-                                submission.setSentence(newSubmission.getSentence());
-                                submission.setStatus(SubmissionStatus.DECIDED);
-                                submissionRepository.save(submission);
-                            }catch (InterruptedException e){
-                                e.printStackTrace();
-                            }catch (ExecutionException e){
-                                System.out.println("ce");
-                            }catch (TimeoutException e){
-                                System.out.println("tle");
-                            }
-                        }
+                proxy -> {
+                    try {
+                        SubmissionWithToken submissionWithToken = (SubmissionWithToken) submission;
+                        String token = UserUtil.getRandomCharAndNumr(20);
+                        token = UserUtil.encrypt("SHA1", token);
+                        submissionWithToken.setToken(token);
+                        Oauth oauth = new Oauth();
+                        oauth.setToken(token);
+                        oauth.setSubmissionId(submissionWithToken.getId());
+                        oauthRepository.save(oauth);
+                        Future<Submission> submissionFuture = dispatchSubmission.dispatchSubmission(
+                                submissionWithToken,
+                                proxy.getUrl()
+                        );
+                        //5秒超时，就不再等待响应
+                        Submission newSubmission = submissionFuture.get(5, TimeUnit.SECONDS);
+                        submission.setSentence(newSubmission.getSentence());
+                        submission.setStatus(SubmissionStatus.DECIDED);
+                        submissionRepository.save(submission);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } catch (ExecutionException e) {
+                        System.out.println("ce");
+                    } catch (TimeoutException e) {
+                        System.out.println("tle");
+                    }
+                }
         ).collect(Collectors.toList());
 
         //加入Message
@@ -235,7 +235,7 @@ public class SubmissionController {
             } else {
                 return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
             }
-        }else {
+        } else {
             Submission theSubmission = submissionRepository.findById(submissionId);
             theSubmission.setSentence(submission.getSentence());
             theSubmission.setStatus(SubmissionStatus.DECIDED);
