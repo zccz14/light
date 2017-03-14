@@ -9,7 +9,7 @@ import org.springframework.data.mongodb.repository.Query;
 import java.util.List;
 
 /**
- * @author  by lqp on 2017/3/1.
+ * @author by lqp on 2017/3/1.
  */
 public interface SubmissionRepository extends MongoRepository<Submission, String> {
     Submission findById(String id);

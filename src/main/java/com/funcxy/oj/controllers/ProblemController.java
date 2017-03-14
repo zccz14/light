@@ -127,8 +127,8 @@ public class ProblemController {
      * GET查看自己创建的题目
      *
      * @param pageNumber 页码
-     * @param pageSize 页大小
-     * @param session 请求会话
+     * @param pageSize   页大小
+     * @param session    请求会话
      * @return 所有自己创建的题目
      */
     @RequestMapping(method = RequestMethod.GET)
@@ -178,7 +178,7 @@ public class ProblemController {
      * PUT修改某一个题目
      *
      * @param problem 需要进行修改的题目
-     * @param id 目标题目的ID
+     * @param id      目标题目的ID
      * @param session 请求会话
      * @return 修改之后的结果
      */
@@ -201,7 +201,7 @@ public class ProblemController {
     /**
      * DELETE删除某一个题目
      *
-     * @param id 目标题目的ID
+     * @param id      目标题目的ID
      * @param session 请求会话
      * @return 删除的题目
      */

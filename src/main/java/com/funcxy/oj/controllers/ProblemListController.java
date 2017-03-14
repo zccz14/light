@@ -74,7 +74,7 @@ public class ProblemListController {
     }
 
     @Autowired
-    public ProblemListController(ProblemListRepository problemListRepository, UserRepository userRepository, GroupRepository groupRepository, ProblemRepository problemRepository ) {
+    public ProblemListController(ProblemListRepository problemListRepository, UserRepository userRepository, GroupRepository groupRepository, ProblemRepository problemRepository) {
         this.problemListRepository = problemListRepository;
         this.userRepository = userRepository;
         this.groupRepository = groupRepository;
@@ -125,7 +125,8 @@ public class ProblemListController {
 
     /**
      * GET查看单个题单
-     * @param id 需要查看的题单的ID
+     *
+     * @param id      需要查看的题单的ID
      * @param session session
      * @return 返回单个题单
      * 权限说明：
@@ -159,8 +160,8 @@ public class ProblemListController {
         }
 
         if (tempProblemList.isPublic() ||
-                (groupRepository.findById(tempProblemList.getCreator())!=null
-                        &&user.getGroupIn().contains(tempProblemList.getCreator()))||
+                (groupRepository.findById(tempProblemList.getCreator()) != null
+                        && user.getGroupIn().contains(tempProblemList.getCreator())) ||
                 tempProblemList
                         .getUserList()
                         .contains(tempObjectId)) {
@@ -209,11 +210,12 @@ public class ProblemListController {
 
     /**
      * 创建题单API
+     *
      * @param problemList 题单对象
-     * @param session session
+     * @param session     session
      * @return 成功时返回题单对象
      * 此API针对个人创建题单，登陆后使用
-     *
+     * <p>
      * 前端传输题单时，对于未指定的judger应使用null占位
      */
     @RequestMapping(method = RequestMethod.POST)
@@ -290,9 +292,10 @@ public class ProblemListController {
 
     /**
      * 修改题单API
+     *
      * @param problemList 题单对象
-     * @param id 题单id
-     * @param session session
+     * @param id          题单id
+     * @param session     session
      * @return 成功时返回题单
      * 此API针对用户和群组
      * 只有当用户为题单创建者或题单对应群组所有者时可修改
@@ -308,8 +311,8 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (tempProblemList==null||userRepository.findById(tempObjectId)==null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (tempProblemList == null || userRepository.findById(tempObjectId) == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
 
         // 题单中的四个日期是否合法
@@ -326,9 +329,9 @@ public class ProblemListController {
         }
 
         if ((!tempProblemList.getCreator().equals(tempObjectId))
-                &&(groupRepository.findById(tempProblemList.getCreator())==null
-                ||!groupRepository.findById(tempProblemList.getCreator()).getOwnerId().equals(tempObjectId))){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                && (groupRepository.findById(tempProblemList.getCreator()) == null
+                || !groupRepository.findById(tempProblemList.getCreator()).getOwnerId().equals(tempObjectId))) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
         // 题单是否为公开题单
@@ -344,7 +347,8 @@ public class ProblemListController {
 
     /**
      * 删除题单
-     * @param id 目标题单id
+     *
+     * @param id      目标题单id
      * @param session session
      * @return 是否删除成功，成功时返回OK
      * 针对用户和群组
@@ -361,14 +365,14 @@ public class ProblemListController {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (tempProblemList == null || userRepository.findById(tempObjectId)==null){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (tempProblemList == null || userRepository.findById(tempObjectId) == null) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
 
         if ((!tempProblemList.getCreator().equals(tempObjectId))
-                &&(groupRepository.findById(tempProblemList.getCreator())==null
-                ||!groupRepository.findById(tempProblemList.getCreator()).getOwnerId().equals(tempObjectId))){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                && (groupRepository.findById(tempProblemList.getCreator()) == null
+                || !groupRepository.findById(tempProblemList.getCreator()).getOwnerId().equals(tempObjectId))) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
         problemListRepository.delete(tempProblemList);
@@ -377,19 +381,19 @@ public class ProblemListController {
         User user = userRepository.findById(tempObjectId);
         user.deleteProblemListOwned(tempProblemList.getId());
         userRepository.save(user);
-        return new ResponseEntity<>( HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
     /**
      * 添加题目到题单
+     *
      * @param problemListId 题单id
-     * @param judgeProblem 包含题目Id和judgerId 其中judgerId可留空
-     * @param httpSession session
+     * @param judgeProblem  包含题目Id和judgerId 其中judgerId可留空
+     * @param httpSession   session
      * @return 成功时返回新problem对象
      * 针对用户和群组，权限与修改相同
-     *
      */
-    @RequestMapping(value = "/{problemListId}",method = RequestMethod.POST)
+    @RequestMapping(value = "/{problemListId}", method = RequestMethod.POST)
     public ResponseEntity addProblem(@PathVariable String problemListId,
                                      @RequestBody JudgeProblem judgeProblem,
                                      HttpSession httpSession) {
@@ -401,18 +405,18 @@ public class ProblemListController {
         Problem problem = problemRepository.findById(judgeProblem.getProblemId());
         User judger = null;
         if (judgeProblem.getJudgeId() != null) judger = userRepository.findById(judgeProblem.getJudgeId());
-        if ( problemList == null || user == null || problem==null) {
+        if (problemList == null || user == null || problem == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         //鉴权
         if ((!problemList.getCreator().equals(user.getId()))
-                &&(groupRepository.findById(problemList.getCreator())==null
-                ||!groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId()))){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                && (groupRepository.findById(problemList.getCreator()) == null
+                || !groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId()))) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (problemList.getProblemIds().contains(problem.getId())){
-            return new ResponseEntity<>(new FieldsDuplicateError(),HttpStatus.BAD_REQUEST);
+        if (problemList.getProblemIds().contains(problem.getId())) {
+            return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
         }
 
         problemList.getProblemIds().add(problem.getId());
@@ -423,45 +427,46 @@ public class ProblemListController {
             problemList.getJudgerList().add(judger.getId());
         }
         problemListRepository.save(problemList);
-        return new ResponseEntity<>(problemList,HttpStatus.OK);
+        return new ResponseEntity<>(problemList, HttpStatus.OK);
     }
 
     /**
      * 删除题单中的单个问题
+     *
      * @param problemListId 题单Id
-     * @param problemId 待删除题目Id
-     * @param httpSession session
+     * @param problemId     待删除题目Id
+     * @param httpSession   session
      * @return 成功时return新题单
      * 针对group和user
      */
-    @RequestMapping(value = "/{problemListId}/{problemId}",method = RequestMethod.DELETE)
+    @RequestMapping(value = "/{problemListId}/{problemId}", method = RequestMethod.DELETE)
     public ResponseEntity deleteProblem(@PathVariable String problemListId,
                                         @PathVariable String problemId,
-                                        HttpSession httpSession){
+                                        HttpSession httpSession) {
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         ProblemList problemList = problemListRepository.findById(problemListId);
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
         Problem problem = problemRepository.findById(problemId);
-        if ( problemList == null || user == null || problem==null) {
+        if (problemList == null || user == null || problem == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         //鉴权
         if ((!problemList.getCreator().equals(user.getId()))
-                &&(groupRepository.findById(problemList.getCreator())==null
-                ||!groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId()))){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+                && (groupRepository.findById(problemList.getCreator()) == null
+                || !groupRepository.findById(problemList.getCreator()).getOwnerId().equals(user.getId()))) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
-        if (!problemList.getProblemIds().contains(problem.getId())){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (!problemList.getProblemIds().contains(problem.getId())) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         //删除裁判
         problemList.getJudgerList().remove(problemList.getProblemIds().indexOf(problem.getId()));
         problemList.getProblemIds().remove(problem.getId());
         problemListRepository.save(problemList);
-        return new ResponseEntity<>(problemList,HttpStatus.OK);
+        return new ResponseEntity<>(problemList, HttpStatus.OK);
     }
 
     /**

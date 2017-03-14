@@ -1,9 +1,11 @@
 package com.funcxy.oj.controllers.groups;
 
-import com.funcxy.oj.errors.FieldsDuplicateError;
 import com.funcxy.oj.errors.ForbiddenError;
 import com.funcxy.oj.errors.NotFoundError;
-import com.funcxy.oj.models.*;
+import com.funcxy.oj.models.Group;
+import com.funcxy.oj.models.GroupType;
+import com.funcxy.oj.models.ProblemList;
+import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.GroupRepository;
 import com.funcxy.oj.repositories.ProblemListRepository;
 import com.funcxy.oj.repositories.ProblemRepository;
@@ -22,10 +24,10 @@ import java.util.stream.Collectors;
 
 /**
  * @author ddhee
- * 权限说明：
- * 只有管理员有权创建/修改/删除题单
- * 对于open和free的群组，所有人（包括外部人员）可以查看题单列表，close的群组只有群组内成员可以查看题单列表
- * 群组内成员可以查看题单
+ *         权限说明：
+ *         只有管理员有权创建/修改/删除题单
+ *         对于open和free的群组，所有人（包括外部人员）可以查看题单列表，close的群组只有群组内成员可以查看题单列表
+ *         群组内成员可以查看题单
  */
 
 @RestController
@@ -41,7 +43,7 @@ public class GroupPLController {
     ProblemRepository problemRepository;
 
     @Autowired
-    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository,ProblemRepository problemRepository) {
+    public GroupPLController(GroupRepository groupRepository, UserRepository userRepository, ProblemListRepository problemListRepository, ProblemRepository problemRepository) {
         this.groupRepository = groupRepository;
         this.userRepository = userRepository;
         this.problemListRepository = problemListRepository;
@@ -61,8 +63,8 @@ public class GroupPLController {
         if (user == null || group == null) {
             return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
-        if (!group.getOwnerId().equals(user.getId())){
-            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        if (!group.getOwnerId().equals(user.getId())) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
         if (!problemList.isPublic()) {
             problemList.setUserList(null);
@@ -75,10 +77,10 @@ public class GroupPLController {
     }
 
     // 获取题单列表
-    @RequestMapping(value = "/{groupName}/problemList",method = RequestMethod.GET)
+    @RequestMapping(value = "/{groupName}/problemList", method = RequestMethod.GET)
     public ResponseEntity getProblemList(@PathVariable String groupName,
-                                              Pageable pageable,
-                                              HttpSession httpSession) {
+                                         Pageable pageable,
+                                         HttpSession httpSession) {
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
