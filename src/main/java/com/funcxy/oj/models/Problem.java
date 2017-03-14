@@ -42,7 +42,7 @@ public class Problem extends Model {
     /**
      * 参考答案
      */
-    private String referenceAnswer;
+    private Object referenceAnswer;
 
     public String getCreator() {
         return creator;
@@ -68,12 +68,12 @@ public class Problem extends Model {
         this.description = description.trim();
     }
 
-    public String getReferenceAnswer() {
+    public Object getReferenceAnswer() {
         return referenceAnswer;
     }
 
-    public void setReferenceAnswer(String referenceAnswer) {
-        this.referenceAnswer = referenceAnswer.trim();
+    public void setReferenceAnswer(Object referenceAnswer) {
+        this.referenceAnswer = referenceAnswer;
     }
 
     @Override
