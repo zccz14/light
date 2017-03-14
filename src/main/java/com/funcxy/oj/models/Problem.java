@@ -38,7 +38,7 @@ public class Problem extends Model {
      */
     @NotNull
     @NotBlank
-    private String description;
+    private Object description;
     /**
      * 参考答案
      */
@@ -60,7 +60,7 @@ public class Problem extends Model {
         this.title = title.trim();
     }
 
-    public String getDescription() {
+    public Object getDescription() {
         return description;
     }
 

@@ -3,6 +3,7 @@ package com.funcxy.oj.controllers;
 import com.funcxy.oj.contents.BindingProblemLists;
 import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.contents.SignInPassport;
+import com.funcxy.oj.contents.SubmissionWithToken;
 import com.funcxy.oj.errors.*;
 import com.funcxy.oj.models.*;
 import com.funcxy.oj.repositories.*;
@@ -20,7 +21,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
@@ -40,6 +46,7 @@ public class UserController {
     private final GroupRepository groupRepository;
     private final SubmissionRepository submissionRepository;
     private final DispatchSubmission dispatchSubmission;
+    private final OauthRepository oauthRepository;
 
     @Autowired
     public UserController(UserRepository userRepository,
@@ -47,13 +54,15 @@ public class UserController {
                           ProblemRepository problemRepository,
                           GroupRepository groupRepository,
                           SubmissionRepository submissionRepository,
-                          DispatchSubmission dispatchSubmission) {
+                          DispatchSubmission dispatchSubmission,
+                          OauthRepository oauthRepository) {
         this.userRepository = userRepository;
         this.problemListRepository = problemListRepository;
         this.problemRepository = problemRepository;
         this.groupRepository = groupRepository;
         this.submissionRepository = submissionRepository;
         this.dispatchSubmission = dispatchSubmission;
+        this.oauthRepository = oauthRepository;
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
@@ -278,13 +287,13 @@ public class UserController {
     /**
      * GET 判题
      *
-     * @param username
-     * @param httpSession
-     * @return
+     * @param username 用户名
+     * @param httpSession httpsession对象
+     * @return 无返回
      */
     @RequestMapping(value = "/{username}/judge", method = GET)
     public ResponseEntity judge(@PathVariable String username,
-                                HttpSession httpSession) {
+                                HttpSession httpSession) throws InterruptedException{
 
         if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
@@ -310,18 +319,37 @@ public class UserController {
                     .map(problems::indexOf)
                     .peek(index -> {
                         try {
-                            dispatchSubmission.dispatchSubmission(submissions.get(index), new URI(proxy.getUrl()));
-                        } catch (Exception e) {
-                            System.out.println(e);
+                            String token = UserUtil.getRandomCharAndNumr(20);
+                            token = UserUtil.encrypt("SHA1",token);
+                            Oauth oauth = new Oauth();
+                            oauth.setSubmissionId(submissionIds.get(index));
+                            oauth.setToken(token);
+                            oauthRepository.save(oauth);
+                            Submission submission = submissions.get(index);
+                            SubmissionWithToken submissionWithToken = (SubmissionWithToken)submissions.get(index);
+                            submissionWithToken.setToken(token);
+                            Future<Submission> submissionFuture =  dispatchSubmission.dispatchSubmission(
+                                    submissionWithToken,
+                                    proxy.getUrl());
+                            Submission newSubmission = submissionFuture.get(100, TimeUnit.MILLISECONDS);
+                            submission.setSentence(newSubmission.getSentence());
+                            submission.setStatus(SubmissionStatus.DECIDED);
+                        }catch (InterruptedException e){
+                            //中断
+                            e.printStackTrace();
+                        }catch (TimeoutException e){
+                            //超时
+                            return;
+                        }catch (ExecutionException e){
+                            //
                         }
-                    }).collect(Collectors.toList());
+                    })
+                    .collect(Collectors.toList());
         }
 
         return null;
     }
 
-
-    //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
 
 
     /**
