@@ -290,6 +290,14 @@ public class GroupController {
         }
     }
 
+    /**
+     * POST发送Pull Request
+     *
+     * @param groupName           目标题单所在的组的组名
+     * @param bindingProblemLists 绑定的源题单和目标题单对象
+     * @param session             请求会话
+     * @return PR是否发送成功
+     */
     @RequestMapping(value = "/{groupName}/pullReq", method = POST)
     public ResponseEntity sendPullRequest(@PathVariable String groupName,
                                           @RequestBody BindingProblemLists bindingProblemLists,
@@ -313,16 +321,21 @@ public class GroupController {
 
         User groupOwner = userRepository.findById(groupOwnerId);
 
+        Message tempMessage = new Message("Pull request",
+                userRepository.findById(userId).getUsername() + "wants to merge into problemLists.",
+                MessageType.OTHERS, groupName);
+
+        bindingProblemLists.setMessage(tempMessage);
+
         List<BindingProblemLists> binding = tempGroup.getBindingProblemLists();
+
+        groupRepository.save(tempGroup);
 
         if (!binding.contains(bindingProblemLists)) {
             binding.add(bindingProblemLists);
         }
 
-        groupOwner.getMessages().add(new Message("Pull request",
-                userRepository.findById(userId).getUsername() + "wants to merge into problemLists.",
-                MessageType.OTHERS, bindingProblemLists.getTargetProblemListId()));
-
+        groupOwner.getMessages().add(tempMessage);
         userRepository.save(groupOwner);
 
         return new ResponseEntity<>(HttpStatus.OK);

@@ -1,5 +1,6 @@
 package com.funcxy.oj.controllers;
 
+import com.funcxy.oj.contents.BindingProblemLists;
 import com.funcxy.oj.contents.Passport;
 import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.errors.*;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.util.List;
 
 import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 import static org.springframework.web.bind.annotation.RequestMethod.*;
@@ -27,7 +29,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 /**
  * User Controller
  *
- * @author zccz14 aak1247
+ * @author zccz14 aak1247 Peter
  */
 @RestController
 @RequestMapping("/users")
@@ -317,8 +319,57 @@ public class UserController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
+    /**
+     * POST处理PR
+     *
+     * @param username 当前用户
+     * @param index    Message的index
+     * @param accept   是否同意PR
+     * @param session  请求会话
+     * @return 是否PR成功
+     */
+    @RequestMapping(value = "/{username}/handlePR/{index}", method = POST)
+    public ResponseEntity handlePullRequest(@PathVariable String username,
+                                            @PathVariable int index,
+                                            @RequestParam boolean accept,
+                                            HttpSession session) {
+        if (!isSignedIn(session)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
 
+        String userId = session.getAttribute("userId").toString();
+        User groupOwner = userRepository.findById(userId);
+
+        if (groupOwner == null ||
+                !groupOwner.getUsername().equals(username)) {
+            return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+        }
+
+        Message tempMessage = groupOwner.getMessages().get(index);
+        String groupName = tempMessage.getAdditionalInformation();
+        Group tempGroup = groupRepository.findOneByGroupName(groupName);
+        List<BindingProblemLists> bindings = tempGroup.getBindingProblemLists();
+        BindingProblemLists bindingProblemList = bindings.get(bindings.indexOf(tempMessage));
+
+        if (accept) {
+            ProblemList source = problemListRepository.findById(bindingProblemList.getSourceProblemListId());
+            ProblemList target = problemListRepository.findById(bindingProblemList.getTargetProblemListId());
+
+            List<String> sourceProblemIds = source.getProblemIds();
+            List<String> targetProblemIds = target.getProblemIds();
+
+            targetProblemIds.removeAll(sourceProblemIds);
+            targetProblemIds.addAll(sourceProblemIds);
+        }
+
+        bindings.remove(bindingProblemList);
+        groupRepository.save(tempGroup);
+
+        tempMessage.setHasRead(true);
+        userRepository.save(groupOwner);
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 
     /**
      * POST在用户之间发送私信
@@ -347,8 +398,8 @@ public class UserController {
      * GET阅读私信
      *
      * @param username 当前用户
-     * @param index 私信条数
-     * @param session 请求回话
+     * @param index    私信条数
+     * @param session  请求回话
      * @return 阅读完成
      */
     @RequestMapping(value = "/{username}/readPrivateLetter/{index}", method = GET)
