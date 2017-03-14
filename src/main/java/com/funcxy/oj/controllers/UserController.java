@@ -12,12 +12,12 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.RegularExpression;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
-
 import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +27,7 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 
 /**
  * User Controller
+ *
  * @author zccz14 aak1247
  */
 @RestController
@@ -51,7 +52,7 @@ public class UserController {
         this.problemRepository = problemRepository;
         this.groupRepository = groupRepository;
         this.submissionRepository = submissionRepository;
-        this.dispatchSubmission= dispatchSubmission;
+        this.dispatchSubmission = dispatchSubmission;
     }
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
@@ -150,25 +151,27 @@ public class UserController {
 
     /**
      * Head方法，用于查询用户名是否重复
+     *
      * @param username 用户名
      * @return 不冲突时返回OK（200）
      */
     @RequestMapping(value = "/find/username", method = HEAD)//精确查找用户名
     public ResponseEntity hasUsername(@RequestParam String username) {
         User userFound = userRepository.findOneByUsername(username);
-        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        if (userFound == null) return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
     /**
      * Head方法，用于查询邮箱是否重复
+     *
      * @param email 邮箱
      * @return 不冲突时返回OK（200）
      */
     @RequestMapping(value = "/find/email", method = HEAD)//精确查找邮箱
     public ResponseEntity hasEmail(@RequestParam String email) {
         User userFound = userRepository.findOneByEmail(email);
-        if (userFound == null) return new ResponseEntity<>( HttpStatus.OK);
+        if (userFound == null) return new ResponseEntity<>(HttpStatus.OK);
         return new ResponseEntity<>(HttpStatus.CONFLICT);
     }
 
@@ -239,7 +242,8 @@ public class UserController {
 
     /**
      * fork 题单
-     * @param username 用户名
+     *
+     * @param username    用户名
      * @param problemList 要fork的题单
      * @param httpSession session
      * @return 成功时返回OK
@@ -273,25 +277,26 @@ public class UserController {
 
     /**
      * GET 判题
+     *
      * @param username
      * @param httpSession
      * @return
      */
-    @RequestMapping(value = "/{username}/judge",method = GET)
+    @RequestMapping(value = "/{username}/judge", method = GET)
     public ResponseEntity judge(@PathVariable String username,
                                 HttpSession httpSession) {
 
-        if (!UserUtil.isSignedIn(httpSession)){
+        if (!UserUtil.isSignedIn(httpSession)) {
             return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
         }
 
         User user = userRepository.findById(httpSession.getAttribute("userId").toString());
 
-        if (user == null)return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (user == null) return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
 
         List<String> submissionIds = user.getSubmissionUndecided();
-        if (submissionIds.size() == 0){
-            return new ResponseEntity<>(new NotFoundError(),HttpStatus.NOT_FOUND);
+        if (submissionIds.size() == 0) {
+            return new ResponseEntity<>(new NotFoundError(), HttpStatus.NOT_FOUND);
         }
         List<Submission> submissions = submissionIds.stream()
                 .map(submissionRepository::findById).collect(Collectors.toList());
@@ -299,14 +304,14 @@ public class UserController {
                 .map(Submission::getProblemId)
                 .map(problemRepository::findById)
                 .collect(Collectors.toList());
-        for (Proxy proxy:user.getProxies()){
+        for (Proxy proxy : user.getProxies()) {
             problems.stream()
                     .filter(problem -> proxy.getType().equals(problem.getType()))
-                    .map( problems::indexOf)
+                    .map(problems::indexOf)
                     .peek(index -> {
                         try {
-                            dispatchSubmission.dispatchSubmission(submissions.get(index),new URI(proxy.getUrl()));
-                        }catch (Exception e){
+                            dispatchSubmission.dispatchSubmission(submissions.get(index), new URI(proxy.getUrl()));
+                        } catch (Exception e) {
                             System.out.println(e);
                         }
                     }).collect(Collectors.toList());
@@ -316,9 +321,7 @@ public class UserController {
     }
 
 
-
     //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
-
 
 
     /**

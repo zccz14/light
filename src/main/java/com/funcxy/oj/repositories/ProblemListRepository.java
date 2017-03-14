@@ -33,9 +33,10 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Stri
 
     @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
     Page<ProblemList> findByCreatorLikeAndTitleLike(User creator, String title, Pageable pageable);
+
     /**
      * @param isPublic 题单公开性
-     * @param pageable     分页参数
+     * @param pageable 分页参数
      * @return 查询结果
      */
     @Query(fields = "{'coverUrl':1, 'title':1, 'creator':1}")
@@ -43,9 +44,9 @@ public interface ProblemListRepository extends MongoRepository<ProblemList, Stri
 
     /**
      * @param isPublic 题单公开性
-     * @param creator      创建者
-     * @param userId       题单包含的用户
-     * @param pageable     分页参数
+     * @param creator  创建者
+     * @param userId   题单包含的用户
+     * @param pageable 分页参数
      * @return 查询结果
      */
     @Query(fields = "{ 'coverUrl':1, 'title':1, 'creator':1}")

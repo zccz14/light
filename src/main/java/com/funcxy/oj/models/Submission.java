@@ -3,7 +3,7 @@ package com.funcxy.oj.models;
 import org.springframework.data.mongodb.core.index.Indexed;
 
 /**
- * @author  niyou2016 on 2017/2/28 0028.
+ * @author niyou2016 on 2017/2/28 0028.
  */
 public class Submission extends Model {
     /**
