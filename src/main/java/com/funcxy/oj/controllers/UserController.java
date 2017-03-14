@@ -319,6 +319,7 @@ public class UserController {
 
     //TODO:处理题单请求（创建/修改/,同意创建逻辑类似fork，其他类似）
 
+
     /**
      * POST在用户之间发送私信
      *
@@ -346,8 +347,8 @@ public class UserController {
      * GET阅读私信
      *
      * @param username 当前用户
-     * @param index
-     * @param session
+     * @param index 私信条数
+     * @param session 请求回话
      * @return 阅读完成
      */
     @RequestMapping(value = "/{username}/readPrivateLetter/{index}", method = GET)
