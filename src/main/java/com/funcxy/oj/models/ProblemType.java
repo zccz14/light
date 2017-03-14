@@ -17,6 +17,10 @@ public enum ProblemType {
      */
     TRUE_OR_FALSE,
     /**
+     * 编程题
+     */
+    PROGRAMMING,
+    /**
      * 开放题
      */
     OPEN_QUESTION

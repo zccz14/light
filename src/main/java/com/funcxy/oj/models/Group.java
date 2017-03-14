@@ -1,10 +1,12 @@
 package com.funcxy.oj.models;
 
+import com.funcxy.oj.contents.BindingProblemLists;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -44,6 +46,18 @@ public class Group extends Model {
      * 组类型
      */
     private GroupType type;
+    /**
+     * 希望进行PR的题单
+     */
+    private List<BindingProblemLists> bindingProblemLists = new ArrayList<>(0);
+
+    public List<BindingProblemLists> getBindingProblemLists() {
+        return bindingProblemLists;
+    }
+
+    public void setBindingProblemLists(List<BindingProblemLists> bindingProblemLists) {
+        this.bindingProblemLists = bindingProblemLists;
+    }
 
     public String getOwnerId() {
         return ownerId;

@@ -24,7 +24,7 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
  * @author niyou2016 on 2017/3/2 0002.
  */
 @RestController
-@RequestMapping("/submission")
+@RequestMapping("/submissions")
 
 public class SubmissionController {
     private final SubmissionRepository submissionRepository;
@@ -186,6 +186,7 @@ public class SubmissionController {
 
     /**
      * 搜索提交
+     *
      * @param session session
      * @return 成功时返回搜索到的提交
      */

@@ -94,7 +94,7 @@ public class User extends Model {
     /**
      * 评测转发规则列表
      */
-    private List<Dispatcher> dispatchers = new ArrayList<>(0);
+    private List<Proxy> proxies = new ArrayList<>(0);
 
     public User() {
         super();
@@ -323,12 +323,12 @@ public class User extends Model {
         this.invitation = invitation;
     }
 
-    public List<Dispatcher> getDispatchers() {
-        return dispatchers;
+    public List<Proxy> getProxies() {
+        return proxies;
     }
 
-    public void setDispatchers(List<Dispatcher> dispatchers) {
-        this.dispatchers = dispatchers;
+    public void setProxies(List<Proxy> proxies) {
+        this.proxies = proxies;
     }
 
 }
