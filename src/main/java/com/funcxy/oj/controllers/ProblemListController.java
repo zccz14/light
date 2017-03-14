@@ -476,10 +476,10 @@ public class ProblemListController {
      * @return true：日期合法，反之
      */
     private boolean isNotValidDate(ProblemList problemList) {
-        Date readBeginTime;
-        Date readEndTime = null;
-        Date answerBeginTime;
-        Date answerEndTime = null;
+        Date readBeginTime = problemList.getReadBeginTime();
+        Date readEndTime = problemList.getReadEndTime();
+        Date answerBeginTime = problemList.getAnswerBeginTime();
+        Date answerEndTime = problemList.getAnswerEndTime();
 
         /*
         * 1. readBeginTime < readEndTime
@@ -487,17 +487,20 @@ public class ProblemListController {
         * 3. readBeginTime < answerBeginTime
         * 4. answerEndTime < readEndTime
         * */
-        return !((readBeginTime = problemList.getReadBeginTime()) != null &&
-                (readEndTime = problemList.getReadEndTime()) != null &&
-                readBeginTime.after(readEndTime)) &&
-                !((answerBeginTime = problemList.getAnswerBeginTime()) != null &&
-                        (answerEndTime = problemList.getAnswerEndTime()) != null &&
-                        answerBeginTime.after(answerEndTime)) &&
-                !((readBeginTime != null && answerBeginTime != null) &&
-                        readBeginTime.after(answerBeginTime)) &&
-                !((readEndTime != null && answerEndTime != null) &&
-                        readEndTime.before(answerEndTime));
+        if (readBeginTime == null || readEndTime == null) {
+            if (answerBeginTime != null && answerEndTime != null) {
+                return answerBeginTime.before(answerEndTime);
+            }
+            return true;
+        }
+
+        if (readBeginTime.before(readEndTime)) {
+            if (answerBeginTime != null && answerEndTime != null) {
+                return answerBeginTime.before(answerEndTime);
+            }
+            return true;
+        }
+
+        return false;
     }
-
-
 }
