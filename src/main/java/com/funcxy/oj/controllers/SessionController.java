@@ -21,9 +21,17 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 @RestController
 @RequestMapping("/session")
 public class SessionController {
+    /**
+     * 进行Users的数据库操作
+     */
     private final
     UserRepository userRepository;
 
+    /**
+     * 构造函数
+     *
+     * @param userRepository 用户仓库
+     */
     @Autowired
     public SessionController(UserRepository userRepository) {
         this.userRepository = userRepository;

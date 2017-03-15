@@ -2,6 +2,7 @@ package com.funcxy.oj.contents;
 
 /**
  * Created by wtupc96 on 2017/3/13.
+ * 简化后的Group模型
  *
  * @author Peter
  * @version 1.0

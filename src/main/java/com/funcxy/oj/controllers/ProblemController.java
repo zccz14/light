@@ -68,6 +68,7 @@ public class ProblemController {
      * POST创建题目
      *
      * @param problem 将要创建的题目
+     *                @see Problem
      * @param session 请求会话
      * @return 是否创建成功
      */
@@ -128,6 +129,7 @@ public class ProblemController {
      *
      * @param pageNumber 页码
      * @param pageSize   页大小
+     *                   @see DataPageable
      * @param session    请求会话
      * @return 所有自己创建的题目
      */

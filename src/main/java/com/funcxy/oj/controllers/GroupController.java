@@ -30,11 +30,24 @@ import static org.springframework.web.bind.annotation.RequestMethod.*;
 @RestController
 @RequestMapping("/groups")
 public class GroupController {
+    /**
+     * 用户数据库操作
+     */
     private final
     UserRepository userRepository;
+
+    /**
+     * 用户组数据库操作
+     */
     private final
     GroupRepository groupRepository;
 
+    /**
+     * 构造函数
+     *
+     * @param userRepository  用户仓库
+     * @param groupRepository 用户组仓库
+     */
     @Autowired
     public GroupController(UserRepository userRepository, GroupRepository groupRepository) {
         this.userRepository = userRepository;
@@ -42,7 +55,13 @@ public class GroupController {
     }
 
 
-    //创建群组
+    /**
+     * POST创建群组
+     *
+     * @param group 前端传回有效的Group数据
+     * @param httpSession 请求会话
+     * @return 是否创建成功
+     */
     @RequestMapping(value = "/create", method = POST)
     public ResponseEntity<Object> createGroup(@RequestBody @Valid Group group, HttpSession httpSession) {
         if (!isSignedIn(httpSession)) {
@@ -56,8 +75,15 @@ public class GroupController {
         userRepository.save(user);
         return new ResponseEntity<>(group, HttpStatus.CREATED);
     }
-    //解散群组
 
+    /**
+     * POST解散群组
+     *
+     * @param dismissVerification 解散群组的权限测试
+     * @param groupName 组名
+     * @param httpSession 请求会话
+     * @return 是否解散成功
+     */
     @RequestMapping(value = "/{groupName}/dismiss", method = POST)//解散群组
     public ResponseEntity dismissGroup(@RequestBody DismissVerification dismissVerification, @PathVariable String groupName, HttpSession httpSession) {
         if (!isSignedIn(httpSession)) {
@@ -79,7 +105,16 @@ public class GroupController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //搜索群组
+    /**
+     * GET搜索群组
+     *
+     * @param groupName 搜索的群组名
+     * @param type 搜索的群组类型
+     * @see GroupType
+     * @param pageable 搜索结果的分页参数
+     * @see Pageable
+     * @return 搜索结果
+     */
     @RequestMapping(value = "/search", method = GET)
     public ResponseEntity searchGroup(@RequestParam(defaultValue = "/*") String groupName,
                                       @RequestParam(defaultValue = "/*") String type,
@@ -88,7 +123,13 @@ public class GroupController {
         return new ResponseEntity<>(groups, HttpStatus.OK);
     }
 
-    // 查看群组资料
+    /**
+     * GET查看某一群组详细信息
+     *
+     * @param groupName 群组名
+     * @param httpSession 请求会话
+     * @return 查询结果
+     */
     @RequestMapping(value = "/{groupName}", method = GET)
     public ResponseEntity getGroup(@PathVariable String groupName, HttpSession httpSession) {
         if (!isSignedIn(httpSession)) {
@@ -99,7 +140,14 @@ public class GroupController {
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    //修改群组资料
+    /**
+     * PUT修改群组资料
+     *
+     * @param groupName 待修改的群组名
+     * @param group 修改后的群组信息
+     * @param httpSession 请求会话
+     * @return 修改后的群组
+     */
     @RequestMapping(value = "/{groupName}/profile", method = PUT)
     public ResponseEntity updateGroup(@PathVariable String groupName,
                                       @RequestBody Group group,
@@ -150,7 +198,15 @@ public class GroupController {
         return new ResponseEntity<>(group, HttpStatus.OK);
     }
 
-    //申请加入
+    /**
+     * POST申请加入群组
+     *
+     * @param groupName 所申请的群组名
+     * @param user 进行申请的用户
+     *             @see User
+     * @param httpSession 请求会话
+     * @return 无
+     */
     @RequestMapping(value = "/{groupName}/apply-for", method = POST)
     public ResponseEntity applyFor(@PathVariable String groupName,
                                    @RequestBody User user,
@@ -181,7 +237,15 @@ public class GroupController {
         }
     }
 
-    //邀请成员
+    /**
+     * POST邀请成员
+     *
+     * @param groupName 进行邀请的组的名称
+     * @param user 被邀请的用户
+     *             @see User
+     * @param httpSession
+     * @return 无
+     */
     @RequestMapping(value = "{groupName}/invite", method = POST)
     public ResponseEntity invite(@PathVariable String groupName,
                                  @RequestBody User user,
@@ -271,7 +335,15 @@ public class GroupController {
         }
     }
 
-    //获取群组成员列表
+    /**
+     * GET获取组成员列表
+     *
+     * @param groupName 获取组的组名
+     * @param pageable 请求分页参数
+     *                 @see Pageable
+     * @param httpSession 请求会话
+     * @return 成员列表
+     */
     @RequestMapping(value = "/{groupName}/members", method = GET)
     public ResponseEntity retriveMember(@PathVariable String groupName,
                                         Pageable pageable,

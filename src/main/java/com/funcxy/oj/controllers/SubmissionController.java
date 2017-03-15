@@ -27,12 +27,40 @@ import static com.funcxy.oj.utils.UserUtil.isSignedIn;
 @RequestMapping("/submissions")
 
 public class SubmissionController {
+    /**
+     * 进行Submissions的数据库操作
+     */
     private final SubmissionRepository submissionRepository;
+
+    /**
+     * 进行ProblemLists的数据库操作
+     */
     private final ProblemListRepository problemListRepository;
+
+    /**
+     * 进行Users的数据库操作
+     */
     private final UserRepository userRepository;
+
+    /**
+     * 进行Problems的数据库操作
+     */
     private final ProblemRepository problemRepository;
+
+    /**
+     * 进行Groups的数据库操作
+     */
     private final GroupRepository groupRepository;
 
+    /**
+     * 构造函数
+     *
+     * @param submissionRepository  提交仓库
+     * @param problemListRepository 题单仓库
+     * @param userRepository        用户仓库
+     * @param problemRepository     题目仓库
+     * @param groupRepository       群组仓库
+     */
     @Autowired
     public SubmissionController(SubmissionRepository submissionRepository,
                                 ProblemListRepository problemListRepository,
@@ -69,6 +97,7 @@ public class SubmissionController {
      * 创建提交
      *
      * @param submission 提交对象
+     * @see Submission
      * @param session    session对象
      * @return 成功时返回提交对象
      * 权限说明：
@@ -138,6 +167,7 @@ public class SubmissionController {
      * 修改判决/处理提交
      *
      * @param submission   提交对象（包含判决）
+     *                     @see Submission
      * @param submissionId 提交Id
      * @param session      session对象
      * @return 成功时返回新提交
@@ -207,6 +237,14 @@ public class SubmissionController {
         return new ResponseEntity<>(submissions, HttpStatus.OK);
     }
 
+    /**
+     * GET由用户名检索用户提交
+     *
+     * @param username 目标用户名
+     * @param pageable 分页参数
+     * @param httpSession 请求会话
+     * @return 检索结果
+     */
     @RequestMapping(value = "/search-by-username", method = RequestMethod.GET)
     public ResponseEntity searchByUsername(@RequestParam(defaultValue = "") String username,
                                            Pageable pageable,
@@ -220,6 +258,14 @@ public class SubmissionController {
         return new ResponseEntity<>(submissions, HttpStatus.OK);
     }
 
+    /**
+     * GET根据题目查询提交情况
+     *
+     * @param problemTitle 目标题目的标题
+     * @param pageable 分页参数
+     * @param httpSession 请求参数
+     * @return 查询情况
+     */
     @RequestMapping(value = "/search-by-problemTitle", method = RequestMethod.GET)
     public ResponseEntity searchByProblemTitle(@RequestParam(defaultValue = "") String problemTitle,
                                                Pageable pageable,

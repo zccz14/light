@@ -57,8 +57,14 @@ public class ProblemListController {
      */
     private final UserRepository userRepository;
 
+    /**
+     * 进行Groups的数据库操作
+     */
     private final GroupRepository groupRepository;
 
+    /**
+     * 进行Problems的数据库操作
+     */
     private final ProblemRepository problemRepository;
 
     /**
@@ -98,6 +104,7 @@ public class ProblemListController {
      *
      * @param pageNumber 页码
      * @param pageSize   页大小
+     *                   @see DataPageable
      * @param session    请求的会话
      * @return 是否获取成功
      */
@@ -212,6 +219,7 @@ public class ProblemListController {
      * 创建题单API
      *
      * @param problemList 题单对象
+     *                    @see ProblemList
      * @param session     session
      * @return 成功时返回题单对象
      * 此API针对个人创建题单，登陆后使用
@@ -265,6 +273,7 @@ public class ProblemListController {
      * POST上传题单封面
      *
      * @param cover   封面图片
+     *                @see MultipartFile
      * @param session 请求会话
      * @return 是否上传成功
      */
@@ -294,6 +303,7 @@ public class ProblemListController {
      * 修改题单API
      *
      * @param problemList 题单对象
+     *                    @see ProblemList
      * @param id          题单id
      * @param session     session
      * @return 成功时返回题单
@@ -473,6 +483,7 @@ public class ProblemListController {
      * 判断题单中的四个时间字段是否合法
      *
      * @param problemList 需要进行合法判断的题单
+     *                    @see ProblemList
      * @return true：日期合法，反之
      */
     private boolean isNotValidDate(ProblemList problemList) {

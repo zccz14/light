@@ -215,7 +215,7 @@ public class ProblemList extends Model {
     }
 
     public void setPublic(boolean isPublic) {
-        isPublic = isPublic;
+        this.isPublic = isPublic;
     }
 
     public boolean isAnonymous() {
