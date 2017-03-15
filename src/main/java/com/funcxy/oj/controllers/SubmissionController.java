@@ -147,6 +147,8 @@ public class SubmissionController {
                         SubmissionWithToken submissionWithToken = (SubmissionWithToken) submission;
                         String token = UserUtil.getRandomCharAndNumr(20);
                         token = UserUtil.encrypt("SHA1", token);
+                        Object refAns = problemRepository.findById(submission.getProblemId()).getReferenceAnswer();
+                        submissionWithToken.setRefAnswer(refAns);
                         submissionWithToken.setToken(token);
                         Oauth oauth = new Oauth();
                         oauth.setToken(token);
