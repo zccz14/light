@@ -65,6 +65,12 @@ public class UserController {
 
     @RequestMapping(value = "/sign-in", method = POST)//登录
     public ResponseEntity signIn(@RequestBody SignInPassport passport, HttpSession httpSession) {
+        if(UserUtil.isSignedIn(httpSession)){
+            User user = userRepository.findById(httpSession.getAttribute("userId").toString());
+            if (user!=null){
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+        }
         if (passport.username == null) {
             return new ResponseEntity<>(new FieldsRequiredError(), HttpStatus.BAD_REQUEST);
         } else {
