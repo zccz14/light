@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
@@ -29,6 +30,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertNotNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,25 +38,35 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
 /**
- * Created by DDHEE on 2017/3/14.
+ * @author  DDHEE on 2017/3/14.
+ */
+
+/**
+ * 说明：
+ * 通过MockMvc发出请求
+ * 通过sessisonAtrs设定session
+ * 通过content设定请求体
+ * 通过andExpect进行响应的断言测试
+ *
  */
 
 @RunWith(SpringJUnit4ClassRunner.class)  //使用junit4进行测试
 @SpringBootTest(classes = Application.class)
+@SpringBootConfiguration
 public class UserSignTest {
-    String usernameValid = "zccz13";
-    String usernameValid1 = "zzcz13";
-    String usernameDuplicated = "  z ccz 1  3 ";
-    String usernameEmpty = "      ";
-    String emailValid = "hell@yeahfuncxy.net";
-    String emailValid1 = "hello@yeahfuncxy.com";
-    String emailDuplicated = "  h ell@yeah    func   xy.net";
-    String emailEmpty = "     ";
-    String emailInvalid = "asfdjklas@.com";
-    String passwordValid = "abc6789067890";
-    String passwordWrong = "ab6789067890";
-    String passwordEmpty = "";
-    String passwordInvalid = "243";
+    private String usernameValid = "zccz13";
+    private String usernameValid1 = "zzcz13";
+    private String usernameDuplicated = "  z ccz 1  3 ";
+    private String usernameEmpty = "      ";
+    private String emailValid = "hell@yeahfuncxy.net";
+    private String emailValid1 = "hello@yeahfuncxy.com";
+    private String emailDuplicated = "  h ell@yeah    func   xy.net";
+    private String emailEmpty = "     ";
+    private String emailInvalid = "asfdjklas@.com";
+    private String passwordValid = "abc6789067890";
+    private String passwordWrong = "ab6789067890";
+    private String passwordEmpty = "";
+    private String passwordInvalid = "243";
 
     @Autowired
     private UserRepository userRepository;
@@ -93,6 +105,10 @@ public class UserSignTest {
         testUserPassport.username = usernameValid;
         testUserPassport.email = emailValid;
         testUserPassport.password = passwordValid;
+
+        //session
+        //维持登录态
+        sessionAttr = new HashMap<String, Object>();
     }
 
     @Test
@@ -308,8 +324,11 @@ public class UserSignTest {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
+        User user = userRepository.findOneByUsername(usernameValid);
+        sessionAttr.put("userId",user.getId());
         testUserSignInPassport.username = usernameValid1;
         mockMvc.perform(post("/users/sign-in")
+                .sessionAttrs(sessionAttr)
                 .content(this.json(testUserSignInPassport))
                 .contentType(contentType))
                 .andDo(print())
@@ -323,22 +342,22 @@ public class UserSignTest {
                 .content(this.json(testUserPassport))
                 .contentType(contentType))
                 .andDo(print())
-                .andExpect(status().isCreated())
-                .andReturn();
+                .andExpect(status().isCreated());
         testUserSignInPassport.username = usernameValid;
         testUserSignInPassport.password = passwordValid;
         mockMvc.perform(post("/users/sign-in")
                 .content(this.json(testUserSignInPassport))
                 .contentType(contentType))
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andReturn();
-        mockMvc.perform(post("/users/sign-out")
-                .content(json(testUserSignInPassport))
+                .andExpect(status().isOk());
+        User user = userRepository.findOneByUsername(usernameValid);
+        sessionAttr.put("userId",user.getId());
+        mockMvc.perform(get("/users/sign-out")
+                .sessionAttrs(sessionAttr)
                 .contentType(contentType))
                 .andDo(print())
-                .andExpect(status().isNoContent())
-                .andReturn();
+                .andExpect(status().isNoContent());
+        sessionAttr.clear();
     }
 
     @Test
@@ -349,8 +368,7 @@ public class UserSignTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andReturn();
-        mockMvc.perform(post("/users/sign-out")
-                .content(this.json(testUserSignInPassport))
+        mockMvc.perform(get("/users/sign-out")
                 .contentType(contentType))
                 .andDo(print())
                 .andExpect(status().isForbidden())
