@@ -325,6 +325,8 @@ public class UserController {
                             oauthRepository.save(oauth);
                             Submission submission = submissions.get(index);
                             SubmissionWithToken submissionWithToken = (SubmissionWithToken) submissions.get(index);
+                            Object refAns = problemRepository.findById(submission.getProblemId()).getReferenceAnswer();
+                            submissionWithToken.setRefAnswer(refAns);
                             submissionWithToken.setToken(token);
                             Future<Submission> submissionFuture = dispatchSubmission.dispatchSubmission(
                                     submissionWithToken,
