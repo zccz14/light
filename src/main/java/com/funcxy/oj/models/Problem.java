@@ -40,6 +40,10 @@ public class Problem extends Model {
     @NotBlank
     private Object description;
     /**
+     * 附加的具有格式的题面
+     */
+    private Object addons;
+    /**
      * 参考答案
      */
     private Object referenceAnswer;
@@ -92,4 +96,11 @@ public class Problem extends Model {
         this.type = type;
     }
 
+    public Object getAddons() {
+        return addons;
+    }
+
+    public void setAddons(Object addons) {
+        this.addons = addons;
+    }
 }

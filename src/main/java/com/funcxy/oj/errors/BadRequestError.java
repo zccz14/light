@@ -7,7 +7,7 @@ package com.funcxy.oj.errors;
  */
 public class BadRequestError extends Error {
     BadRequestError(String message) {
-        super(404, message);
+        super(400, message);
     }
 
     public BadRequestError() {

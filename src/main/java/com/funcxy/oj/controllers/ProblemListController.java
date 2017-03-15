@@ -227,7 +227,7 @@ public class ProblemListController {
         }
 
         // 题单中四个日期的指定是否合法
-        if (isNotValidDate(problemList)) {
+        if (!isValidDate(problemList)) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
 
@@ -316,7 +316,7 @@ public class ProblemListController {
         }
 
         // 题单中的四个日期是否合法
-        if (isNotValidDate(problemList)) {
+        if (isValidDate(problemList)) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
         //不能保证一一对应时我是拒绝的
@@ -475,11 +475,11 @@ public class ProblemListController {
      * @param problemList 需要进行合法判断的题单
      * @return true：日期合法，反之
      */
-    private boolean isNotValidDate(ProblemList problemList) {
-        Date readBeginTime;
-        Date readEndTime = null;
-        Date answerBeginTime;
-        Date answerEndTime = null;
+    private boolean isValidDate(ProblemList problemList) {
+        Date readBeginTime = problemList.getReadBeginTime();
+        Date readEndTime = problemList.getReadEndTime();
+        Date answerBeginTime = problemList.getAnswerBeginTime();
+        Date answerEndTime = problemList.getAnswerEndTime();
 
         /*
         * 1. readBeginTime < readEndTime
@@ -487,17 +487,20 @@ public class ProblemListController {
         * 3. readBeginTime < answerBeginTime
         * 4. answerEndTime < readEndTime
         * */
-        return !((readBeginTime = problemList.getReadBeginTime()) != null &&
-                (readEndTime = problemList.getReadEndTime()) != null &&
-                readBeginTime.after(readEndTime)) &&
-                !((answerBeginTime = problemList.getAnswerBeginTime()) != null &&
-                        (answerEndTime = problemList.getAnswerEndTime()) != null &&
-                        answerBeginTime.after(answerEndTime)) &&
-                !((readBeginTime != null && answerBeginTime != null) &&
-                        readBeginTime.after(answerBeginTime)) &&
-                !((readEndTime != null && answerEndTime != null) &&
-                        readEndTime.before(answerEndTime));
+        if (readBeginTime == null || readEndTime == null) {
+            if (answerBeginTime != null && answerEndTime != null) {
+                return answerBeginTime.before(answerEndTime);
+            }
+            return true;
+        }
+
+        if (readBeginTime.before(readEndTime)) {
+            if (answerBeginTime != null && answerEndTime != null) {
+                return answerBeginTime.before(answerEndTime);
+            }
+            return true;
+        }
+
+        return false;
     }
-
-
 }
