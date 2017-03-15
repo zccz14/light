@@ -235,7 +235,7 @@ public class ProblemListController {
         }
 
         // 题单中四个日期的指定是否合法
-        if (isNotValidDate(problemList)) {
+        if (!isValidDate(problemList)) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
 
@@ -326,7 +326,7 @@ public class ProblemListController {
         }
 
         // 题单中的四个日期是否合法
-        if (isNotValidDate(problemList)) {
+        if (isValidDate(problemList)) {
             return new ResponseEntity<>(new FieldsInvalidError(), HttpStatus.BAD_REQUEST);
         }
         //不能保证一一对应时我是拒绝的
@@ -486,7 +486,7 @@ public class ProblemListController {
      *                    @see ProblemList
      * @return true：日期合法，反之
      */
-    private boolean isNotValidDate(ProblemList problemList) {
+    private boolean isValidDate(ProblemList problemList) {
         Date readBeginTime = problemList.getReadBeginTime();
         Date readEndTime = problemList.getReadEndTime();
         Date answerBeginTime = problemList.getAnswerBeginTime();
