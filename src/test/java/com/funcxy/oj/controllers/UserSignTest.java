@@ -3,6 +3,7 @@ package com.funcxy.oj.controllers;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.funcxy.oj.Application;
 import com.funcxy.oj.contents.Passport;
+import com.funcxy.oj.contents.SignInPassport;
 import com.funcxy.oj.models.User;
 import com.funcxy.oj.repositories.UserRepository;
 import org.bson.types.ObjectId;
@@ -51,6 +52,7 @@ public class UserSignTest {
     String emailEmpty = "     ";
     String emailInvalid = "asfdjklas@.com";
     String passwordValid = "abc6789067890";
+    String passwordWrong = "ab6789067890";
     String passwordEmpty = "";
     String passwordInvalid = "243";
 
@@ -83,6 +85,7 @@ public class UserSignTest {
     }
 
     private Passport testUserPassport = new Passport();
+    private SignInPassport testUserSignInPassport = new SignInPassport();
 
     @Before
     public void validUser () throws Exception {
@@ -190,6 +193,167 @@ public class UserSignTest {
                 .contentType(contentType))
                 .andDo(print())
                 .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestNormalByUsername() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestWrongPassword() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid;
+        testUserSignInPassport.password = passwordWrong;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestNormalByEmail() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = emailValid;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestUserNotFound() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid1;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestHaveSignedInWithSameRequest() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+    }
+
+    @Test
+    public void signInTestHaveSignedInWithDifferentRequest() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid1;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isForbidden())
+                .andReturn();
+    }
+
+    @Test
+    public void signOutTestNormal() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        testUserSignInPassport.username = usernameValid;
+        testUserSignInPassport.password = passwordValid;
+        mockMvc.perform(post("/users/sign-in")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+        mockMvc.perform(post("/users/sign-out")
+                .content(json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isNoContent())
+                .andReturn();
+    }
+
+    @Test
+    public void signOutTestNeverSignedIn() throws Exception {
+        mockMvc.perform(post("/users/sign-up")
+                .content(this.json(testUserPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andReturn();
+        mockMvc.perform(post("/users/sign-out")
+                .content(this.json(testUserSignInPassport))
+                .contentType(contentType))
+                .andDo(print())
+                .andExpect(status().isForbidden())
                 .andReturn();
     }
 
