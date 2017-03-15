@@ -1,5 +1,7 @@
 package com.funcxy.oj.controllers.users;
 
+import com.funcxy.oj.errors.ForbiddenError;
+import com.funcxy.oj.utils.UserUtil;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,9 @@ import static org.springframework.web.bind.annotation.RequestMethod.GET;
 public class SignOutController {
     @RequestMapping(method = GET)
     public ResponseEntity<Object> SignOut(HttpSession httpSession) {
+        if (!UserUtil.isSignedIn(httpSession)){
+            return new ResponseEntity<>(new ForbiddenError(),HttpStatus.FORBIDDEN);
+        }
         httpSession.invalidate();
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
