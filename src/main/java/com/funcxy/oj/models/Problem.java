@@ -38,7 +38,7 @@ public class Problem extends Model {
      */
     @NotNull
     @NotBlank
-    private Object description;
+    private String description;
     /**
      * 附加的具有格式的题面
      */
@@ -64,7 +64,7 @@ public class Problem extends Model {
         this.title = title.trim();
     }
 
-    public Object getDescription() {
+    public String getDescription() {
         return description;
     }
 
