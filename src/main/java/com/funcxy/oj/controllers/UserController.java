@@ -67,8 +67,11 @@ public class UserController {
     public ResponseEntity signIn(@RequestBody SignInPassport passport, HttpSession httpSession) {
         if(UserUtil.isSignedIn(httpSession)){
             User user = userRepository.findById(httpSession.getAttribute("userId").toString());
+            if (user!=null&&!user.getUsername().equals(passport.username)&&!user.getEmail().equals(passport.username)){
+                return new ResponseEntity<>(new ForbiddenError(), HttpStatus.FORBIDDEN);
+            }
             if (user!=null){
-                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                return new ResponseEntity<>(user,HttpStatus.OK);
             }
         }
         if (passport.username == null) {
