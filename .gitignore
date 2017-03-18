@@ -1,9 +1,5 @@
 # Intellij IDEA
 .idea/workspace.xml
 .idea/tasks.xml
-# Eclipse
-.project
-.classpath
-.settings
 # Build
 target
