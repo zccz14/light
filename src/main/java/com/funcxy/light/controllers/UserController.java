@@ -111,7 +111,7 @@ public class UserController {
         System.out.println(passport.username + passport.email + passport.password);
         if (Validation.isValid(passport)) {
             System.out.println(passport.username + " sign up");
-            User userFoundByUsername = userRepository.findOneByUsername(passport.email);
+            User userFoundByUsername = userRepository.findOneByUsername(passport.username);
             if (userFoundByUsername != null) {
                 return new ResponseEntity<>(new FieldsDuplicateError(), HttpStatus.BAD_REQUEST);
             }
