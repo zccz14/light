@@ -1,0 +1,13 @@
+= light
+
+Let there be light.
+
+Online Judge System Core Server of RESTful API
+
+== Author List
+
+zccz14 <zccz14@outlook.com>
+
+aak1247 <aak1247@outlook.com>
+
+wtupc96 <peter_ouyang@outlook.com>
