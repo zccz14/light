@@ -82,6 +82,8 @@ public class Problem extends Model {
 
     @Override
     public boolean equals(Object obj) {
+        if (obj == null)
+            return false;
         if (this.getId() != null)
             return this.getId().equals(((Problem) obj).getId());
         else

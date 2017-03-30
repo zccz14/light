@@ -160,15 +160,22 @@ public class ProblemListController {
 
         String tempObjectId = session.getAttribute("userId").toString();
         User user = userRepository.findById(tempObjectId);
+        String creator = tempProblemList.getCreator();
 
         // 是自己创建的题单
-        if (tempProblemList.getCreator().equals(tempObjectId)) {
+        if (creator.equals(tempObjectId)) {
             return new ResponseEntity<>(tempProblemList, HttpStatus.OK);
         }
 
+        /*
+         用户能看到该题单的必要条件：
+         1. 这个题单是公开的；
+         2. 这个用户和创建者是一个群组的；
+         3. 题单的用户包含该用户。
+         */
         if (tempProblemList.isPublic() ||
-                (groupRepository.findById(tempProblemList.getCreator()) != null
-                        && user.getGroupIn().contains(tempProblemList.getCreator())) ||
+                (groupRepository.findById(creator) != null
+                        && user.getGroupIn().contains(creator)) ||
                 tempProblemList
                         .getUserList()
                         .contains(tempObjectId)) {

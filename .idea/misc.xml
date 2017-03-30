@@ -8,33 +8,20 @@
       <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblemList title" />
       <entry_point TYPE="field" FQNAME="com.funcxy.oj.models.CleanedProblemList type" />
     </entry_points>
-    <pattern value="com.funcxy.oj.models.Dispatcher" method="setUrl" />
-    <pattern value="com.funcxy.oj.models.Dispatcher" method="getUrl" />
-    <pattern value="com.funcxy.oj.models.Dispatcher" method="getType" />
-    <pattern value="com.funcxy.oj.errors.Error" method="getCode" />
-    <pattern value="com.funcxy.oj.errors.Error" method="setCode" />
-    <pattern value="com.funcxy.oj.errors.Error" method="getMessage" />
-    <pattern value="com.funcxy.oj.errors.Error" method="setMessage" />
-    <pattern value="com.funcxy.oj.errors.FieldsDuplicateError" method="getFields" />
-    <pattern value="com.funcxy.oj.errors.FieldsDuplicateError" method="setFields" />
-    <pattern value="com.funcxy.oj.errors.FieldsInvalidError" method="getFields" />
-    <pattern value="com.funcxy.oj.errors.FieldsInvalidError" method="setFields" />
-    <pattern value="com.funcxy.oj.errors.FieldsRequiredError" method="getFields" />
-    <pattern value="com.funcxy.oj.errors.FieldsRequiredError" method="setFields" />
   </component>
   <component name="JavadocGenerationManager">
-    <option name="OUTPUT_DIRECTORY" />
+    <option name="OUTPUT_DIRECTORY" value="D:/Orange-Juice JavaDoc" />
     <option name="OPTION_SCOPE" value="protected" />
     <option name="OPTION_HIERARCHY" value="true" />
     <option name="OPTION_NAVIGATOR" value="true" />
     <option name="OPTION_INDEX" value="true" />
     <option name="OPTION_SEPARATE_INDEX" value="true" />
-    <option name="OPTION_DOCUMENT_TAG_USE" value="false" />
-    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="false" />
-    <option name="OPTION_DOCUMENT_TAG_VERSION" value="false" />
+    <option name="OPTION_DOCUMENT_TAG_USE" value="true" />
+    <option name="OPTION_DOCUMENT_TAG_AUTHOR" value="true" />
+    <option name="OPTION_DOCUMENT_TAG_VERSION" value="true" />
     <option name="OPTION_DOCUMENT_TAG_DEPRECATED" value="true" />
     <option name="OPTION_DEPRECATED_LIST" value="true" />
-    <option name="OTHER_OPTIONS" value="" />
+    <option name="OTHER_OPTIONS" value="-encoding utf-8 -charset utf-8" />
     <option name="HEAP_SIZE" />
     <option name="LOCALE" />
     <option name="OPEN_IN_BROWSER" value="true" />
@@ -47,7 +34,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" assert-keyword="true" jdk-15="true" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/out" />
   </component>
 </project>
