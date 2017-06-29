@@ -11,7 +11,7 @@ after_success:
   - git init
   - git add .
   - git commit -m "Travis Deploy"
-  - git push -f -q https://$GITHUB_TOKEN@github.com/function-x/Orange-Juice-Docs.git master
+  - git push -f -q https://$GITHUB_TOKEN@github.com/zccz14/light.git master:gh-pages
   - codeclimate-test-reporter < coverage/lcov.info
 addons:
   code_climate:
