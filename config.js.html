@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: config.js</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: config.js</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>/**
+ * 系统配置
+ * @module
+ * @author zccz14 &lt;zccz14@outlook.com>
+ */
+// 配置查阅索引（重要）
+// system.mongodb:
+// http://mongodb.github.io/node-mongodb-native/2.2/reference/connecting/connection-settings/
+// system.morgan: https://github.com/expressjs/morgan
+// system.session: https://github.com/expressjs/session
+/**
+ * @typedef {Object} SystemConfiguration
+ * @prop {URL} system.mongodb MongoDB URL
+ * @prop {URL} originFrontEnt 远程前端 URL
+ * @prop {String} environment 部署环境 "production" 或是 "development"
+ */
+/**
+ * @readonly
+ * @type {SystemConfiguration}
+ * @member
+ */
+const configuration = {
+  originFrontEnds: [
+    'https://function-x.github.io',  // Allow API ref
+    'http://127.0.0.1:8080', // Temporarily Local Debugging
+    'http://localhost:8080', // Temporarily Local Debugging
+  ],
+  system: {
+    assets: { path: require('path').join(__dirname, 'assets') },
+    mongodb: {
+      URI: 'mongodb://' + (process.env.MONGO_SERVER || 'localhost:27017') + '/OrangeJuice'
+    },
+    morgan: { format: 'dev', options: {} },
+    // Store the password in encrypted
+    // You can customize the hash algorithm
+    passwordHash: {
+      store: function (clearPassword) {
+        // DO NOT CHANGE IT after deployed!!!
+        // Or your users should reset their password
+        return require('crypto')
+          .createHash('sha1')  // Hash Algorithm
+          .update(clearPassword)
+          .digest('hex');
+      },
+      // return true if the clearPassword is true
+      verify: function (clearPassword, encryptedPassword) {
+        return configuration.system.passwordHash.store(clearPassword) ===
+          encryptedPassword;
+      }
+    },
+    session: {
+      secret: 'ORANGEJUICE',
+      key: 'OJID',
+      resave: false,
+      saveUninitialized: true
+    },
+    defaultPort: 2048
+  }
+};
+
+
+module.exports = configuration;
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Modules</h3><ul><li><a href="module-config.html">config</a></li><li><a href="module-lib_on_error.html">lib/on_error</a></li><li><a href="module-lib_problem_create.html">lib/problem_create</a></li><li><a href="module-lib_problem_delete.html">lib/problem_delete</a></li><li><a href="module-lib_problem_detail.html">lib/problem_detail</a></li><li><a href="module-lib_problem_list_create.html">lib/problem_list_create</a></li><li><a href="module-lib_problem_list_detail.html">lib/problem_list_detail</a></li><li><a href="module-lib_problem_list_problem_create.html">lib/problem_list_problem_create</a></li><li><a href="module-lib_problem_list_retrieve.html">lib/problem_list_retrieve</a></li><li><a href="module-lib_problem_retrieve.html">lib/problem_retrieve</a></li><li><a href="module-lib_problem_update.html">lib/problem_update</a></li><li><a href="module-lib_submission_create.html">lib/submission_create</a></li><li><a href="module-lib_submission_detail.html">lib/submission_detail</a></li><li><a href="module-lib_submission_retrieve.html">lib/submission_retrieve</a></li><li><a href="module-lib_submission_sentence_update.html">lib/submission_sentence_update</a></li><li><a href="module-lib_user_create.html">lib/user_create</a></li><li><a href="module-lib_user_detail.html">lib/user_detail</a></li><li><a href="module-lib_user_login.html">lib/user_login</a></li><li><a href="module-lib_user_logout.html">lib/user_logout</a></li><li><a href="module-lib_user_profile_detail.html">lib/user_profile_detail</a></li><li><a href="module-lib_user_retrieve.html">lib/user_retrieve</a></li><li><a href="module-models_index.html">models/index</a></li><li><a href="module-routes_group.html">routes/group</a></li><li><a href="module-routes_index.html">routes/index</a></li><li><a href="module-routes_problem.html">routes/problem</a></li><li><a href="module-routes_problem_list.html">routes/problem_list</a></li><li><a href="module-routes_submission.html">routes/submission</a></li><li><a href="module-routes_user.html">routes/user</a></li><li><a href="module-server.html">server</a></li></ul><h3>Classes</h3><ul><li><a href="Problem.html">Problem</a></li><li><a href="ProblemList.html">ProblemList</a></li><li><a href="Submission.html">Submission</a></li><li><a href="User.html">User</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.3</a> on Thu Jun 29 2017 19:15:14 GMT+0000 (UTC)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>

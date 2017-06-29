@@ -1,0 +1,371 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for light/lib/submission_create.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">all files</a> / <a href="index.html">light/lib/</a> submission_create.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">19.35% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>6/31</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/12</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/2</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">20% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>6/30</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1×</span></td><td class="text"><pre class="prettyprint lang-js">/**
+ * Submission Create
+ * @module
+ * @author zccz14 &lt;zccz14@outlook.com&gt;
+ * @requires co
+ * @requires superagent
+ * @requires models/index
+ * @requires lib/on_error
+ */
+&nbsp;
+const co = require('co');
+const request = require('superagent');
+&nbsp;
+const {User, ProblemList, Submission} = require('../models');
+&nbsp;
+const OnError = require('./on_error');
+/**
+ * @name ProblemCreate
+ * @desc 创建题目的中间件
+ * @function
+ * @param {HTTPRequest} req - HTTPRequest
+ * @param {HTTPRequest} res - HTTPResponse
+ * @returns {void}
+ * 
+ * @api {post} /submission 创建提交
+ * @apiVersion 0.1.0
+ * @apiName SubmissionCreate
+ * @apiGroup Submission
+ * @apiPermission user
+ *
+ * @apiParam {ObjectId} problemId 题目ID
+ * @apiParam {ObjectId} problemListId 题单ID
+ * @apiParam {ObjectId} judgerId 裁判ID
+ * @apiParam {String} type 提交类型
+ * @apiParam {Buffer} body 提交正文
+ *
+ * @apiSuccess {Number} code 0
+ * @apiSuccess {Submission} submission 新建的提交
+ * @apiSuccess {ProblemList} problemList 更新后的题单
+ * @apiDescription
+ *   用户登录后查看题单中的题目并提交。
+ *   如果题单不存在，返回 11
+ *   如果题单存在但用户看不到，返回 11
+ *   如果用户无法提交，返回 7
+ *   如果题单中没有要交的问题，返回 11
+ *   一切正常返回 0
+ */
+<span class="fstat-no" title="function not covered" >function SubmissionCreate(req, res) {</span>
+<span class="cstat-no" title="statement not covered" >  co(<span class="fstat-no" title="function not covered" >function* () {</span></span>
+<span class="cstat-no" title="statement not covered" >    let user = req.session.user;</span>
+    // combine
+<span class="cstat-no" title="statement not covered" >    let submitterId = user._id;</span>
+<span class="cstat-no" title="statement not covered" >    let {judgerId, problemId, problemListId, type, body} = req.body;</span>
+    // find the problem list
+<span class="cstat-no" title="statement not covered" >    let problemList = yield ProblemList.findById(problemListId).exec();</span>
+    // if the problem is not visible to the submitter
+<span class="cstat-no" title="statement not covered" >    if (problemList.ownerId.toString() !== submitterId &amp;&amp; problemList.visibility !== 'public') {</span>
+      // the problem list does not belongs to the submitter
+      // and is not public
+<span class="cstat-no" title="statement not covered" >      res.json({ code: 11, msg: 'problem list not available', problemListId });</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+    // if the problem list does not allow submitting
+<span class="cstat-no" title="statement not covered" >    if (problemList.allowSubmitting !== true) {</span>
+<span class="cstat-no" title="statement not covered" >      res.json({ code: 7, msg: 'not allow submitting', problemListId });</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+    // If the Problem List does not contain the problem
+<span class="cstat-no" title="statement not covered" >    if (problemList.problems.every((v =&gt; <span class="cstat-no" title="statement not covered" >v.toString() !== problemId)</span>)) {</span>
+<span class="cstat-no" title="statement not covered" >      res.json({ code: 11, msg: 'problem not available', problemListId, problemId });</span>
+<span class="cstat-no" title="statement not covered" >      return;</span>
+    }
+<span class="cstat-no" title="statement not covered" >    let judger = yield User.findById(judgerId).exec();</span>
+<span class="cstat-no" title="statement not covered" >    if (judger === null) {</span>
+<span class="cstat-no" title="statement not covered" >      res.json({ code: 11, msg: 'judger not found', judgerId });</span>
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    let submission = new Submission({</span>
+      submitterId: user._id,
+      judgerId,
+      problemId,
+      problemListId,
+      type,
+      body
+    });
+<span class="cstat-no" title="statement not covered" >    submission = yield submission.save();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    problemList = yield ProblemList.findByIdAndUpdate(problemList._id, {</span>
+      $addToSet: {
+        submissions: submission._id
+      }
+    }, { new: true });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (judger.judgeProxy) {</span>
+<span class="cstat-no" title="statement not covered" >      yield request.post(judger.judgeProxy).send(submission);</span>
+    } else {
+<span class="cstat-no" title="statement not covered" >      yield User.findByIdAndUpdate(judgerId, { $addToSet: { judgeList: submission._id } }).exec();</span>
+    }
+<span class="cstat-no" title="statement not covered" >    res.json({ code: 0, submission, problemList });</span>
+  }).catch(OnError(req, res));
+}
+&nbsp;
+module.exports = SubmissionCreate;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="http://istanbul-js.org/" target="_blank">istanbul</a> at Thu Jun 29 2017 19:15:10 GMT+0000 (UTC)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>
