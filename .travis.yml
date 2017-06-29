@@ -5,9 +5,15 @@ services: mongodb
 before_install:
     - git config --global user.email "zccz14@outlook.com"
     - git config --global user.name "zccz14"
+    - npm i -g codeclimate-test-reporter
 after_success:
   - cd docs
   - git init
   - git add .
   - git commit -m "Travis Deploy"
   - git push -f -q https://$GITHUB_TOKEN@github.com/function-x/Orange-Juice-Docs.git master
+  - codeclimate-test-reporter < lcov.info
+addons:
+  code_climate:
+    repo_token: $CODE_CLIMATE_TOKEN
+
